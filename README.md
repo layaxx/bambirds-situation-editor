@@ -9,7 +9,7 @@ Make sure you have python3 installed on your computer
 1.  Open the index.html in your webbrowser
 2.  Create the level you want (x axis starts at the very left side and ends at the very right side) you can put the birds where you want as they will moved to the correct point anyways
 3.  Click save and save the level to a folder
-4.  Run Parser.py and with 
+4.  Run parser/Parser.py with your paths as arguments (`--help` for help)
 6.  If you did not change the structure of the output-file to the directory (json directory) where you run your file (if you run the game in slingshot this would be in `cors/fowl/json/`), copy the file now in this directory
 7.  Run Angrybirds (now you should see the new level you just created)
 
