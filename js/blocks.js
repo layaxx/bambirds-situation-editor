@@ -1,5 +1,6 @@
+// TODO: Uncommented blocks have not been mapped to the chrome ids yet
 blocks = {
-    BasicBird2: {
+    BIRD_WHITE: {
         collisionSound: "bird_05_collision",
         controllable: true,
         damageFactors: "DefaultDamageFactors",
@@ -32,7 +33,7 @@ blocks = {
         unselectionSound: "bird_05_unselect",
         useLegacyCollisionPath: true
     },
-    BlackBird: {
+    BIRD_BLACK: {
         collisionSound: "bird_04_collision",
         controllable: true,
         damageFactors: "BlackBirdDamageFactors",
@@ -65,14 +66,14 @@ blocks = {
         unselectionSound: "bird_04_unselect",
         useLegacyCollisionPath: true
     },
-    BlockCarpet: {
-        group: "extras",
-        groupIndex: 38,
-        material: "extras",
-        sprite: "BLOCK_CARPET",
-        type: "box"
-    },
-    BoomerangBird: {
+    // BlockCarpet: {
+    //     group: "extras",
+    //     groupIndex: 38,
+    //     material: "extras",
+    //     sprite: "BLOCK_CARPET",
+    //     type: "box"
+    // },
+    BIRD_GREEN: {
         allowRoll: true,
         boomerangHorizontalForce: -50,
         boomerangMaxHorizontalSpeed: 50,
@@ -105,309 +106,309 @@ blocks = {
         type: "circle",
         unselectionSound: "bird_03_unselect"
     },
-    DecorationBone01: {
-        group: "decorations",
-        groupIndex: 6,
-        material: "decoration",
-        sprite: "DECORATION_BONE01",
-        type: "box"
-    },
-    DecorationBone02: {
-        group: "decorations",
-        groupIndex: 7,
-        material: "decoration",
-        sprite: "DECORATION_BONE02",
-        type: "box"
-    },
-    DecorationBone03: {
-        group: "decorations",
-        groupIndex: 8,
-        material: "decoration",
-        sprite: "DECORATION_BONE03",
-        type: "box"
-    },
-    DecorationBone04: {
-        group: "decorations",
-        groupIndex: 9,
-        material: "decoration",
-        sprite: "DECORATION_BONE04",
-        type: "box"
-    },
-    DecorationBoneSet01: {
-        group: "decorations",
-        groupIndex: 10,
-        material: "decoration",
-        sprite: "DECORATION_BONESET01",
-        type: "box"
-    },
-    DecorationBoneSet02: {
-        group: "decorations",
-        groupIndex: 11,
-        material: "decoration",
-        sprite: "DECORATION_BONESET02",
-        type: "box"
-    },
-    DecorationEstrade01: {
-        group: "decorations",
-        groupIndex: 12,
-        material: "decoration",
-        sprite: "ESTRADE_FLAG",
-        type: "box"
-    },
-    DecorationEstrade02: {
-        group: "decorations",
-        groupIndex: 13,
-        material: "decoration",
-        sprite: "ESTRADE_THEATER",
-        type: "box"
-    },
-    DecorationSkull01: {
-        group: "decorations",
-        groupIndex: 4,
-        material: "decoration",
-        sprite: "DECORATION_SKULL01",
-        type: "box"
-    },
-    DecorationSkull02: {
-        group: "decorations",
-        groupIndex: 5,
-        material: "decoration",
-        sprite: "DECORATION_SKULL02",
-        type: "box"
-    },
-    DecorationSpotsTheme01_01: {
-        group: "decorations",
-        groupIndex: 1,
-        material: "decoration",
-        sprite: "DECORATION_SPOTS_THEME1_01",
-        theme: "theme1",
-        type: "box"
-    },
-    DecorationSpotsTheme01_02: {
-        group: "decorations",
-        groupIndex: 2,
-        material: "decoration",
-        sprite: "DECORATION_SPOTS_THEME1_02",
-        theme: "theme1",
-        type: "box"
-    },
-    DecorationSpotsTheme01_03: {
-        group: "decorations",
-        groupIndex: 3,
-        material: "decoration",
-        sprite: "DECORATION_SPOTS_THEME1_03",
-        theme: "theme1",
-        type: "box"
-    },
-    DecorationSpotsTheme02_01: {
-        group: "decorations",
-        groupIndex: 1,
-        material: "decoration",
-        sprite: "DECORATION_SPOTS_THEME2_01",
-        theme: "theme2",
-        type: "box"
-    },
-    DecorationSpotsTheme02_02: {
-        group: "decorations",
-        groupIndex: 2,
-        material: "decoration",
-        sprite: "DECORATION_SPOTS_THEME2_02",
-        theme: "theme2",
-        type: "box"
-    },
-    DecorationSpotsTheme02_03: {
-        group: "decorations",
-        groupIndex: 3,
-        material: "decoration",
-        sprite: "DECORATION_SPOTS_THEME2_03",
-        theme: "theme2",
-        type: "box"
-    },
-    DecorationSpotsTheme03_01: {
-        group: "decorations",
-        groupIndex: 1,
-        material: "decoration",
-        sprite: "DECORATION_SPOTS_THEME3_01",
-        theme: "theme3",
-        type: "box"
-    },
-    DecorationSpotsTheme03_02: {
-        group: "decorations",
-        groupIndex: 2,
-        material: "decoration",
-        sprite: "DECORATION_SPOTS_THEME3_02",
-        theme: "theme3",
-        type: "box"
-    },
-    DecorationSpotsTheme03_03: {
-        group: "decorations",
-        groupIndex: 3,
-        material: "decoration",
-        sprite: "DECORATION_SPOTS_THEME3_03",
-        theme: "theme3",
-        type: "box"
-    },
-    EggGranade: {
-        controllable: true,
-        damageFactors: "DefaultDamageFactors",
-        density: 3,
-        explosionDamage: 400,
-        explosionDamageRadius: 8,
-        explosionForce: 10000,
-        explosionRadius: 10,
-        friction: 0.30000001192093,
-        material: "red",
-        particles: "explosionBuff",
-        restitution: 0.23000000417233,
-        specialty: "BOMB",
-        sprite: "DROPPABLE_EGG",
-        strength: 60,
-        type: "circle",
-        useLegacyCollisionPath: true
-    },
-    Estrade01: {
-        group: "platforms",
-        groupIndex: 2,
-        material: "immovable",
-        sprite: "ESTRADE_01",
-        type: "box"
-    },
-    Estrade02: {
+    // DecorationBone01: {
+    //     group: "decorations",
+    //     groupIndex: 6,
+    //     material: "decoration",
+    //     sprite: "DECORATION_BONE01",
+    //     type: "box"
+    // },
+    // DecorationBone02: {
+    //     group: "decorations",
+    //     groupIndex: 7,
+    //     material: "decoration",
+    //     sprite: "DECORATION_BONE02",
+    //     type: "box"
+    // },
+    // DecorationBone03: {
+    //     group: "decorations",
+    //     groupIndex: 8,
+    //     material: "decoration",
+    //     sprite: "DECORATION_BONE03",
+    //     type: "box"
+    // },
+    // DecorationBone04: {
+    //     group: "decorations",
+    //     groupIndex: 9,
+    //     material: "decoration",
+    //     sprite: "DECORATION_BONE04",
+    //     type: "box"
+    // },
+    // DecorationBoneSet01: {
+    //     group: "decorations",
+    //     groupIndex: 10,
+    //     material: "decoration",
+    //     sprite: "DECORATION_BONESET01",
+    //     type: "box"
+    // },
+    // DecorationBoneSet02: {
+    //     group: "decorations",
+    //     groupIndex: 11,
+    //     material: "decoration",
+    //     sprite: "DECORATION_BONESET02",
+    //     type: "box"
+    // },
+    // DecorationEstrade01: {
+    //     group: "decorations",
+    //     groupIndex: 12,
+    //     material: "decoration",
+    //     sprite: "ESTRADE_FLAG",
+    //     type: "box"
+    // },
+    // DecorationEstrade02: {
+    //     group: "decorations",
+    //     groupIndex: 13,
+    //     material: "decoration",
+    //     sprite: "ESTRADE_THEATER",
+    //     type: "box"
+    // },
+    // DecorationSkull01: {
+    //     group: "decorations",
+    //     groupIndex: 4,
+    //     material: "decoration",
+    //     sprite: "DECORATION_SKULL01",
+    //     type: "box"
+    // },
+    // DecorationSkull02: {
+    //     group: "decorations",
+    //     groupIndex: 5,
+    //     material: "decoration",
+    //     sprite: "DECORATION_SKULL02",
+    //     type: "box"
+    // },
+    // DecorationSpotsTheme01_01: {
+    //     group: "decorations",
+    //     groupIndex: 1,
+    //     material: "decoration",
+    //     sprite: "DECORATION_SPOTS_THEME1_01",
+    //     theme: "theme1",
+    //     type: "box"
+    // },
+    // DecorationSpotsTheme01_02: {
+    //     group: "decorations",
+    //     groupIndex: 2,
+    //     material: "decoration",
+    //     sprite: "DECORATION_SPOTS_THEME1_02",
+    //     theme: "theme1",
+    //     type: "box"
+    // },
+    // DecorationSpotsTheme01_03: {
+    //     group: "decorations",
+    //     groupIndex: 3,
+    //     material: "decoration",
+    //     sprite: "DECORATION_SPOTS_THEME1_03",
+    //     theme: "theme1",
+    //     type: "box"
+    // },
+    // DecorationSpotsTheme02_01: {
+    //     group: "decorations",
+    //     groupIndex: 1,
+    //     material: "decoration",
+    //     sprite: "DECORATION_SPOTS_THEME2_01",
+    //     theme: "theme2",
+    //     type: "box"
+    // },
+    // DecorationSpotsTheme02_02: {
+    //     group: "decorations",
+    //     groupIndex: 2,
+    //     material: "decoration",
+    //     sprite: "DECORATION_SPOTS_THEME2_02",
+    //     theme: "theme2",
+    //     type: "box"
+    // },
+    // DecorationSpotsTheme02_03: {
+    //     group: "decorations",
+    //     groupIndex: 3,
+    //     material: "decoration",
+    //     sprite: "DECORATION_SPOTS_THEME2_03",
+    //     theme: "theme2",
+    //     type: "box"
+    // },
+    // DecorationSpotsTheme03_01: {
+    //     group: "decorations",
+    //     groupIndex: 1,
+    //     material: "decoration",
+    //     sprite: "DECORATION_SPOTS_THEME3_01",
+    //     theme: "theme3",
+    //     type: "box"
+    // },
+    // DecorationSpotsTheme03_02: {
+    //     group: "decorations",
+    //     groupIndex: 2,
+    //     material: "decoration",
+    //     sprite: "DECORATION_SPOTS_THEME3_02",
+    //     theme: "theme3",
+    //     type: "box"
+    // },
+    // DecorationSpotsTheme03_03: {
+    //     group: "decorations",
+    //     groupIndex: 3,
+    //     material: "decoration",
+    //     sprite: "DECORATION_SPOTS_THEME3_03",
+    //     theme: "theme3",
+    //     type: "box"
+    // },
+    // EggGranade: {
+    //     controllable: true,
+    //     damageFactors: "DefaultDamageFactors",
+    //     density: 3,
+    //     explosionDamage: 400,
+    //     explosionDamageRadius: 8,
+    //     explosionForce: 10000,
+    //     explosionRadius: 10,
+    //     friction: 0.30000001192093,
+    //     material: "red",
+    //     particles: "explosionBuff",
+    //     restitution: 0.23000000417233,
+    //     specialty: "BOMB",
+    //     sprite: "DROPPABLE_EGG",
+    //     strength: 60,
+    //     type: "circle",
+    //     useLegacyCollisionPath: true
+    // },
+    // Estrade01: {
+    //     group: "platforms",
+    //     groupIndex: 2,
+    //     material: "immovable",
+    //     sprite: "ESTRADE_01",
+    //     type: "box"
+    // },
+    MISC_ESTRADE_9X3: {
         group: "platforms",
         groupIndex: 3,
         material: "immovable",
         sprite: "ESTRADE_02",
         type: "box"
     },
-    Estrade03: {
-        group: "platforms",
-        groupIndex: 4,
-        material: "immovable",
-        sprite: "ESTRADE_03",
-        type: "box"
-    },
-    Estrade04: {
-        group: "platforms",
-        groupIndex: 5,
-        material: "immovable",
-        sprite: "ESTRADE_04",
-        type: "box"
-    },
-    ExtraApple: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 17,
-        material: "extras",
-        sprite: "BLOCK_APPLE",
-        strength: 30,
-        type: "circle"
-    },
-    ExtraBanana: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 19,
-        material: "extras",
-        sprite: "BLOCK_BANANA",
-        strength: 30,
-        type: "box"
-    },
-    ExtraBeachBall: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 22,
-        material: "extras",
-        sprite: "BLOCK_BEACHBALL",
-        strength: 15,
-        type: "circle"
-    },
-    ExtraBlockDice: {
-        controllable: false,
-        damageSprites: {
-            damage1: {
-                max: 100,
-                min: 84,
-                sprite: "BLOCK_EXTRA_DICE_6"
-            },
-            damage2: {
-                max: 84,
-                min: 68,
-                sprite: "BLOCK_EXTRA_DICE_5"
-            },
-            damage3: {
-                max: 68,
-                min: 52,
-                sprite: "BLOCK_EXTRA_DICE_4"
-            },
-            damage4: {
-                max: 52,
-                min: 36,
-                sprite: "BLOCK_EXTRA_DICE_3"
-            },
-            damage5: {
-                max: 36,
-                min: 20,
-                sprite: "BLOCK_EXTRA_DICE_2"
-            },
-            damage6: {
-                max: 20,
-                min: -1000,
-                sprite: "BLOCK_EXTRA_DICE_1"
-            }
-        },
-        defence: 1,
-        group: "extras",
-        groupIndex: 5,
-        material: "extras",
-        sprite: "BLOCK_EXTRA_DICE_6",
-        strength: 30,
-        type: "box"
-    },
-    ExtraBlockFlag01: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 2,
-        material: "extras",
-        sprite: "BLOCK_EXTRA_FLAG_01",
-        type: "box"
-    },
-    ExtraBlockFlag02: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 3,
-        material: "extras",
-        sprite: "BLOCK_EXTRA_FLAG_02",
-        type: "box"
-    },
-    ExtraBlockSmiley: {
-        controllable: false,
-        damageSprites: {
-            damage1: {
-                max: 100,
-                min: 50,
-                sprite: "BLOCK_SMILEY_1"
-            },
-            damage3: {
-                max: 50,
-                min: -1000,
-                sprite: "BLOCK_SMILEY_3"
-            }
-        },
-        group: "extras",
-        groupIndex: 23,
-        material: "extras",
-        sprite: "BLOCK_SMILEY_1",
-        strength: 25,
-        type: "circle"
-    },
-    ExtraBlockStairs: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 6,
-        material: "extras",
-        sprite: "ESTRADE_STAIRS",
-        type: "box"
-    },
-    ExtraBlockTNT: {
+    // Estrade03: {
+    //     group: "platforms",
+    //     groupIndex: 4,
+    //     material: "immovable",
+    //     sprite: "ESTRADE_03",
+    //     type: "box"
+    // },
+    // Estrade04: {
+    //     group: "platforms",
+    //     groupIndex: 5,
+    //     material: "immovable",
+    //     sprite: "ESTRADE_04",
+    //     type: "box"
+    // },
+    // ExtraApple: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 17,
+    //     material: "extras",
+    //     sprite: "BLOCK_APPLE",
+    //     strength: 30,
+    //     type: "circle"
+    // },
+    // ExtraBanana: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 19,
+    //     material: "extras",
+    //     sprite: "BLOCK_BANANA",
+    //     strength: 30,
+    //     type: "box"
+    // },
+    // ExtraBeachBall: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 22,
+    //     material: "extras",
+    //     sprite: "BLOCK_BEACHBALL",
+    //     strength: 15,
+    //     type: "circle"
+    // },
+    // ExtraBlockDice: {
+    //     controllable: false,
+    //     damageSprites: {
+    //         damage1: {
+    //             max: 100,
+    //             min: 84,
+    //             sprite: "BLOCK_EXTRA_DICE_6"
+    //         },
+    //         damage2: {
+    //             max: 84,
+    //             min: 68,
+    //             sprite: "BLOCK_EXTRA_DICE_5"
+    //         },
+    //         damage3: {
+    //             max: 68,
+    //             min: 52,
+    //             sprite: "BLOCK_EXTRA_DICE_4"
+    //         },
+    //         damage4: {
+    //             max: 52,
+    //             min: 36,
+    //             sprite: "BLOCK_EXTRA_DICE_3"
+    //         },
+    //         damage5: {
+    //             max: 36,
+    //             min: 20,
+    //             sprite: "BLOCK_EXTRA_DICE_2"
+    //         },
+    //         damage6: {
+    //             max: 20,
+    //             min: -1000,
+    //             sprite: "BLOCK_EXTRA_DICE_1"
+    //         }
+    //     },
+    //     defence: 1,
+    //     group: "extras",
+    //     groupIndex: 5,
+    //     material: "extras",
+    //     sprite: "BLOCK_EXTRA_DICE_6",
+    //     strength: 30,
+    //     type: "box"
+    // },
+    // ExtraBlockFlag01: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 2,
+    //     material: "extras",
+    //     sprite: "BLOCK_EXTRA_FLAG_01",
+    //     type: "box"
+    // },
+    // ExtraBlockFlag02: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 3,
+    //     material: "extras",
+    //     sprite: "BLOCK_EXTRA_FLAG_02",
+    //     type: "box"
+    // },
+    // ExtraBlockSmiley: {
+    //     controllable: false,
+    //     damageSprites: {
+    //         damage1: {
+    //             max: 100,
+    //             min: 50,
+    //             sprite: "BLOCK_SMILEY_1"
+    //         },
+    //         damage3: {
+    //             max: 50,
+    //             min: -1000,
+    //             sprite: "BLOCK_SMILEY_3"
+    //         }
+    //     },
+    //     group: "extras",
+    //     groupIndex: 23,
+    //     material: "extras",
+    //     sprite: "BLOCK_SMILEY_1",
+    //     strength: 25,
+    //     type: "circle"
+    // },
+    // ExtraBlockStairs: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 6,
+    //     material: "extras",
+    //     sprite: "ESTRADE_STAIRS",
+    //     type: "box"
+    // },
+    MISC_EXPLOSIVE_TNT: {
         controllable: false,
         defence: 1,
         explosionDamage: 150,
@@ -423,15 +424,15 @@ blocks = {
         strength: 10,
         type: "box"
     },
-    ExtraBlockToilet: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 1,
-        material: "extras",
-        sprite: "BLOCK_EXTRA_TOILET",
-        type: "box"
-    },
-    ExtraBlueBird: {
+    // ExtraBlockToilet: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 1,
+    //     material: "extras",
+    //     sprite: "BLOCK_EXTRA_TOILET",
+    //     type: "box"
+    // },
+    BIRD_BLUE: {
         defence: 2000,
         density: 8,
         friction: 0.30000001192093,
@@ -444,243 +445,243 @@ blocks = {
         strength: 3000,
         type: "circle"
     },
-    ExtraBoomerangBird: {
-        defence: 2000,
-        density: 8,
-        friction: 0.30000001192093,
-        group: "extras",
-        groupIndex: 37,
-        material: "extras",
-        radius: 1.1000000238419,
-        restitution: 0.25,
-        sprite: "BIRD_BOOMERANG_STILL",
-        strength: 3000,
-        type: "circle"
-    },
-    ExtraDiamond: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 25,
-        material: "extras",
-        sprite: "BLOCK_DIAMOND",
-        strength: 25,
-        type: "circle"
-    },
-    ExtraDonut01: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 14,
-        material: "extras",
-        sprite: "BLOCK_DONUT",
-        strength: 50,
-        type: "circle"
-    },
-    ExtraGoldenEgg: {
-        controllable: false,
-        defence: 1,
-        group: "extras",
-        groupIndex: 33,
-        material: "extras",
-        sprite: "BLOCK_GOLDEN_EGG",
-        strength: 5,
-        type: "circle"
-    },
-    ExtraHam: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 16,
-        material: "extras",
-        sprite: "BLOCK_HAM",
-        strength: 60,
-        type: "circle"
-    },
-    ExtraHolyGrail: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 24,
-        material: "extras",
-        sprite: "BLOCK_HOLYGRAIL",
-        strength: 25,
-        type: "box"
-    },
-    ExtraMelon: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 15,
-        material: "extras",
-        sprite: "BLOCK_WATERMELON",
-        strength: 40,
-        type: "circle"
-    },
-    ExtraPillar: {
-        controllable: false,
-        defence: 40,
-        density: 10,
-        group: "extras",
-        groupIndex: 21,
-        material: "extras",
-        sprite: "BLOCK_PILLAR",
-        strength: 120,
-        type: "box"
-    },
-    ExtraPoleRed: {
-        collision: false,
-        controllable: false,
-        defence: 1000000,
-        group: "extras",
-        groupIndex: 10,
-        material: "immovable",
-        sprite: "POLE_RED",
-        strength: 10,
-        type: "box"
-    },
-    ExtraPoleYellow: {
-        collision: false,
-        controllable: false,
-        defence: 1000000,
-        group: "extras",
-        groupIndex: 9,
-        material: "immovable",
-        sprite: "POLE_YELLOW",
-        strength: 10,
-        type: "box"
-    },
-    ExtraRopeThick01: {
-        controllable: false,
-        defence: 1,
-        group: "extras",
-        groupIndex: 34,
-        material: "extras",
-        sprite: "BLOCK_ROPE_THICK_1",
-        strength: 5,
-        type: "box"
-    },
-    ExtraRopeThin01: {
-        controllable: false,
-        defence: 1,
-        group: "extras",
-        groupIndex: 35,
-        material: "extras",
-        sprite: "BLOCK_ROPE_THIN_1",
-        strength: 5,
-        type: "box"
-    },
-    ExtraRopeThin02: {
-        controllable: false,
-        defence: 1,
-        group: "extras",
-        groupIndex: 36,
-        material: "extras",
-        sprite: "BLOCK_ROPE_THIN_2",
-        strength: 5,
-        type: "box"
-    },
-    ExtraRubberBall: {
-        controllable: false,
-        defence: 50,
-        group: "extras",
-        groupIndex: 29,
-        material: "rubber",
-        restitution: 1.1000000238419,
-        sprite: "BLOCK_BEACHBALL",
-        strength: 1000,
-        type: "circle"
-    },
-    ExtraRubberDuck: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 26,
-        material: "extras",
-        sprite: "BLOCK_RUBBERDUCK",
-        strength: 25,
-        type: "circle"
-    },
-    ExtraStolenEgg: {
-        controllable: false,
-        defence: 20000,
-        group: "extras",
-        groupIndex: 27,
-        material: "extras",
-        sprite: "BLOCK_STOLEN_EGG",
-        strength: 2000,
-        type: "circle"
-    },
-    ExtraStrawberry: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 18,
-        material: "extras",
-        sprite: "BLOCK_STRAWBERRY",
-        strength: 30,
-        type: "circle"
-    },
-    ExtraStrongBall: {
-        controllable: false,
-        defence: 2000,
-        group: "extras",
-        groupIndex: 28,
-        material: "rock",
-        sprite: "BLOCK_STEEL_BALL",
-        strength: 5000,
-        type: "circle"
-    },
-    ExtraTire01: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 11,
-        material: "extras",
-        sprite: "BLOCK_TIRE_01",
-        strength: 200,
-        type: "circle"
-    },
-    ExtraTire02: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 12,
-        material: "extras",
-        sprite: "BLOCK_TIRE_02",
-        strength: 200,
-        type: "circle"
-    },
-    ExtraTire03: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 13,
-        material: "extras",
-        sprite: "BLOCK_TIRE_03",
-        strength: 200,
-        type: "circle"
-    },
-    ExtraTrampoline: {
-        defence: 100,
-        group: "extras",
-        groupIndex: 30,
-        material: "rubber",
-        restitution: 5.5,
-        sprite: "BLOCK_SUPER_BALL",
-        strength: 1000,
-        type: "circle"
-    },
-    ExtraTrampoline2: {
-        defence: 100,
-        group: "extras",
-        groupIndex: 32,
-        material: "immovableRubber",
-        restitution: 1.1000000238419,
-        sprite: "BLOCK_TRAMPOLINE_01",
-        strength: 1000,
-        type: "box"
-    },
-    ExtraTreasureChest: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 20,
-        material: "extras",
-        sprite: "BLOCK_TREASURE_CHEST",
-        strength: 20,
-        type: "box"
-    },
-    GrandpaPiglette: {
+    // ExtraBoomerangBird: {
+    //     defence: 2000,
+    //     density: 8,
+    //     friction: 0.30000001192093,
+    //     group: "extras",
+    //     groupIndex: 37,
+    //     material: "extras",
+    //     radius: 1.1000000238419,
+    //     restitution: 0.25,
+    //     sprite: "BIRD_BOOMERANG_STILL",
+    //     strength: 3000,
+    //     type: "circle"
+    // },
+    // ExtraDiamond: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 25,
+    //     material: "extras",
+    //     sprite: "BLOCK_DIAMOND",
+    //     strength: 25,
+    //     type: "circle"
+    // },
+    // ExtraDonut01: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 14,
+    //     material: "extras",
+    //     sprite: "BLOCK_DONUT",
+    //     strength: 50,
+    //     type: "circle"
+    // },
+    // ExtraGoldenEgg: {
+    //     controllable: false,
+    //     defence: 1,
+    //     group: "extras",
+    //     groupIndex: 33,
+    //     material: "extras",
+    //     sprite: "BLOCK_GOLDEN_EGG",
+    //     strength: 5,
+    //     type: "circle"
+    // },
+    // ExtraHam: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 16,
+    //     material: "extras",
+    //     sprite: "BLOCK_HAM",
+    //     strength: 60,
+    //     type: "circle"
+    // },
+    // ExtraHolyGrail: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 24,
+    //     material: "extras",
+    //     sprite: "BLOCK_HOLYGRAIL",
+    //     strength: 25,
+    //     type: "box"
+    // },
+    // ExtraMelon: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 15,
+    //     material: "extras",
+    //     sprite: "BLOCK_WATERMELON",
+    //     strength: 40,
+    //     type: "circle"
+    // },
+    // ExtraPillar: {
+    //     controllable: false,
+    //     defence: 40,
+    //     density: 10,
+    //     group: "extras",
+    //     groupIndex: 21,
+    //     material: "extras",
+    //     sprite: "BLOCK_PILLAR",
+    //     strength: 120,
+    //     type: "box"
+    // },
+    // ExtraPoleRed: {
+    //     collision: false,
+    //     controllable: false,
+    //     defence: 1000000,
+    //     group: "extras",
+    //     groupIndex: 10,
+    //     material: "immovable",
+    //     sprite: "POLE_RED",
+    //     strength: 10,
+    //     type: "box"
+    // },
+    // ExtraPoleYellow: {
+    //     collision: false,
+    //     controllable: false,
+    //     defence: 1000000,
+    //     group: "extras",
+    //     groupIndex: 9,
+    //     material: "immovable",
+    //     sprite: "POLE_YELLOW",
+    //     strength: 10,
+    //     type: "box"
+    // },
+    // ExtraRopeThick01: {
+    //     controllable: false,
+    //     defence: 1,
+    //     group: "extras",
+    //     groupIndex: 34,
+    //     material: "extras",
+    //     sprite: "BLOCK_ROPE_THICK_1",
+    //     strength: 5,
+    //     type: "box"
+    // },
+    // ExtraRopeThin01: {
+    //     controllable: false,
+    //     defence: 1,
+    //     group: "extras",
+    //     groupIndex: 35,
+    //     material: "extras",
+    //     sprite: "BLOCK_ROPE_THIN_1",
+    //     strength: 5,
+    //     type: "box"
+    // },
+    // ExtraRopeThin02: {
+    //     controllable: false,
+    //     defence: 1,
+    //     group: "extras",
+    //     groupIndex: 36,
+    //     material: "extras",
+    //     sprite: "BLOCK_ROPE_THIN_2",
+    //     strength: 5,
+    //     type: "box"
+    // },
+    // ExtraRubberBall: {
+    //     controllable: false,
+    //     defence: 50,
+    //     group: "extras",
+    //     groupIndex: 29,
+    //     material: "rubber",
+    //     restitution: 1.1000000238419,
+    //     sprite: "BLOCK_BEACHBALL",
+    //     strength: 1000,
+    //     type: "circle"
+    // },
+    // ExtraRubberDuck: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 26,
+    //     material: "extras",
+    //     sprite: "BLOCK_RUBBERDUCK",
+    //     strength: 25,
+    //     type: "circle"
+    // },
+    // ExtraStolenEgg: {
+    //     controllable: false,
+    //     defence: 20000,
+    //     group: "extras",
+    //     groupIndex: 27,
+    //     material: "extras",
+    //     sprite: "BLOCK_STOLEN_EGG",
+    //     strength: 2000,
+    //     type: "circle"
+    // },
+    // ExtraStrawberry: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 18,
+    //     material: "extras",
+    //     sprite: "BLOCK_STRAWBERRY",
+    //     strength: 30,
+    //     type: "circle"
+    // },
+    // ExtraStrongBall: {
+    //     controllable: false,
+    //     defence: 2000,
+    //     group: "extras",
+    //     groupIndex: 28,
+    //     material: "rock",
+    //     sprite: "BLOCK_STEEL_BALL",
+    //     strength: 5000,
+    //     type: "circle"
+    // },
+    // ExtraTire01: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 11,
+    //     material: "extras",
+    //     sprite: "BLOCK_TIRE_01",
+    //     strength: 200,
+    //     type: "circle"
+    // },
+    // ExtraTire02: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 12,
+    //     material: "extras",
+    //     sprite: "BLOCK_TIRE_02",
+    //     strength: 200,
+    //     type: "circle"
+    // },
+    // ExtraTire03: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 13,
+    //     material: "extras",
+    //     sprite: "BLOCK_TIRE_03",
+    //     strength: 200,
+    //     type: "circle"
+    // },
+    // ExtraTrampoline: {
+    //     defence: 100,
+    //     group: "extras",
+    //     groupIndex: 30,
+    //     material: "rubber",
+    //     restitution: 5.5,
+    //     sprite: "BLOCK_SUPER_BALL",
+    //     strength: 1000,
+    //     type: "circle"
+    // },
+    // ExtraTrampoline2: {
+    //     defence: 100,
+    //     group: "extras",
+    //     groupIndex: 32,
+    //     material: "immovableRubber",
+    //     restitution: 1.1000000238419,
+    //     sprite: "BLOCK_TRAMPOLINE_01",
+    //     strength: 1000,
+    //     type: "box"
+    // },
+    // ExtraTreasureChest: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 20,
+    //     material: "extras",
+    //     sprite: "BLOCK_TREASURE_CHEST",
+    //     strength: 20,
+    //     type: "box"
+    // },
+    PIG_MUSTACHE: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -726,7 +727,7 @@ blocks = {
         theme: "",
         type: "box"
     },
-    HelmetPiglette: {
+    PIG_HELMET: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -764,7 +765,7 @@ blocks = {
         strength: 15,
         type: "circle"
     },
-    KingPiglette: {
+    PIG_KING: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -802,7 +803,7 @@ blocks = {
         strength: 100,
         type: "circle"
     },
-    LargePiglette: {
+    PIG_BASIC_BIG: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -839,7 +840,7 @@ blocks = {
         strength: 20,
         type: "circle"
     },
-    LightBlock1: {
+    ICE_BLOCK_1X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -870,7 +871,7 @@ blocks = {
         strength: 13,
         type: "box"
     },
-    LightBlock10: {
+    ICE_BLOCK_10X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -901,7 +902,7 @@ blocks = {
         strength: 65,
         type: "box"
     },
-    LightBlock11: {
+    ICE_TRIANGLE_4X4: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -946,7 +947,7 @@ blocks = {
             }
         }
     },
-    LightBlock12: {
+    ICE_TRIANGLE_4X4_HOLLOW: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -991,7 +992,7 @@ blocks = {
             }
         }
     },
-    LightBlock2: {
+    ICE_BLOCK_2X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -1022,7 +1023,7 @@ blocks = {
         strength: 26,
         type: "box"
     },
-    LightBlock3: {
+    ICE_BLOCK_2X2: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -1053,7 +1054,7 @@ blocks = {
         strength: 40,
         type: "box"
     },
-    LightBlock4: {
+    ICE_BLOCK_4X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -1084,7 +1085,7 @@ blocks = {
         strength: 33,
         type: "box"
     },
-    LightBlock5: {
+    ICE_BLOCK_4X2: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -1115,7 +1116,7 @@ blocks = {
         strength: 53,
         type: "box"
     },
-    LightBlock6: {
+    ICE_BLOCK_8X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -1146,7 +1147,7 @@ blocks = {
         strength: 47,
         type: "box"
     },
-    LightBlock7: {
+    ICE_CIRCLE_4X4: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -1177,7 +1178,7 @@ blocks = {
         strength: 125,
         type: "circle"
     },
-    LightBlock8: {
+    ICE_CIRCLE_2X2: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -1208,7 +1209,7 @@ blocks = {
         strength: 100,
         type: "circle"
     },
-    LightBlock9: {
+    ICE_BLOCK_4X4_HOLLOW: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -1239,7 +1240,7 @@ blocks = {
         strength: 70,
         type: "box"
     },
-    MediumPiglette: {
+    PIG_BASIC_MEDIUM: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -1277,36 +1278,36 @@ blocks = {
         strength: 10,
         type: "circle"
     },
-    RedBigBird: {
-        allowRoll: true,
-        collisionSound: "bird_01_collision",
-        controllable: true,
-        damageFactors: "RedBigBirdDamageFactors",
-        density: 10,
-        friction: 0.30000001192093,
-        group: "birds",
-        groupIndex: 6,
-        launchSound: "bird_01_flying",
-        material: "red",
-        particles: "redBuff",
-        particlesTrail: "redBirdTrail",
-        radius: 1.7999999523163,
-        restitution: 0.44999998807907,
-        selectionSound: "bird_01_select",
-        specialty: "SOUND",
-        sprite: "BIRD_BIG_BROTHER",
-        spriteAction: "HUD_ICON_NOTE",
-        spriteBlink: "BIRD_BIG_BROTHER_BLINK",
-        spriteCollision: "BIRD_BIG_BROTHER",
-        spriteFlying: "BIRD_BIG_BROTHER",
-        spriteScore: "10K_RED",
-        spriteYell: "BIRD_BIG_BROTHER_YELL",
-        strength: 60,
-        tutorialInfo: "TUTORIAL_5",
-        type: "circle",
-        unselectionSound: "bird_01_unselect"
-    },
-    RedBird: {
+    // RedBigBird: {
+    //     allowRoll: true,
+    //     collisionSound: "bird_01_collision",
+    //     controllable: true,
+    //     damageFactors: "RedBigBirdDamageFactors",
+    //     density: 10,
+    //     friction: 0.30000001192093,
+    //     group: "birds",
+    //     groupIndex: 6,
+    //     launchSound: "bird_01_flying",
+    //     material: "red",
+    //     particles: "redBuff",
+    //     particlesTrail: "redBirdTrail",
+    //     radius: 1.7999999523163,
+    //     restitution: 0.44999998807907,
+    //     selectionSound: "bird_01_select",
+    //     specialty: "SOUND",
+    //     sprite: "BIRD_BIG_BROTHER",
+    //     spriteAction: "HUD_ICON_NOTE",
+    //     spriteBlink: "BIRD_BIG_BROTHER_BLINK",
+    //     spriteCollision: "BIRD_BIG_BROTHER",
+    //     spriteFlying: "BIRD_BIG_BROTHER",
+    //     spriteScore: "10K_RED",
+    //     spriteYell: "BIRD_BIG_BROTHER_YELL",
+    //     strength: 60,
+    //     tutorialInfo: "TUTORIAL_5",
+    //     type: "circle",
+    //     unselectionSound: "bird_01_unselect"
+    // },
+    BIRD_RED: {
         allowRoll: true,
         collisionSound: "bird_01_collision",
         controllable: true,
@@ -1336,14 +1337,14 @@ blocks = {
         unselectionSound: "bird_01_unselect",
         useLegacyCollisionPath: true
     },
-    ShootingPlatform01: {
-        group: "platforms",
-        groupIndex: 1,
-        material: "immovable",
-        sprite: "SHOOTING_PLATFORM",
-        type: "box"
-    },
-    SmallBlueBird: {
+    // ShootingPlatform01: {
+    //     group: "platforms",
+    //     groupIndex: 1,
+    //     material: "immovable",
+    //     sprite: "SHOOTING_PLATFORM",
+    //     type: "box"
+    // },
+    BIRD_BLUE: {
         allowRoll: true,
         collisionSound: "bird_02_collision",
         controllable: true,
@@ -1373,7 +1374,7 @@ blocks = {
         unselectionSound: "bird_02_unselect",
         useLegacyCollisionPath: true
     },
-    SmallPiglette: {
+    PIG_BASIC_SMALL: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -1408,66 +1409,66 @@ blocks = {
         strength: 4,
         type: "circle"
     },
-    SpecialBlockStart: {
-        collision: false,
-        controllable: false,
-        defence: 1000000,
-        group: "extras",
-        groupIndex: 8,
-        material: "extras",
-        sprite: "SWING_BASKET_01",
-        strength: 10,
-        type: "box"
-    },
-    SpecialBlockSwing: {
-        controllable: false,
-        group: "extras",
-        groupIndex: 7,
-        material: "immovable",
-        sprite: "SWING_HOLDER_01",
-        type: "box"
-    },
-    StaticBalloon01: {
-        destroyedScoreInc: 100,
-        group: "clouds",
-        groupIndex: 1,
-        material: "clouds",
-        sprite: "BLOCK_PIG_BALLOON_1",
-        type: "box"
-    },
-    StaticBalloon02: {
-        destroyedScoreInc: 100,
-        group: "clouds",
-        groupIndex: 2,
-        material: "clouds",
-        sprite: "BLOCK_PIG_BALLOON_2",
-        type: "box"
-    },
-    StaticBalloon03: {
-        destroyedScoreInc: 100,
-        group: "clouds",
-        groupIndex: 3,
-        material: "clouds",
-        sprite: "BLOCK_BALLOON_1",
-        type: "box"
-    },
-    StaticBalloon04: {
-        destroyedScoreInc: 100,
-        group: "clouds",
-        groupIndex: 4,
-        material: "clouds",
-        sprite: "BLOCK_BALLOON_2",
-        type: "box"
-    },
-    StaticBalloon05: {
-        destroyedScoreInc: 100,
-        group: "clouds",
-        groupIndex: 5,
-        material: "clouds",
-        sprite: "BLOCK_BALLOON_3",
-        type: "box"
-    },
-    StaticBlockTheme01_01: {
+    // SpecialBlockStart: {
+    //     collision: false,
+    //     controllable: false,
+    //     defence: 1000000,
+    //     group: "extras",
+    //     groupIndex: 8,
+    //     material: "extras",
+    //     sprite: "SWING_BASKET_01",
+    //     strength: 10,
+    //     type: "box"
+    // },
+    // SpecialBlockSwing: {
+    //     controllable: false,
+    //     group: "extras",
+    //     groupIndex: 7,
+    //     material: "immovable",
+    //     sprite: "SWING_HOLDER_01",
+    //     type: "box"
+    // },
+    // StaticBalloon01: {
+    //     destroyedScoreInc: 100,
+    //     group: "clouds",
+    //     groupIndex: 1,
+    //     material: "clouds",
+    //     sprite: "BLOCK_PIG_BALLOON_1",
+    //     type: "box"
+    // },
+    // StaticBalloon02: {
+    //     destroyedScoreInc: 100,
+    //     group: "clouds",
+    //     groupIndex: 2,
+    //     material: "clouds",
+    //     sprite: "BLOCK_PIG_BALLOON_2",
+    //     type: "box"
+    // },
+    // StaticBalloon03: {
+    //     destroyedScoreInc: 100,
+    //     group: "clouds",
+    //     groupIndex: 3,
+    //     material: "clouds",
+    //     sprite: "BLOCK_BALLOON_1",
+    //     type: "box"
+    // },
+    // StaticBalloon04: {
+    //     destroyedScoreInc: 100,
+    //     group: "clouds",
+    //     groupIndex: 4,
+    //     material: "clouds",
+    //     sprite: "BLOCK_BALLOON_2",
+    //     type: "box"
+    // },
+    // StaticBalloon05: {
+    //     destroyedScoreInc: 100,
+    //     group: "clouds",
+    //     groupIndex: 5,
+    //     material: "clouds",
+    //     sprite: "BLOCK_BALLOON_3",
+    //     type: "box"
+    // },
+    TERRAIN_TEXTURED_HILLS_5X2: {
         group: "staticBlocks",
         groupIndex: 1,
         material: "immovable",
@@ -1476,7 +1477,7 @@ blocks = {
         theme: "theme1",
         type: "box"
     },
-    StaticBlockTheme01_02: {
+    TERRAIN_TEXTURED_HILLS_10X2: {
         group: "staticBlocks",
         groupIndex: 2,
         material: "immovable",
@@ -1485,7 +1486,7 @@ blocks = {
         theme: "theme1",
         type: "box"
     },
-    StaticBlockTheme01_03: {
+    TERRAIN_TEXTURED_HILLS_32X2: {
         group: "staticBlocks",
         groupIndex: 3,
         material: "immovable",
@@ -1494,7 +1495,7 @@ blocks = {
         theme: "theme1",
         type: "box"
     },
-    StaticBlockTheme01_04: {
+    TERRAIN_TEXTURED_HILLS_5X5: {
         group: "staticBlocks",
         groupIndex: 4,
         material: "immovable",
@@ -1503,7 +1504,7 @@ blocks = {
         theme: "theme1",
         type: "box"
     },
-    StaticBlockTheme01_05: {
+    TERRAIN_TEXTURED_HILLS_10X10: {
         group: "staticBlocks",
         groupIndex: 5,
         material: "immovable",
@@ -1512,7 +1513,7 @@ blocks = {
         theme: "theme1",
         type: "box"
     },
-    StaticBlockTheme01_06: {
+    TERRAIN_TEXTURED_HILLS_1X1: {
         group: "staticBlocks",
         groupIndex: 6,
         material: "immovable",
@@ -1521,413 +1522,35 @@ blocks = {
         theme: "theme1",
         type: "box"
     },
-    StaticBlockTheme02_01: {
-        group: "staticBlocks",
-        groupIndex: 1,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_01",
-        texture: "INGAME_THEME_GROUND_2",
-        theme: "theme2",
-        type: "box"
-    },
-    StaticBlockTheme02_02: {
-        group: "staticBlocks",
-        groupIndex: 2,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_02",
-        texture: "INGAME_THEME_GROUND_2",
-        theme: "theme2",
-        type: "box"
-    },
-    StaticBlockTheme02_03: {
-        group: "staticBlocks",
-        groupIndex: 3,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_03",
-        texture: "INGAME_THEME_GROUND_2",
-        theme: "theme2",
-        type: "box"
-    },
-    StaticBlockTheme02_04: {
-        group: "staticBlocks",
-        groupIndex: 4,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_04",
-        texture: "INGAME_THEME_GROUND_2",
-        theme: "theme2",
-        type: "box"
-    },
-    StaticBlockTheme02_05: {
-        group: "staticBlocks",
-        groupIndex: 5,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_05",
-        texture: "INGAME_THEME_GROUND_2",
-        theme: "theme2",
-        type: "box"
-    },
-    StaticBlockTheme02_06: {
-        group: "staticBlocks",
-        groupIndex: 6,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_06",
-        texture: "INGAME_THEME_GROUND_2",
-        theme: "theme2",
-        type: "box"
-    },
-    StaticBlockTheme03_01: {
-        group: "staticBlocks",
-        groupIndex: 1,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_01",
-        texture: "INGAME_THEME_GROUND_3",
-        theme: "theme3",
-        type: "box"
-    },
-    StaticBlockTheme03_02: {
-        group: "staticBlocks",
-        groupIndex: 2,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_02",
-        texture: "INGAME_THEME_GROUND_3",
-        theme: "theme3",
-        type: "box"
-    },
-    StaticBlockTheme03_03: {
-        group: "staticBlocks",
-        groupIndex: 3,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_03",
-        texture: "INGAME_THEME_GROUND_3",
-        theme: "theme3",
-        type: "box"
-    },
-    StaticBlockTheme03_04: {
-        group: "staticBlocks",
-        groupIndex: 4,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_04",
-        texture: "INGAME_THEME_GROUND_3",
-        theme: "theme3",
-        type: "box"
-    },
-    StaticBlockTheme03_05: {
-        group: "staticBlocks",
-        groupIndex: 5,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_05",
-        texture: "INGAME_THEME_GROUND_3",
-        theme: "theme3",
-        type: "box"
-    },
-    StaticBlockTheme03_06: {
-        group: "staticBlocks",
-        groupIndex: 6,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_06",
-        texture: "INGAME_THEME_GROUND_3",
-        theme: "theme3",
-        type: "box"
-    },
-    StaticBlockTheme04_01: {
-        group: "staticBlocks",
-        groupIndex: 1,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_01",
-        texture: "INGAME_THEME_GROUND_4",
-        theme: "theme4",
-        type: "box"
-    },
-    StaticBlockTheme04_02: {
-        group: "staticBlocks",
-        groupIndex: 2,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_02",
-        texture: "INGAME_THEME_GROUND_4",
-        theme: "theme4",
-        type: "box"
-    },
-    StaticBlockTheme04_03: {
-        group: "staticBlocks",
-        groupIndex: 3,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_03",
-        texture: "INGAME_THEME_GROUND_4",
-        theme: "theme4",
-        type: "box"
-    },
-    StaticBlockTheme04_04: {
-        group: "staticBlocks",
-        groupIndex: 4,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_04",
-        texture: "INGAME_THEME_GROUND_4",
-        theme: "theme4",
-        type: "box"
-    },
-    StaticBlockTheme04_05: {
-        group: "staticBlocks",
-        groupIndex: 5,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_05",
-        texture: "INGAME_THEME_GROUND_4",
-        theme: "theme4",
-        type: "box"
-    },
-    StaticBlockTheme04_06: {
-        group: "staticBlocks",
-        groupIndex: 6,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_06",
-        texture: "INGAME_THEME_GROUND_4",
-        theme: "theme4",
-        type: "box"
-    },
-    StaticBlockTheme05_01: {
-        group: "staticBlocks",
-        groupIndex: 1,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_01",
-        texture: "INGAME_THEME_GROUND_5",
-        theme: "theme5",
-        type: "box"
-    },
-    StaticBlockTheme05_02: {
-        group: "staticBlocks",
-        groupIndex: 2,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_02",
-        texture: "INGAME_THEME_GROUND_5",
-        theme: "theme5",
-        type: "box"
-    },
-    StaticBlockTheme05_03: {
-        group: "staticBlocks",
-        groupIndex: 3,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_03",
-        texture: "INGAME_THEME_GROUND_5",
-        theme: "theme5",
-        type: "box"
-    },
-    StaticBlockTheme05_04: {
-        group: "staticBlocks",
-        groupIndex: 4,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_04",
-        texture: "INGAME_THEME_GROUND_5",
-        theme: "theme5",
-        type: "box"
-    },
-    StaticBlockTheme05_05: {
-        group: "staticBlocks",
-        groupIndex: 5,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_05",
-        texture: "INGAME_THEME_GROUND_5",
-        theme: "theme5",
-        type: "box"
-    },
-    StaticBlockTheme05_06: {
-        group: "staticBlocks",
-        groupIndex: 6,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_06",
-        texture: "INGAME_THEME_GROUND_5",
-        theme: "theme5",
-        type: "box"
-    },
-    StaticBlockTheme06_01: {
-        group: "staticBlocks",
-        groupIndex: 1,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_01",
-        texture: "INGAME_THEME_GROUND_6",
-        theme: "theme6",
-        type: "box"
-    },
-    StaticBlockTheme06_02: {
-        group: "staticBlocks",
-        groupIndex: 2,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_02",
-        texture: "INGAME_THEME_GROUND_6",
-        theme: "theme6",
-        type: "box"
-    },
-    StaticBlockTheme06_03: {
-        group: "staticBlocks",
-        groupIndex: 3,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_03",
-        texture: "INGAME_THEME_GROUND_6",
-        theme: "theme6",
-        type: "box"
-    },
-    StaticBlockTheme06_04: {
-        group: "staticBlocks",
-        groupIndex: 4,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_04",
-        texture: "INGAME_THEME_GROUND_6",
-        theme: "theme6",
-        type: "box"
-    },
-    StaticBlockTheme06_05: {
-        group: "staticBlocks",
-        groupIndex: 5,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_05",
-        texture: "INGAME_THEME_GROUND_6",
-        theme: "theme6",
-        type: "box"
-    },
-    StaticBlockTheme06_06: {
-        group: "staticBlocks",
-        groupIndex: 6,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_06",
-        texture: "INGAME_THEME_GROUND_6",
-        theme: "theme6",
-        type: "box"
-    },
-    StaticBlockTheme07_01: {
-        group: "staticBlocks",
-        groupIndex: 1,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_01",
-        texture: "INGAME_THEME_GROUND_7",
-        theme: "theme7",
-        type: "box"
-    },
-    StaticBlockTheme07_02: {
-        group: "staticBlocks",
-        groupIndex: 2,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_02",
-        texture: "INGAME_THEME_GROUND_7",
-        theme: "theme7",
-        type: "box"
-    },
-    StaticBlockTheme07_03: {
-        group: "staticBlocks",
-        groupIndex: 3,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_03",
-        texture: "INGAME_THEME_GROUND_7",
-        theme: "theme7",
-        type: "box"
-    },
-    StaticBlockTheme07_04: {
-        group: "staticBlocks",
-        groupIndex: 4,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_04",
-        texture: "INGAME_THEME_GROUND_7",
-        theme: "theme7",
-        type: "box"
-    },
-    StaticBlockTheme07_05: {
-        group: "staticBlocks",
-        groupIndex: 5,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_05",
-        texture: "INGAME_THEME_GROUND_7",
-        theme: "theme7",
-        type: "box"
-    },
-    StaticBlockTheme07_06: {
-        group: "staticBlocks",
-        groupIndex: 6,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_06",
-        texture: "INGAME_THEME_GROUND_7",
-        theme: "theme7",
-        type: "box"
-    },
-    StaticBlockTheme08_01: {
-        group: "staticBlocks",
-        groupIndex: 1,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_01",
-        texture: "INGAME_THEME_GROUND_8",
-        theme: "theme8",
-        type: "box"
-    },
-    StaticBlockTheme08_02: {
-        group: "staticBlocks",
-        groupIndex: 2,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_02",
-        texture: "INGAME_THEME_GROUND_8",
-        theme: "theme8",
-        type: "box"
-    },
-    StaticBlockTheme08_03: {
-        group: "staticBlocks",
-        groupIndex: 3,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_03",
-        texture: "INGAME_THEME_GROUND_8",
-        theme: "theme8",
-        type: "box"
-    },
-    StaticBlockTheme08_04: {
-        group: "staticBlocks",
-        groupIndex: 4,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_04",
-        texture: "INGAME_THEME_GROUND_8",
-        theme: "theme8",
-        type: "box"
-    },
-    StaticBlockTheme08_05: {
-        group: "staticBlocks",
-        groupIndex: 5,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_05",
-        texture: "INGAME_THEME_GROUND_8",
-        theme: "theme8",
-        type: "box"
-    },
-    StaticBlockTheme08_06: {
-        group: "staticBlocks",
-        groupIndex: 6,
-        material: "immovable",
-        sprite: "GROUND_BLOCK_06",
-        texture: "INGAME_THEME_GROUND_8",
-        theme: "theme8",
-        type: "box"
-    },
-    StaticCloud01: {
-        group: "clouds",
-        groupIndex: 6,
-        material: "immovable",
-        sprite: "BLOCK_BANANA",
-        type: "box"
-    },
-    StaticCloud02: {
-        group: "clouds",
-        groupIndex: 7,
-        material: "immovable",
-        sprite: "BLOCK_BANANA",
-        type: "box"
-    },
-    StaticCloud03: {
-        group: "clouds",
-        groupIndex: 8,
-        material: "immovable",
-        sprite: "BLOCK_BANANA",
-        type: "box"
-    },
-    StaticCloud04: {
-        group: "clouds",
-        groupIndex: 9,
-        material: "immovable",
-        sprite: "BLOCK_BANANA",
-        type: "box"
-    },
-    StaticFragileBlock01: {
+    // StaticCloud01: {
+    //     group: "clouds",
+    //     groupIndex: 6,
+    //     material: "immovable",
+    //     sprite: "BLOCK_BANANA",
+    //     type: "box"
+    // },
+    // StaticCloud02: {
+    //     group: "clouds",
+    //     groupIndex: 7,
+    //     material: "immovable",
+    //     sprite: "BLOCK_BANANA",
+    //     type: "box"
+    // },
+    // StaticCloud03: {
+    //     group: "clouds",
+    //     groupIndex: 8,
+    //     material: "immovable",
+    //     sprite: "BLOCK_BANANA",
+    //     type: "box"
+    // },
+    // StaticCloud04: {
+    //     group: "clouds",
+    //     groupIndex: 9,
+    //     material: "immovable",
+    //     sprite: "BLOCK_BANANA",
+    //     type: "box"
+    // },
+    BREAKABLE_STATIC_BLOCK_10X2: {
         destroyedScoreInc: 50,
         group: "staticFragile",
         groupIndex: 1,
@@ -1935,7 +1558,7 @@ blocks = {
         sprite: "GROUND_BLOCK_01",
         type: "box"
     },
-    StaticFragileBlock02: {
+    BREAKABLE_STATIC_BLOCK_5X2: {
         destroyedScoreInc: 50,
         group: "staticFragile",
         groupIndex: 2,
@@ -1943,7 +1566,7 @@ blocks = {
         sprite: "GROUND_BLOCK_02",
         type: "box"
     },
-    StaticFragileBlock03: {
+    BREAKABLE_STATIC_BLOCK_32X2: {
         destroyedScoreInc: 50,
         group: "staticFragile",
         groupIndex: 3,
@@ -1951,7 +1574,7 @@ blocks = {
         sprite: "GROUND_BLOCK_03",
         type: "box"
     },
-    StaticFragileBlock04: {
+    BREAKABLE_STATIC_BLOCK_5X5: {
         destroyedScoreInc: 50,
         group: "staticFragile",
         groupIndex: 4,
@@ -1959,7 +1582,7 @@ blocks = {
         sprite: "GROUND_BLOCK_04",
         type: "box"
     },
-    StaticFragileBlock05: {
+    BREAKABLE_STATIC_BLOCK_10X10: {
         destroyedScoreInc: 50,
         group: "staticFragile",
         groupIndex: 5,
@@ -1967,7 +1590,7 @@ blocks = {
         sprite: "GROUND_BLOCK_05",
         type: "box"
     },
-    StaticFragileBlock06: {
+    BREAKABLE_STATIC_BLOCK_1X1: {
         destroyedScoreInc: 50,
         group: "staticFragile",
         groupIndex: 6,
@@ -1975,7 +1598,7 @@ blocks = {
         sprite: "GROUND_BLOCK_06",
         type: "box"
     },
-    StoneBlock1: {
+    STONE_BLOCK_1X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2006,7 +1629,7 @@ blocks = {
         strength: 30,
         type: "box"
     },
-    StoneBlock10: {
+    STONE_BLOCK_10X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2037,7 +1660,7 @@ blocks = {
         strength: 140,
         type: "box"
     },
-    StoneBlock11: {
+    STONE_TRIANGLE_4X4: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2082,7 +1705,7 @@ blocks = {
             }
         }
     },
-    StoneBlock12: {
+    STONE_TRIANGLE_4X4_HOLLOW: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2127,7 +1750,7 @@ blocks = {
             }
         }
     },
-    StoneBlock2: {
+    STONE_BLOCK_2X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2158,7 +1781,7 @@ blocks = {
         strength: 60,
         type: "box"
     },
-    StoneBlock3: {
+    STONE_BLOCK_2X2: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2189,7 +1812,7 @@ blocks = {
         strength: 100,
         type: "box"
     },
-    StoneBlock4: {
+    STONE_BLOCK_4X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2220,7 +1843,7 @@ blocks = {
         strength: 80,
         type: "box"
     },
-    StoneBlock5: {
+    STONE_BLOCK_4X2: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2251,7 +1874,7 @@ blocks = {
         strength: 140,
         type: "box"
     },
-    StoneBlock6: {
+    STONE_BLOCK_8X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2282,7 +1905,7 @@ blocks = {
         strength: 120,
         type: "box"
     },
-    StoneBlock7: {
+    STONE_CIRCLE_4X4: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2313,7 +1936,7 @@ blocks = {
         strength: 600,
         type: "circle"
     },
-    StoneBlock8: {
+    STONE_CIRCLE_2X2: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2344,7 +1967,7 @@ blocks = {
         strength: 300,
         type: "circle"
     },
-    StoneBlock9: {
+    STONE_BLOCK_4X4_HOLLOW: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2375,7 +1998,7 @@ blocks = {
         strength: 160,
         type: "box"
     },
-    WoodBlock1: {
+    WOOD_BLOCK_1X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2406,7 +2029,7 @@ blocks = {
         strength: 20,
         type: "box"
     },
-    WoodBlock10: {
+    WOOD_BLOCK_10X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2437,7 +2060,7 @@ blocks = {
         strength: 100,
         type: "box"
     },
-    WoodBlock11: {
+    WOOD_TRIANGLE_4X4: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2482,7 +2105,7 @@ blocks = {
             }
         }
     },
-    WoodBlock12: {
+    WOOD_TRIANGLE_4X4_HOLLOW: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2527,7 +2150,7 @@ blocks = {
             }
         }
     },
-    WoodBlock2: {
+    WOOD_BLOCK_2X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2558,7 +2181,7 @@ blocks = {
         strength: 40,
         type: "box"
     },
-    WoodBlock3: {
+    WOOD_BLOCK_2X2: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2589,7 +2212,7 @@ blocks = {
         strength: 60,
         type: "box"
     },
-    WoodBlock4: {
+    WOOD_BLOCK_4X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2620,7 +2243,7 @@ blocks = {
         strength: 50,
         type: "box"
     },
-    WoodBlock5: {
+    WOOD_BLOCK_4X2: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2651,7 +2274,7 @@ blocks = {
         strength: 80,
         type: "box"
     },
-    WoodBlock6: {
+    WOOD_BLOCK_8X1: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2682,7 +2305,7 @@ blocks = {
         strength: 70,
         type: "box"
     },
-    WoodBlock7: {
+    WOOD_CIRCLE_4X4: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2713,7 +2336,7 @@ blocks = {
         strength: 200,
         type: "circle"
     },
-    WoodBlock8: {
+    WOOD_CIRCLE_2X2: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2744,7 +2367,7 @@ blocks = {
         strength: 150,
         type: "circle"
     },
-    WoodBlock9: {
+    WOOD_BLOCK_4X4_HOLLOW: {
         controllable: false,
         damageSprites: {
             damage1: {
@@ -2775,7 +2398,7 @@ blocks = {
         strength: 120,
         type: "box"
     },
-    YellowBird: {
+    BIRD_YELLOW: {
         allowRoll: true,
         collisionSound: "bird_03_collision",
         controllable: true,
@@ -2804,5 +2427,19 @@ blocks = {
         type: "circle",
         unselectionSound: "bird_03_unselect",
         useLegacyCollisionPath: true
+    },
+    SLINGSHOT_BACK: {
+        group: "extras",
+        groupIndex: 38,
+        material: "extras",
+        sprite: "SLING_SHOT_01_BACK",
+        type: "box"
+    },
+    SLINGSHOT_FRONT: {
+        group: "extras",
+        groupIndex: 38,
+        material: "extras",
+        sprite: "SLING_SHOT_01_FRONT",
+        type: "box"
     }
 }

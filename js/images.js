@@ -823,6 +823,7 @@ images = {
             p1: 13
         },
         SLING_SHOT_01_FRONT: {
+            omitInToolSet: true,
             pvrX: 335,
             pvrY: 706,
             width: 43,
@@ -831,6 +832,7 @@ images = {
             p1: 37
         },
         SLING_SHOT_01_BACK: {
+            omitInToolSet: true,
             pvrX: 383,
             pvrY: 610,
             width: 38,

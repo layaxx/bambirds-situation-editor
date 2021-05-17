@@ -1,143 +1,193 @@
 <!DOCTYPE html>
-<title>Angry Birds Level Editor v0.1b</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
-<script type="application/javascript" src="js/blocks.js"></script>
-<script type="application/javascript" src="js/images.js"></script>
-<script type="application/javascript" src="js/able.js"></script>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<div style="position:relative">
-    <html lang="en">
+<html lang="en">
 
-    <head>
-    </head>
+<head>
+  <title>Angry Birds Level Editor v0.1b</title>
+  <link rel="stylesheet" href="css/style.css" type="text/css">
+  <script type="application/javascript" src="js/blocks.js"></script>
+  <script type="application/javascript" src="js/images.js"></script>
+  <script type="application/javascript" src="js/able.js"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
 
-    <body onload="init()" background="background.png" style="background-attachment: fixed">
-        <div id="loading" style="color: white;background-color: brown; border: solid; width: 100%; height: 20%">
-            <h1>
-                Loading images, please wait..</h1>
-        </div>
-        &nbsp;
-        <p>
-            <font size="3" color="#FFFFFF">Please paste complete decompiled </font>
-            <font size="3"> <b style="color:#FFFFFF;background-color:#99ff99">level</b>
-                <font color="#FFFFFF"> lua code here and press "render":</font>
-            </font>
-            <font color="#FFFFFF"><br/>
+<body onload="init()" background="background.png" style="background-attachment: fixed">
+  <div style="position:relative">
 
-            </font>
 
-            <textarea id="txt" rows="10" cols="100">
-physicsToWorld = 20
-theme = "theme1"
-joints = {
-}
-birdCameraData = {
-    ipad = {
-        bottom = 122.18199920654,
-        left = -655.24298095703,
-        px = 48.054100036621,
-        py = -369.68798828125,
-        right = 1953.7199707031,
-        screenHeight = 768,
-        screenWidth = 1024,
-        sx = 0.72799998521805,
-        sy = 0.72799998521805,
-        top = -897.16101074219
-    },
-    iphone = {
-        bottom = 58.935001373291,
-        left = -627.74499511719,
-        px = 40.922298431396,
-        py = -355.47198486328,
-        right = 1921.3100585938,
-        screenHeight = 968,
-        screenWidth = 1280,
-        sx = 0.95712798833847,
-        sy = 0.95712798833847,
-        top = -861.15100097656
-    },
-    version = "0.02"
-}
-castleCameraData = {
-    ipad = {
-        bottom = 122.18199920654,
-        left = 547.12298583984,
-        px = 1250.4200439453,
-        py = -405.29098510742,
-        right = 1953.7199707031,
-        screenHeight = 768,
-        screenWidth = 1024,
-        sx = 0.72799998521805,
-        sy = 0.72799998521805,
-        top = -932.76397705078
-    },
-    iphone = {
-        bottom = 47.576000213623,
-        left = 583.97302246094,
-        px = 1245.1300048828,
-        py = -452.42401123047,
-        right = 1906.2900390625,
-        screenHeight = 968,
-        screenWidth = 1280,
-        sx = 0.96799999475479,
-        sy = 0.96799999475479,
-        top = -952.42401123047
-    },
-    version = "0.02"
-}
-counts = {
-    RedBird = 1,
-    YellowBird = 1,
-    WoodBlock9 = 2,
-    KingPiglette = 1
-}
-world = {
-    ground = {
-        angle = 0,
-        definition = "Ground",
-        name = "ground",
-        x = 55.188701629639,
-        y = 5
-    },
-    RedBird_1 = {
-        x = -35.44444444444444,
-        y = -1.3333333333333357,
-        name = "RedBird_1",
-        definition = "RedBird",
-        angle = 0
-    },
-    YellowBird_1 = {
-        x = -32.66666666666667,
-        y = -1.4444444444444429,
-        name = "YellowBird_1",
-        definition = "YellowBird",
-        angle = 0
-    },
-    WoodBlock9_1 = {
-        x = 62.111111111111114,
-        y = -2.1111111111111143,
-        name = "WoodBlock9_1",
-        definition = "WoodBlock9",
-        angle = 0
-    },
-    WoodBlock9_2 = {
-        x = 62.111111111111114,
-        y = -6.111111111111107,
-        name = "WoodBlock9_2",
-        definition = "WoodBlock9",
-        angle = 0
-    },
-    KingPiglette_1 = {
-        x = 62.22222222222222,
-        y = -11.666666666666664,
-        name = "KingPiglette_1",
-        definition = "KingPiglette",
-        angle = 0
+    <div id="loading" style="color: white;background-color: brown; border: solid; width: 100%; height: 20%">
+      <h1>
+        Loading images, please wait..</h1>
+    </div>
+    &nbsp;
+    <p>
+      <font size="3" color="#FFFFFF">Please paste complete </font>
+      <font size="3"> <b style="color:#FFFFFF;background-color:#99ff99">level</b>
+        <font color="#FFFFFF"> json code here and press "render":</font>
+      </font>
+    </p>
+    <textarea id="txt" rows="10" cols="100" >
+    {
+      "camera": [
+        {
+          "bottom": 12.246,
+          "id": "Slingshot",
+          "left": -26.971,
+          "right": 39.889,
+          "top": -37.899,
+          "x": 18.709,
+          "y": -12.826
+        },
+        {
+          "bottom": 11.027,
+          "id": "Castle",
+          "left": 9.864,
+          "right": 72.625,
+          "top": -36.045,
+          "x": 53.495,
+          "y": -12.509
+        }
+      ],
+      "counts": {
+        "birds": 3,
+        "blocks": 18
+      },
+      "id": "pack1/Level1.lua",
+      "scoreEagle": 17000,
+      "scoreGold": 32000,
+      "scoreSilver": 30000,
+      "theme": "BACKGROUND_BLUE_GRASS",
+      "world": {
+        "bird_1": {
+          "angle": 0,
+          "id": "BIRD_RED",
+          "x": 0,
+          "y": -0.974
+        },
+        "bird_2": {
+          "angle": 0,
+          "id": "BIRD_RED",
+          "x": 15.394,
+          "y": -1.02
+        },
+        "bird_3": {
+          "angle": 0,
+          "id": "BIRD_RED",
+          "x": 12.167,
+          "y": -1.019
+        },
+        "block_1": {
+          "angle": 0.827,
+          "id": "PIG_BASIC_SMALL",
+          "x": 54.169,
+          "y": -13.88
+        },
+        "block_10": {
+          "angle": 90,
+          "id": "WOOD_BLOCK_2X1",
+          "x": 54.301,
+          "y": -23.605
+        },
+        "block_11": {
+          "angle": 270.084,
+          "id": "WOOD_BLOCK_8X1",
+          "x": 50.304,
+          "y": -6.748
+        },
+        "block_12": {
+          "angle": 269.86,
+          "id": "WOOD_BLOCK_8X1",
+          "x": 57.463,
+          "y": -6.749
+        },
+        "block_13": {
+          "angle": 359.986,
+          "id": "WOOD_BLOCK_8X1",
+          "x": 53.941,
+          "y": -11.222
+        },
+        "block_14": {
+          "angle": 90.018,
+          "id": "WOOD_BLOCK_8X1",
+          "x": 52.182,
+          "y": -15.696
+        },
+        "block_15": {
+          "angle": 89.994,
+          "id": "WOOD_BLOCK_8X1",
+          "x": 55.996,
+          "y": -15.696
+        },
+        "block_16": {
+          "angle": 179.983,
+          "id": "WOOD_BLOCK_4X1",
+          "x": 54.158,
+          "y": -20.17
+        },
+        "block_17": {
+          "angle": 359.747,
+          "id": "WOOD_BLOCK_4X1",
+          "x": 53.921,
+          "y": -3.317
+        },
+        "block_18": {
+          "angle": 359.812,
+          "id": "WOOD_BLOCK_4X1",
+          "x": 53.933,
+          "y": -8.342
+        },
+        "block_2": {
+          "angle": 89.561,
+          "id": "ICE_BLOCK_4X1",
+          "x": 52.58,
+          "y": -5.822
+        },
+        "block_3": {
+          "angle": 90.221,
+          "id": "ICE_BLOCK_4X1",
+          "x": 55.35,
+          "y": -5.83
+        },
+        "block_4": {
+          "angle": 0,
+          "id": "MISC_ESTRADE_9X3",
+          "x": 49.509,
+          "y": -1.3
+        },
+        "block_5": {
+          "angle": 0,
+          "id": "MISC_ESTRADE_9X3",
+          "x": 58.208,
+          "y": -1.316
+        },
+        "block_6": {
+          "angle": 180,
+          "id": "STONE_BLOCK_2X2",
+          "x": 54.26,
+          "y": -21.602
+        },
+        "block_7": {
+          "angle": 359.985,
+          "id": "WOOD_BLOCK_2X1",
+          "x": 54.023,
+          "y": -12.291
+        },
+        "block_8": {
+          "angle": 90,
+          "id": "WOOD_BLOCK_2X1",
+          "x": 45.78,
+          "y": -3.658
+        },
+        "block_9": {
+          "angle": 90,
+          "id": "WOOD_BLOCK_2X1",
+          "x": 61.852,
+          "y": -3.658
+        }
+      }
     }
-}
-    </textarea><br/>
-</div>
-<center>
+    </textarea>
+  </div>
+  <center>
     <font color="#FFFFFF">Zoom:</font>
     <input type="button" onclick="chgval('zoom',-1)" value="-">
     <input id="zoom" type="text" value="6" size="3">
@@ -145,36 +195,62 @@ world = {
     <font color="#FFFFFF">Move canvas:</font>
     <input type="button" onclick="chgval('delta',-10)" value="<">
     <input id="delta" type="text" value="330" size="3">
-    <input type="button" onclick="chgval('delta',10)" value=">"><br/>
-    <input type="button" onclick="levelData = parseLevel()" value="render/revert"><input type="button" onclick="saveLevel();" value="save changes"><input type="button" onclick="alert(help());" value="HELP!"><br/>
-    <font color="#FFFFFF">Controls: click to select, right mouse or [q]/[w] to change angle, [d] to duplicate object, arrow keys or mouse leftclick+move to move object. [j]/[r] on 2 selected objs to make/delete joint. ctrl+click to add/remove object to/from selection<br/>
-    </font>
+    <input type="button" onclick="chgval('delta',10)" value=">"><br />
+    <input type="button" onclick="levelData = parseLevel()" value="render/revert"><input type="button"
+      onclick="saveLevel();" value="save changes"><input type="button" onclick="alert(help());" value="HELP!"><br />
     <div id="tscontainer" style="width:800px; overflow:scroll; background-color: silver">
-        <canvas id="toolset" width="3800" height="160" style="background-color: silver">oh, I guess you're using oudated browser, or text-only browser like lynx or links, if you're using IE, you need to wait until IE9, because IE&lt;9 just sucks, deal with it.</canvas>
-    </div><br/>
-    <canvas oncontextmenu="return false;" id="canvas" width="800" height="480" style="background-color: white">&nbsp;</canvas><br/>
+      <canvas id="toolset" width="1000" height="200" style="background-color: silver">oh, I guess you're using oudated
+        browser, or text-only browser like lynx or links, if you're using IE, you need to wait until IE9, because
+        IE&lt;9
+        just sucks, deal with it.</canvas>
+    </div><br />
+    <canvas oncontextmenu="return false;" id="canvas" width="800" height="480"
+      style="background-color: white">&nbsp;</canvas><br />
     <font color="#FFFFFF">Artwork and data files (c) Rovio Mobile Ltd., </font>
     <b style="color:#FFFFFF;background-color:#ff9999">Editor</b>
     <font color="#FFFFFF"> by forcer.
-    </font> <span style="color: #FFFFFF"><strong>Buy 
-	<b style="background-color:#ffff66">Angry</b> 
-	<b style="background-color:#a0ffff">Birds</b> or 
-	<b style="background-color:#ffff66">Angry</b> 
-	<b style="background-color:#a0ffff">Birds</b> 
-	<b style="background-color:#99ff99">level</b> packs if you like this 
-	<b style="background-color:#ff9999">editor</b>!</strong></span>
+    </font> <span style="color: #FFFFFF"><strong>Buy
+        <b style="background-color:#ffff66">Angry</b>
+        <b style="background-color:#a0ffff">Birds</b> or
+        <b style="background-color:#ffff66">Angry</b>
+        <b style="background-color:#a0ffff">Birds</b>
+        <b style="background-color:#99ff99">level</b> packs if you like this
+        <b style="background-color:#ff9999">editor</b>!</strong></span>
     <font color="#FFFFFF"><br />
     </font>
-    <small><font color="#FFFFFF">problems? suggestions? contact me at forcer (at) vnet.sk or
-	</font> <a href="http://talk.maemo.org/showthread.php?p=472386">
-	<font color="#FFFFFF">forum thread</font></a></small>
-    <font color="#FFFFFF">
-    </font>
+    <small>
+      <font color="#FFFFFF">problems? suggestions? contact me at forcer (at) vnet.sk or
+      </font> <a href="http://talk.maemo.org/showthread.php?p=472386">
+        <font color="#FFFFFF">forum thread</font>
+      </a>
+    </small>
     <p>&nbsp;</p>
     <p>
-        <font color="#FFFFFF">Level editor page revived and tweaked by Apache Thunder. Original version created by forcer.</font>
+      <font color="#FFFFFF">
+        Level editor page revived and tweaked by Apache Thunder. Original version created by forcer. 
+        Changed to direct json output by Felix Haase @ Uni Bamberg.
+      </font>
     </p>
-</center>
+    
+    <table style="color: #FFFFFF">
+      <thead>
+        <tr>
+          <th>Controls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>left click</td><td>select one</td></tr>
+        <tr><td>ctrl + left click</td><td>add to/remove from selection</td></tr>
+        <tr><td>left drag</td><td>select multiple</td></tr>
+        <tr><td>ctrl + left drag</td><td>add to selection</td></tr>
+        <tr><td>(selected) left drag / arrows</td><td>move object</td></tr>
+        <tr><td>right drag / [q]/[w]</td><td>change angle</td></tr>
+        <tr><td>[d]</td><td>duplicate object</td></tr>
+        <tr><td>←/→</td><td>move canvas</td></tr>
+        <tr><td>↑/↓</td><td>zoom canvas</td></tr>
+      </tbody>
+    </table>
+  </center>
 </body>
 
 </html>

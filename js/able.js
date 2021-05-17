@@ -27,6 +27,26 @@ var levelData = {};
 var ratio = 20.7;
 var ydelta = 50;
 
+function isObject(v) {
+    return '[object Object]' === Object.prototype.toString.call(v);
+};
+
+JSON.sort = function(o) {
+    if (Array.isArray(o)) {
+            return o.sort().map(JSON.sort);
+    } else if (isObject(o)) {
+        return Object
+            .keys(o)
+        .sort()
+            .reduce(function(a, k) {
+                a[k] = JSON.sort(o[k]);
+
+                return a;
+            }, {});
+    }
+    return o;
+}
+
 function help() {
     var message = "Welcome to ABLE!.\n\n" +
         "ABLE(Angry Birds Level Editor) is Level editor for Angry Birds(AB) 1.3.x for Maemo, Android and Palm (Apple devices not included)\n" +
@@ -132,6 +152,7 @@ function toolSetMapping() {
     for (var blname in blocks) {
         var sprd = spriteData[blname];
         if (sprd == null) continue;
+        if (sprd.data.omitInToolSet) continue;
 
         if (currentWidth + sprd.data.width * scale > tMaxX) {
             currentHeight += maxHeight;
@@ -244,14 +265,25 @@ function dumpLevel(arr, level) {
     return dumpedText;
 }
 
-function getNextAvailableObjectName(definition) {
-    var i = 0;
+function getObjectType(definition) {
+    return blocks[definition].group === "birds" ? "bird": "block";
+}
 
-    while (levelData.world[definition + '_' + ++i]) {
-        if (i > 999) break;
+function getLastObjectID(type) {
+    let i = 0;    
+    while (levelData.world[type + '_' + ++i]) {
+        if (i > 999) {throw new Error("Too many objects")};
     }
+    return i - 1;
+}
 
-    return definition + '_' + i;
+function getLastObjectName(type) {
+    return `${type}_${getLastObjectID(type)}` ;
+}
+
+function getNextAvailableObjectName(definition) {
+    const type = getObjectType(definition)
+    return `${type}_${getLastObjectID(type) + 1}`;
 }
 
 function addNewObject(definition, x, y, angle) {
@@ -271,20 +303,20 @@ function addNewObject(definition, x, y, angle) {
     obj.x = loc.x;
     obj.y = loc.y;
 
-    obj.name = objName;
-    obj.definition = definition;
+    obj.id = definition;
     obj.angle = angle === undefined ? 0 : angle;
-    if (levelData.counts[definition]) {
-        levelData.counts[definition] = parseInt(levelData.counts[definition]) + 1;
+    const type = blocks[definition].group === "birds" ? "birds": "blocks";
+    if (levelData.counts[type]) {
+        levelData.counts[type] = parseInt(levelData.counts[type]) + 1;
     } else {
-        levelData.counts[definition] = 1;
+        levelData.counts[type] = 1;
     }
-    return obj;
+    return objName;
 }
 
 function saveLevel() {
     txtEl = d.getElementById('txt');
-    txtEl.value = dumpLevel(levelData);
+    txtEl.value = JSON.stringify(JSON.sort(levelData), null, 2);
     txtEl.focus();
     txtEl.select();
     download('Level1-1.json', txtEl.value);
@@ -292,7 +324,7 @@ function saveLevel() {
 
 function download(filename, text) {
     var pom = document.createElement('a');
-    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text));
     pom.setAttribute('download', filename);
 
     if (document.createEvent) {
@@ -307,14 +339,9 @@ function download(filename, text) {
 
 function parseLevel() {
     var txt = d.getElementById('txt').value;
-    txt = txt.replace(/--.*?\n/g, '\n');
-    txt = txt.replace(/([\n\s]*)((physicsToWorld|theme|joints|birdCameraData|castleCameraData|counts|world)\s*=)/g, ",$1$2");
-    txt = txt.replace(/^[\s\n]*,/, '');
-    txt = txt.replace(/=/g, ':');
-    //console.info(txt);
+    console.info(txt);
     try {
-        eval("var res = {" + txt + "}");
-        return res;
+        return JSON.parse(txt);
     } catch (err) {
         alert("Level data not parsable: " + err + "\nSend error reports with level data to forcer (at) vnet.sk");
         return null;
@@ -349,9 +376,9 @@ function canvasMouseDown(e) {
             }
         } else {
             selObjInitVals[0] = {};
-            selObjInitVals[0].x = selObj.x;
-            selObjInitVals[0].y = selObj.y;
-            selObjInitVals[0].angle = selObj.angle;
+            selObjInitVals[0].x = levelData.world[selObj].x;
+            selObjInitVals[0].y = levelData.world[selObj].y;
+            selObjInitVals[0].angle = levelData.world[selObj].angle;
             selectedObjs = [selObj];
         }
     }
@@ -382,12 +409,13 @@ function canvasMouseMove(e) {
     } else if (selectedObjs[0] != null) {
         if (buttonClicked == 2) {
             for (var i in selectedObjs) {
-                selectedObjs[i].angle = selObjInitVals[i].angle + (loc.y - sloc.y) / 5;
+                levelData.world[selectedObjs[i]].angle = canvasAngleToABAngle(abAngleToCanvasAngle(selObjInitVals[i].angle) + (loc.y - sloc.y) / 5);
             }
         } else {
             for (var i in selectedObjs) {
-                selectedObjs[i].x = selObjInitVals[i].x + (loc.x - sloc.x);
-                selectedObjs[i].y = selObjInitVals[i].y + (loc.y - sloc.y);
+                const objName = selectedObjs[i]
+                levelData.world[objName].x = selObjInitVals[i].x + (loc.x - sloc.x);
+                levelData.world[objName].y = selObjInitVals[i].y + (loc.y - sloc.y);
             }
         }
     }
@@ -397,10 +425,11 @@ function canvasMouseMove(e) {
 function syncObjInitValsWithSelObjs() {
     selObjInitVals = [];
     for (var i in selectedObjs) {
+        const objName = selectedObjs[i]
         selObjInitVals[i] = {};
-        selObjInitVals[i].x = selectedObjs[i].x;
-        selObjInitVals[i].y = selectedObjs[i].y;
-        selObjInitVals[i].angle = selectedObjs[i].angle;
+        selObjInitVals[i].x = levelData.world[objName].x;
+        selObjInitVals[i].y = levelData.world[objName].y;
+        selObjInitVals[i].angle = levelData.world[objName].angle;
     }
 }
 
@@ -418,14 +447,22 @@ function isObjectSelected(obj) {
 }
 
 function getObjectsByRect(x, y, w, h) {
+    const minX = Math.min(x,x+w)
+    const minY = Math.min(y,y+h)
+    const maxX = Math.max(x,x+w)
+    const maxY = Math.max(y,y+h)
     var result = [];
     for (var obname in levelData.world) {
-        //if(obname == 'ExtraBlockTNT_1') { console.info("found"); }
         var obj = levelData.world[obname];
-        var loc = transform(obj.x, obj.y, 0, 0);
-        if (!spriteData[obj.definition]) continue;
-        if (loc.x > x && loc.y > y && loc.x < (w + x) && loc.y < (h + y)) {
-            result.push(obj);
+        let loc;
+        if (obname == 'bird_1') { 
+            loc = transform(obj.x, obj.y-7, 0, 0);
+        } else { 
+            loc = transform(obj.x, obj.y, 0, 0);
+        }
+        if (!spriteData[obj.id]) continue;
+        if (loc.x > minX && loc.y > minY && loc.x < maxX && loc.y < maxY) {
+            result.push(obname);
         }
     }
     return result;
@@ -436,20 +473,25 @@ function getObjectByPixel(x, y) {
     //alert(levelData.world['ExtraBlockTNT_1'].name);
     for (var objname in levelData.world) {
         var obj = levelData.world[objname];
-        var sprd = spriteData[obj.definition];
+        var sprd = spriteData[obj.id];
         if (!sprd) continue;
-        var tr = transform(obj.x, obj.y, sprd.data.width, sprd.data.height);
+        let tr;
+        if (objname == 'bird_1') { 
+            tr = transform(obj.x, obj.y-7, sprd.data.width, sprd.data.height);
+        } else { 
+            tr = transform(obj.x, obj.y, sprd.data.width, sprd.data.height);
+        }
 
         gctx.save();
         gctx.translate(tr.x, tr.y);
-        gctx.rotate(obj.angle);
+        gctx.rotate(abAngleToCanvasAngle(obj.angle));
 
         gctx.fillRect(-tr.w / 2, -tr.h / 2, tr.w, tr.h);
         gctx.restore();
         //console.info(x,y);
         var imageData = gctx.getImageData(x, y, 1, 1);
         if (imageData.data[3] > 0) {
-            return obj;
+            return objname;
         }
     }
     return null;
@@ -509,11 +551,11 @@ function canvasKeyDown(e) {
                 catchKeyPress = false;
                 break;
             case 81: //q
-                angleDelta = -0.01;
+                angleDelta = -1;
                 catchKeyPress = false;
                 break;
             case 87: //w
-                angleDelta = 0.01;
+                angleDelta = 1;
                 catchKeyPress = false;
                 break;
             case 46: //delete key
@@ -534,12 +576,16 @@ function canvasKeyDown(e) {
         for (var i in selectedObjs) {
             if (canDeleteObject) {
                 deleteObject(selectedObjs[i]);
+                delete selectedObjs[i]
                 catchKeyPress = false;
             } else {
-                if (selectedObjs[i] == null) continue;
-                selectedObjs[i].x += xDelta;
-                selectedObjs[i].y += yDetla;
-                selectedObjs[i].angle += angleDelta;
+                if (levelData.world[selectedObjs[i]] == null) continue;
+                levelData.world[selectedObjs[i]].x += xDelta;
+                levelData.world[selectedObjs[i]].y += yDetla;
+                const currentAngle = levelData.world[selectedObjs[i]].angle;
+                let newAngle = currentAngle + angleDelta;
+                newAngle = (newAngle < 0 ? newAngle + 360 : newAngle) % 360
+                levelData.world[selectedObjs[i]].angle = newAngle;
             }
         }
 
@@ -556,11 +602,11 @@ function canvasKeyDown(e) {
 
 function makeJoint(obj1, obj2, type) {
     if (!typeof(levelData['joints']) === Object) levelData['joints'] = {};
-    levelData.joints[obj1.name + obj2.name] = {
+    levelData.joints[obj1 + obj2] = {
         coordType: 2,
-        name: obj1.name + obj2.name,
-        end1: obj1.name,
-        end2: obj2.name,
+        name: obj1 + obj2,
+        end1: obj1,
+        end2: obj2,
         type: type,
         x1: 0,
         x2: 0,
@@ -619,9 +665,9 @@ function copySelectedObjects() {
 function pasteClipboardObjects() {
     selectedObjs = [];
     for (var i in clipboardObjs) {
-        var obj = clipboardObjs[i];
+        var obj = levelData.world[clipboardObjs[i]];
         selectedObjs.push(
-            addNewObject(obj.definition, obj.x - 5, obj.y - 5, clipboardObjs[i].angle)
+            addNewObject(obj.id, obj.x - 5, obj.y - 5, clipboardObjs[i].angle)
         )
     }
 }
@@ -630,15 +676,29 @@ function canvasKeyUp(e) {
     ctrlKeyPressed = false;
 }
 
-function deleteObject(obj) {
-    var definition = obj.definition;
-    if (delete(levelData.world[obj.name]) == false) {
-        alert("I failed to delete " + name + " miserably. Please contact creator.")
-    } else {
-        deleteJointByObj(obj);
-        levelData.counts[definition] -= 1;
-        if (levelData.counts[definition] == 0) delete(levelData.counts[definition]);
+function deleteObject(objName) {
+    const obj = levelData.world[objName]
+    const type = getObjectType(obj.id)
+    const lastObjectName = getLastObjectName(type)
+    if (delete(levelData.world[objName]) == false) {
+        alert("Failed to delete " + objName + " miserably. Please contact creator.")
     }
+    if (objName != lastObjectName) {
+        if (!levelData.world[lastObjectName]) {
+            alert(`Failed to update ${lastObjectName} to ${objName}. Please check if your object count is the same as the number of objects.`)
+            return
+        }
+        levelData.world[objName] = levelData.world[lastObjectName]  
+        if (delete(levelData.world[lastObjectName]) == false) {
+            alert(`Failed to update ${lastObjectName} to ${objName}. Please check if your object count is the same as the number of objects.`)
+            return
+        }
+    }
+    deleteJointByObj(objName);
+    
+    const typeCounter = type + "s"
+    levelData.counts[typeCounter] -= 1;
+    if (levelData.counts[typeCounter] == 0) delete(levelData.counts[typeCounter]);
 }
 
 function drawCanvas() {
@@ -648,7 +708,11 @@ function drawCanvas() {
 
     if (levelData != null && levelData.world) {
         for (var obname in levelData.world) {
-            drawObject(levelData.world[obname]);
+            if (obname == "bird_1") {
+                drawBirdInSling(levelData.world[obname])
+            } else {
+                drawObject(levelData.world[obname]);
+            }
         }
         drawJoints();
         drawGround();
@@ -656,12 +720,12 @@ function drawCanvas() {
 }
 
 function drawGround() {
-    var y = levelData.world.ground.y;
-    var theme = levelData.theme.toUpperCase().replace(/[A-Z]+(\d+)/, "FOREGROUND_$1_LAYER_1").replace(/8/, 7);
+    var y = 5;
+    var theme = "FOREGROUND_1_LAYER_1";
     //alert(theme);
     var img = images.grounds.img;
     var iD = images.grounds[theme];
-    var tr = transform(0, y, iD.width, iD.height);
+    var tr = transform(0, 5, iD.width, iD.height);
     //console.info(imageData.img);
     ctx.save();
     ctx.translate(0, (MaxY - 54) + (y * (boxZoom / ratio)));
@@ -684,6 +748,15 @@ function transform(objx, objy, width, height) {
     return ret;
 }
 
+function transformRelative(objx, objy, width, height) {
+    var ret = {};
+    ret.x = objx * boxZoom;
+    ret.y = objy * boxZoom;
+    ret.w = width * (boxZoom / ratio);
+    ret.h = height * (boxZoom / ratio);
+    return ret;
+}
+
 function untransform(cx, cy) {
     var ret = {};
     ret.x = (cx - boxDelta) / boxZoom;
@@ -691,10 +764,59 @@ function untransform(cx, cy) {
     return ret;
 }
 
+function untransformRelative(cx, cy) {
+    var ret = {};
+    ret.x = cx / boxZoom;
+    ret.y = cy / boxZoom;
+    return ret;
+}
+
+function abAngleToCanvasAngle(angle) {
+    return ((angle * Math.PI) / 180 + 360) % 360;
+}
+
+function canvasAngleToABAngle(angle) {
+    return ((angle * 180) / Math.PI + 360) % 360;
+}
+
+function drawBirdInSling(obj) {
+    var angle = abAngleToCanvasAngle(obj.angle);
+    var sprd = spriteData[obj.id];
+    if (!sprd) return;
+    const sling_back_sprite = spriteData["SLINGSHOT_BACK"]
+    const sling_front_sprite = spriteData["SLINGSHOT_FRONT"]
+    // TODO: The -50 needs to be evaluated 
+    var tr = transform(obj.x, obj.y - 7, sprd.data.width, sprd.data.height);
+    var tr_back = transformRelative(0, -1.8, sling_back_sprite.data.width, sling_back_sprite.data.height)
+    var tr_front = transformRelative(-1.5, -2.3, sling_front_sprite.data.width, sling_front_sprite.data.height)
+
+    ctx.save();
+    ctx.translate(tr.x, tr.y);
+    ctx.rotate(angle);
+
+    with(sling_back_sprite) {
+        ctx.drawImage(img, sling_back_sprite.data.pvrX, sling_back_sprite.data.pvrY, sling_back_sprite.data.width, sling_back_sprite.data.height, tr_back.x, tr_back.y, tr_back.w, tr_back.h);
+    }
+    with(sprd) {
+        ctx.drawImage(img, data.pvrX, data.pvrY, data.width, data.height, -tr.w / 2, -tr.h / 2, tr.w, tr.h);
+    }
+    with(sling_front_sprite) {
+        ctx.drawImage(img, sling_front_sprite.data.pvrX, sling_front_sprite.data.pvrY, sling_front_sprite.data.width, sling_front_sprite.data.height, tr_front.x, tr_front.y, tr_front.w, tr_front.h);
+    }
+    for (var i in selectedObjs) {
+        if (obj == levelData.world[selectedObjs[i]]) {
+            ctx.fillStyle = "rgba(255,0,0,0.5)";
+            ctx.fillRect(-tr.w / 2, -tr.h / 2, tr.w, tr.h);
+        }
+    }
+    //ctx.drawImage()
+    ctx.restore();
+}
+
 
 function drawObject(obj) {
-    var angle = obj.angle;
-    var sprd = spriteData[obj.definition];
+    var angle = abAngleToCanvasAngle(obj.angle);
+    var sprd = spriteData[obj.id];
     if (!sprd) return;
 
     var tr = transform(obj.x, obj.y, sprd.data.width, sprd.data.height);
@@ -707,7 +829,7 @@ function drawObject(obj) {
         ctx.drawImage(img, data.pvrX, data.pvrY, data.width, data.height, -tr.w / 2, -tr.h / 2, tr.w, tr.h);
     }
     for (var i in selectedObjs) {
-        if (obj == selectedObjs[i]) {
+        if (obj == levelData.world[selectedObjs[i]]) {
             ctx.fillStyle = "rgba(255,0,0,0.5)";
             ctx.fillRect(-tr.w / 2, -tr.h / 2, tr.w, tr.h);
         }
