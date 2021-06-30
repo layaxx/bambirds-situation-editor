@@ -24,7 +24,7 @@ var numberOfImages = 0;
 
 var d = document;
 var levelData = {};
-var ratio = 20.7;
+var ratio = 20;
 var ydelta = 50;
 
 function isObject(v) {
