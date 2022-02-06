@@ -1,0 +1,416 @@
+{
+  "BIRD_YELLOW": {
+    "element": "Bird",
+    "type": "BirdYellow",
+    "width": 2,
+    "height": 2
+  },
+  "BIRD_RED": {
+    "element": "Bird",
+    "type": "BirdRed",
+    "width": 2,
+    "height": 2
+  },
+  "BIRD_BLACK": {
+    "element": "Bird",
+    "type": "BirdBlack",
+    "width": 3,
+    "height": 3
+  },
+  "BIRD_BLUE": {
+    "element": "Bird",
+    "type": "BirdBlue",
+    "width": 1,
+    "height": 1
+  },
+  "BIRD_GREEN": {
+    "element": "Bird",
+    "type": "BirdGreen",
+    "width": 2,
+    "height": 2
+  },
+  "BIRD_WHITE": {
+    "element": "Bird",
+    "type": "BirdWhite",
+    "width": 3,
+    "height": 3
+  },
+  "PIG_KING": {
+    "element": "Pig",
+    "type": "BasicBig",
+    "material": "",
+    "width": 5,
+    "height": 5
+  },
+  "PIG_MUSTACHE": {
+    "element": "Pig",
+    "type": "BasicBig",
+    "material": "",
+    "width": 5,
+    "height": 5
+  },
+  "PIG_HELMET": {
+    "element": "Pig",
+    "type": "BasicBig",
+    "material": "",
+    "width": 5,
+    "height": 5
+  },
+  "PIG_BASIC_BIG": {
+    "element": "Pig",
+    "type": "BasicBig",
+    "material": "",
+    "width": 5,
+    "height": 5
+  },
+  "PIG_BASIC_MEDIUM": {
+    "element": "Pig",
+    "type": "BasicMedium",
+    "material": "",
+    "width": 4,
+    "height": 4
+  },
+  "PIG_BASIC_SMALL": {
+    "element": "Pig",
+    "type": "BasicSmall",
+    "material": "",
+    "width": 2.5,
+    "height": 2.5
+  },
+  "WOOD_BLOCK_1X1": {
+    "element": "Block",
+    "type": "SquareTiny",
+    "material": "wood",
+    "width": 1,
+    "height": 1
+  },
+  "WOOD_BLOCK_10X1": {
+    "element": "Block",
+    "type": "RectBig",
+    "material": "wood",
+    "width": 10,
+    "height": 1
+  },
+  "WOOD_TRIANGLE_4X4": {
+    "element": "Block",
+    "type": "Triangle",
+    "material": "wood",
+    "width": 4,
+    "height": 4
+  },
+  "WOOD_TRIANGLE_4X4_HOLLOW": {
+    "element": "Block",
+    "type": "TriangleHole",
+    "material": "wood",
+    "width": 4,
+    "height": 4
+  },
+  "WOOD_BLOCK_2X1": {
+    "element": "Block",
+    "type": "RectTiny",
+    "material": "wood",
+    "width": 2,
+    "height": 1
+  },
+  "WOOD_BLOCK_2X2": {
+    "element": "Block",
+    "type": "SquareSmall",
+    "material": "wood",
+    "width": 2,
+    "height": 2
+  },
+  "WOOD_BLOCK_4X1": {
+    "element": "Block",
+    "type": "RectSmall",
+    "material": "wood",
+    "width": 4,
+    "height": 1
+  },
+  "WOOD_BLOCK_4X2": {
+    "element": "Block",
+    "type": "RectFat",
+    "material": "wood",
+    "width": 4,
+    "height": 2
+  },
+  "WOOD_BLOCK_8X1": {
+    "element": "Block",
+    "type": "RectMedium",
+    "material": "wood",
+    "width": 8,
+    "height": 1
+  },
+  "WOOD_CIRCLE_4X4": {
+    "element": "Block",
+    "type": "Circle",
+    "material": "wood",
+    "width": 4,
+    "height": 4
+  },
+  "WOOD_CIRCLE_2X2": {
+    "element": "Block",
+    "type": "CircleSmall",
+    "material": "wood",
+    "width": 2,
+    "height": 2
+  },
+  "WOOD_BLOCK_4X4_HOLLOW": {
+    "element": "Block",
+    "type": "SquareHole",
+    "material": "wood",
+    "width": 4,
+    "height": 4
+  },
+  "STONE_BLOCK_1X1": {
+    "element": "Block",
+    "type": "SquareTiny",
+    "material": "stone",
+    "width": 1,
+    "height": 1
+  },
+  "STONE_BLOCK_10X1": {
+    "element": "Block",
+    "type": "RectBig",
+    "material": "stone",
+    "width": 10,
+    "height": 1
+  },
+  "STONE_TRIANGLE_4X4": {
+    "element": "Block",
+    "type": "Triangle",
+    "material": "stone",
+    "width": 4,
+    "height": 4
+  },
+  "STONE_TRIANGLE_4X4_HOLLOW": {
+    "element": "Block",
+    "type": "TriangleHole",
+    "material": "stone",
+    "width": 4,
+    "height": 4
+  },
+  "STONE_BLOCK_2X1": {
+    "element": "Block",
+    "type": "RectTiny",
+    "material": "stone",
+    "width": 2,
+    "height": 1
+  },
+  "STONE_BLOCK_2X2": {
+    "element": "Block",
+    "type": "SquareSmall",
+    "material": "stone",
+    "width": 2,
+    "height": 2
+  },
+  "STONE_BLOCK_4X1": {
+    "element": "Block",
+    "type": "RectSmall",
+    "material": "stone",
+    "width": 4,
+    "height": 1
+  },
+  "STONE_BLOCK_4X2": {
+    "element": "Block",
+    "type": "RectFat",
+    "material": "stone",
+    "width": 4,
+    "height": 2
+  },
+  "STONE_BLOCK_8X1": {
+    "element": "Block",
+    "type": "RectMedium",
+    "material": "stone",
+    "width": 8,
+    "height": 1
+  },
+  "STONE_CIRCLE_4X4": {
+    "element": "Block",
+    "type": "Circle",
+    "material": "stone",
+    "width": 4,
+    "height": 4
+  },
+  "STONE_CIRCLE_2X2": {
+    "element": "Block",
+    "type": "CircleSmall",
+    "material": "stone",
+    "width": 2,
+    "height": 2
+  },
+  "STONE_BLOCK_4X4_HOLLOW": {
+    "element": "Block",
+    "type": "SquareHole",
+    "material": "stone",
+    "width": 4,
+    "height": 4
+  },
+  "ICE_BLOCK_1X1": {
+    "element": "Block",
+    "type": "SquareTiny",
+    "material": "ice",
+    "width": 1,
+    "height": 1
+  },
+  "ICE_BLOCK_10X1": {
+    "element": "Block",
+    "type": "RectBig",
+    "material": "ice",
+    "width": 10,
+    "height": 1
+  },
+  "ICE_TRIANGLE_4X4": {
+    "element": "Block",
+    "type": "Triangle",
+    "material": "ice",
+    "width": 4,
+    "height": 4
+  },
+  "ICE_TRIANGLE_4X4_HOLLOW": {
+    "element": "Block",
+    "type": "TriangleHole",
+    "material": "ice",
+    "width": 4,
+    "height": 4
+  },
+  "ICE_BLOCK_2X1": {
+    "element": "Block",
+    "type": "RectTiny",
+    "material": "ice",
+    "width": 2,
+    "height": 1
+  },
+  "ICE_BLOCK_2X2": {
+    "element": "Block",
+    "type": "SquareSmall",
+    "material": "ice",
+    "width": 2,
+    "height": 2
+  },
+  "ICE_BLOCK_4X1": {
+    "element": "Block",
+    "type": "RectSmall",
+    "material": "ice",
+    "width": 4,
+    "height": 1
+  },
+  "ICE_BLOCK_4X2": {
+    "element": "Block",
+    "type": "RectFat",
+    "material": "ice",
+    "width": 4,
+    "height": 2
+  },
+  "ICE_BLOCK_8X1": {
+    "element": "Block",
+    "type": "RectMedium",
+    "material": "ice",
+    "width": 8,
+    "height": 1
+  },
+  "ICE_CIRCLE_4X4": {
+    "element": "Block",
+    "type": "Circle",
+    "material": "ice",
+    "width": 4,
+    "height": 4
+  },
+  "ICE_CIRCLE_2X2": {
+    "element": "Block",
+    "type": "CircleSmall",
+    "material": "ice",
+    "width": 2,
+    "height": 2
+  },
+  "ICE_BLOCK_4X4_HOLLOW": {
+    "element": "Block",
+    "type": "SquareHole",
+    "material": "ice",
+    "width": 4,
+    "height": 4
+  },
+  "MISC_EXPLOSIVE_TNT": {
+    "element": "TNT",
+    "type": "",
+    "material": "",
+    "width": 3.5,
+    "height": 3.5
+  },
+  "TERRAIN_TEXTURED_HILLS_5X5": {
+    "element": "Platform",
+    "type": "",
+    "material": "",
+    "width": 5,
+    "height": 5
+  },
+  "TERRAIN_TEXTURED_HILLS_1X1": {
+    "element": "Platform",
+    "type": "",
+    "material": "",
+    "width": 1,
+    "height": 1
+  },
+  "TERRAIN_TEXTURED_HILLS_10X10": {
+    "element": "Platform",
+    "type": "",
+    "material": "",
+    "width": 10,
+    "height": 10
+  },
+  "TERRAIN_TEXTURED_HILLS_5X2": {
+    "element": "Platform",
+    "type": "",
+    "material": "",
+    "width": 5,
+    "height": 2
+  },
+  "TERRAIN_TEXTURED_HILLS_10X2": {
+    "element": "Platform",
+    "type": "",
+    "material": "",
+    "width": 10,
+    "height": 2
+  },
+  "TERRAIN_TEXTURED_HILLS_32X2": {
+    "element": "Platform",
+    "type": "",
+    "material": "",
+    "width": 32,
+    "height": 2
+  },
+  "BREAKABLE_STATIC_BLOCK_10X2": {
+    "element": "Platform",
+    "type": "",
+    "material": "",
+    "width": 10,
+    "height": 2
+  },
+  "BREAKABLE_STATIC_BLOCK_5X2": {
+    "element": "Platform",
+    "type": "",
+    "material": "",
+    "width": 5,
+    "height": 2
+  },
+  "BREAKABLE_STATIC_BLOCK_5X5": {
+    "element": "Platform",
+    "type": "",
+    "material": "",
+    "width": 5,
+    "height": 5
+  },
+  "BREAKABLE_STATIC_BLOCK_10X10": {
+    "element": "Platform",
+    "type": "",
+    "material": "",
+    "width": 10,
+    "height": 10
+  },
+  "BREAKABLE_STATIC_BLOCK_1X1": {
+    "element": "Platform",
+    "type": "",
+    "material": "",
+    "width": 1,
+    "height": 1
+  }
+}
