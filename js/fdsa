@@ -1,0 +1,234 @@
+belongsTo(ice11,struct1).
+belongsTo(ice2,struct0).
+belongsTo(ice4,struct0).
+belongsTo(ice7,struct0).
+belongsTo(pig0,struct0).
+belongsTo(pig1,struct1).
+belongsTo(stone0,struct0).
+belongsTo(stone1,struct0).
+belongsTo(stone10,struct1).
+belongsTo(stone12,struct1).
+belongsTo(stone6,struct0).
+belongsTo(stone9,struct1).
+belongsTo(wood13,struct2).
+belongsTo(wood14,struct2).
+belongsTo(wood3,struct0).
+belongsTo(wood5,struct0).
+belongsTo(wood8,struct0).
+bird(redbird0).
+bird(redbird1).
+bird(redbird2).
+birdOrder(redbird0,0).
+birdOrder(redbird1,1).
+birdOrder(redbird2,2).
+canCollapse(struct0,struct1).
+canCollapse(struct1,struct0).
+canCollapse(struct1,struct2).
+collapsesInDirection(struct0,struct1,away).
+collapsesInDirection(struct1,struct0,towards).
+collapsesInDirection(struct1,struct2,away).
+collapsesInDirection(struct2,struct1,towards).
+ground_plane(384).
+hasColor(redbird0,red).
+hasColor(redbird1,red).
+hasColor(redbird2,red).
+hasForm(ice11,bar).
+hasForm(ice2,bar).
+hasForm(ice4,bar).
+hasForm(ice7,bar).
+hasForm(stone0,block).
+hasForm(stone1,bar).
+hasForm(stone10,bar).
+hasForm(stone12,block).
+hasForm(stone6,block).
+hasForm(stone9,block).
+hasForm(wood13,cube).
+hasForm(wood14,block).
+hasForm(wood3,cube).
+hasForm(wood5,cube).
+hasForm(wood8,cube).
+hasMaterial(ice11,ice,612,280,11,27).
+hasMaterial(ice2,ice,536,325,12,25).
+hasMaterial(ice4,ice,537,318,50,7).
+hasMaterial(ice7,ice,575,325,12,26).
+hasMaterial(pig0,pork,556,339,9,9).
+hasMaterial(pig1,pork,635,295,9,9).
+hasMaterial(stone0,stone,536,355,25,13).
+hasMaterial(stone1,stone,536,348,50,9).
+hasMaterial(stone10,stone,603,306,49,6).
+hasMaterial(stone12,stone,627,312,25,13).
+hasMaterial(stone6,stone,561,355,25,13).
+hasMaterial(stone9,stone,603,312,24,13).
+hasMaterial(wood13,wood,702,371,12,12).
+hasMaterial(wood14,wood,715,371,11,12).
+hasMaterial(wood3,wood,536,307,12,12).
+hasMaterial(wood5,wood,555,307,12,12).
+hasMaterial(wood8,wood,575,307,12,12).
+hasOrientation(ice11,vertical).
+hasOrientation(ice2,vertical).
+hasOrientation(ice4,horizontal).
+hasOrientation(ice7,vertical).
+hasOrientation(stone0,horizontal).
+hasOrientation(stone1,horizontal).
+hasOrientation(stone10,horizontal).
+hasOrientation(stone12,horizontal).
+hasOrientation(stone6,horizontal).
+hasOrientation(stone9,horizontal).
+hasOrientation(wood13,horizontal).
+hasOrientation(wood14,vertical).
+hasOrientation(wood3,horizontal).
+hasOrientation(wood5,horizontal).
+hasOrientation(wood8,horizontal).
+hasSize(hill0,big).
+hasSize(hill1,medium).
+hasSize(hill2,medium).
+hasSize(ice11,medium).
+hasSize(ice2,small).
+hasSize(ice4,medium).
+hasSize(ice7,medium).
+hasSize(pig0,medium).
+hasSize(pig1,medium).
+hasSize(redbird0,medium).
+hasSize(redbird1,medium).
+hasSize(redbird2,medium).
+hasSize(stone0,medium).
+hasSize(stone1,medium).
+hasSize(stone10,medium).
+hasSize(stone12,medium).
+hasSize(stone6,medium).
+hasSize(stone9,medium).
+hasSize(wood13,small).
+hasSize(wood14,medium).
+hasSize(wood3,small).
+hasSize(wood5,small).
+hasSize(wood8,small).
+hill(hill0,530,368,61,15).
+hill(hill1,598,325,59,58).
+hill(hill2,727,344,78,40).
+isAnchorPointFor(stone0,struct0).
+isAnchorPointFor(stone10,struct1).
+isAnchorPointFor(wood13,struct2).
+isBelow(ice2,ice4).
+isBelow(ice4,wood3).
+isBelow(ice4,wood5).
+isBelow(ice4,wood8).
+isBelow(ice7,ice4).
+isBelow(stone0,stone1).
+isBelow(stone1,ice2).
+isBelow(stone1,ice7).
+isBelow(stone1,pig0).
+isBelow(stone10,ice11).
+isBelow(stone10,pig1).
+isBelow(stone12,stone10).
+isBelow(stone6,ice7).
+isBelow(stone6,stone1).
+isBelow(stone9,stone10).
+isCollapsable(struct0).
+isCollapsable(struct1).
+isCollapsable(struct2).
+isLeft(stone0,stone6).
+isLeft(stone9,stone12).
+isLeft(wood13,wood14).
+isLeft(wood14,hill2).
+isOn(ice11,stone10).
+isOn(ice2,stone1).
+isOn(ice4,ice2).
+isOn(ice4,ice7).
+isOn(ice7,stone1).
+isOn(ice7,stone6).
+isOn(pig0,stone1).
+isOn(pig1,stone10).
+isOn(stone0,hill0).
+isOn(stone1,stone0).
+isOn(stone1,stone6).
+isOn(stone10,stone12).
+isOn(stone10,stone9).
+isOn(stone12,hill1).
+isOn(stone6,hill0).
+isOn(stone9,hill1).
+isOn(wood13,ground).
+isOn(wood14,ground).
+isOn(wood3,ice4).
+isOn(wood5,ice4).
+isOn(wood8,ice4).
+isOver(ice4,pig0).
+isOver(wood5,pig0).
+isRight(stone12,stone9).
+isRight(stone6,stone0).
+isRight(wood14,wood13).
+isTower(struct0).
+pig(pig0,556,339,9,9).
+pig(pig1,635,295,9,9).
+protects(struct0,pig0).
+sceneRepresentation("/home/layaxx/Documents/s6_AIBirds/bambirds/tmp/scene-representation-6-1542385277-rep").
+scene_scale(77,1.01058007).
+shape(hill0,poly, 561,376,915,[5,[530,380],[531,382],[591,383],[590,368],[531,369]]).
+shape(hill1,poly, 628.5,355,3422,[4,[598,326],[598,382],[657,383],[657,325]]).
+shape(hill2,poly, 766.5,364.5,3120,[4,[727,383],[728,384],[805,383],[766,344]]).
+shape(ice11,rect, 617.5,293.5,297,[11,27,1.57079633]).
+shape(ice2,rect, 542,337.5,300,[12,25,1.57079633]).
+shape(ice4,rect, 562,321.5,350,[7,50,0]).
+shape(ice7,rect, 581,338,312,[12,26,1.57079633]).
+shape(pig0,ball, 560.5,343,122,[6.25]).
+shape(pig1,ball, 639,299.5,122,[6.25]).
+shape(redbird0,ball, 186.5,330.5,78,[5]).
+shape(redbird1,ball, 135.5,375.5,95,[5.5]).
+shape(redbird2,ball, 119.5,375.5,95,[5.5]).
+shape(stone0,rect, 548.5,361.5,325,[13,25,0]).
+shape(stone1,rect, 561,352.5,344,[6.87654062,50.03814954,0.03141593]).
+shape(stone10,rect, 627.5,309,294,[6,49,0]).
+shape(stone12,rect, 639.5,318.5,325,[13,25,0]).
+shape(stone6,rect, 573.5,361.5,325,[13,25,0]).
+shape(stone9,rect, 615,318.5,312,[13,24,0]).
+shape(wood13,rect, 708,377,144,[12,12,0]).
+shape(wood14,rect, 720.5,377,132,[11,12,1.57079633]).
+shape(wood3,rect, 542,313,144,[12,12,0]).
+shape(wood5,rect, 561,313,144,[12,12,0]).
+shape(wood8,rect, 581,313,144,[12,12,0]).
+situation_name('situation6-2').
+slingshotPivot(185.64,334.26).
+structure(struct0).
+structure(struct1).
+structure(struct2).
+supports(ice11,wood14).
+supports(ice2,ice4).
+supports(ice2,wood14).
+supports(ice2,wood3).
+supports(ice2,wood5).
+supports(ice2,wood8).
+supports(ice4,ice7).
+supports(ice4,wood14).
+supports(ice4,wood5).
+supports(ice7,ice4).
+supports(ice7,wood14).
+supports(ice7,wood3).
+supports(ice7,wood5).
+supports(ice7,wood8).
+supports(stone0,ice2).
+supports(stone0,ice4).
+supports(stone0,ice7).
+supports(stone0,stone1).
+supports(stone0,wood14).
+supports(stone0,wood3).
+supports(stone0,wood5).
+supports(stone0,wood8).
+supports(stone1,wood14).
+supports(stone10,ice11).
+supports(stone10,wood14).
+supports(stone12,ice11).
+supports(stone12,wood14).
+supports(stone6,ice2).
+supports(stone6,ice4).
+supports(stone6,ice7).
+supports(stone6,stone1).
+supports(stone6,wood14).
+supports(stone6,wood3).
+supports(stone6,wood5).
+supports(stone6,wood8).
+supports(stone9,ice11).
+supports(stone9,stone10).
+supports(stone9,wood14).
+supports(wood13,wood14).
+supports(wood3,wood14).
+supports(wood5,wood14).
+supports(wood8,wood14).

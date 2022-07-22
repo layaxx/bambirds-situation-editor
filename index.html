@@ -7,6 +7,7 @@
   <script type="application/javascript" src="js/blocks.js"></script>
   <script type="application/javascript" src="js/images.js"></script>
   <script type="application/javascript" src="js/able.js"></script>
+  <script type="application/javascript" src="js/blockLookup.js"></script>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
 
@@ -206,6 +207,28 @@
     </div><br />
     <canvas oncontextmenu="return false;" id="canvas" width="800" height="480"
       style="background-color: white">&nbsp;</canvas><br />
+      <p>
+        <table style="background-color: white;">
+          <tbody>
+            <tr>
+              <th scope="row">Selected Object:</th>
+              <td id="selected-object-id">None</td>
+            </tr>
+            <tr>
+              <th scope="row">X Coordinate:</th>
+              <td><input type="number" id="selected-object-x" /></td>
+            </tr>
+            <tr>
+              <th scope="row">Y Coordinate:</th>
+              <td><input type="number" id="selected-object-y" /></td>
+            </tr>     
+            <tr>
+              <th scope="row">Scale:</th>
+              <td><input type="number" id="selected-object-s"></td>
+            </tr>        
+          </tbody>
+        </table>
+      </p>
     <font color="#FFFFFF">Artwork and data files (c) Rovio Mobile Ltd., </font>
     <b style="color:#FFFFFF;background-color:#ff9999">Editor</b>
     <font color="#FFFFFF"> by forcer.
