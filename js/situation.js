@@ -117,19 +117,29 @@ function exportFile(keepDerivedInformation = false) {
     }
     if (!obj.isBird) {
       predicates.push(
-        `hasMaterial(${obj.id}, "${obj.material ?? "purple"}", 1, 1, 1, 1).`
+        `hasMaterial(${obj.id}, ${obj.material ?? "purple"}, 1, 1, 1, 1).`
       )
     }
     predicates.push(
-      `shape(${obj.id}, ${obj.shape}, ${obj.x}, ${obj.y}, ${
-        obj.area
-      }, ${JSON.stringify(obj.params)}).`
+      `shape(${obj.id}, ${obj.shape}, ${obj.x}, ${obj.y}, ${getArea(
+        obj
+      )}, ${JSON.stringify(obj.params)}).`
     )
   }
 
   const text = predicates.sort((a, b) => a.localeCompare(b)).join("\n")
 
   $output.value = text
+}
+
+function getArea(object) {
+  if (object.shape === "rect") {
+    return object.params[0] * object.params[1]
+  }
+  if (object.shape === "ball") {
+    return Math.pow(object.params[0], 2) * Math.PI
+  }
+  return object.area
 }
 
 function loadFile(text) {
@@ -332,7 +342,6 @@ function getPredicateName(predicate) {
 }
 
 function drawPoly(id, color, points, cx, cy, a) {
-  console.log(points)
   //   <polygon points="200,10 250,190 160,210" style="fill:lime;stroke:purple;stroke-width:1" />
   const $polygon = document.createElementNS(
     "http://www.w3.org/2000/svg",
