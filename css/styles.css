@@ -1,0 +1,26 @@
+body {
+    background-attachment: fixed;
+    background-repeat: initial
+}
+
+textarea {
+    background-color: whitesmoke;
+    color: darkslategray;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+h1 {
+    color: white;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+main.container {
+    background-color: whitesmoke;
+    color: darkslategray;
+    padding-top: 1rem;
+}
+
+main>div {
+    padding: 0rem 2rem;
+}

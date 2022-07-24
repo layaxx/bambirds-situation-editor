@@ -1,3 +1,5 @@
 {
-  "cSpell.words": ["situationfile"]
+  "cSpell.words": ["esbuild", "outfile", "situationfile"],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
