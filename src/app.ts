@@ -7,13 +7,18 @@ import {
 } from "./objects/helper"
 import { redrawAll, redrawObjects } from "./output"
 import { exportFile } from "./output/prolog"
-import { snapToGrid } from "./output/svg"
+import { drawGrid, drawHorizontalLine, snapToGrid } from "./output/svg"
 import { updateTable } from "./output/table"
 import parse from "./parser/situationFileParser"
 
-var $situationfile: HTMLInputElement
+var $input: HTMLInputElement
 var $output: HTMLInputElement
-var $container: HTMLElement
+var $svgElements: {
+  $svg: HTMLElement
+  $groupBackground: SVGElement
+  $groupObjects: SVGElement
+  $groupOverlay: SVGElement
+}
 var $keepPredicates: HTMLInputElement
 var $tableElements: {
   id: HTMLElement
@@ -27,10 +32,10 @@ var selectedObject: IObject | undefined
 var scene: any
 
 function init() {
-  $situationfile = document.getElementById("situationfile") as HTMLInputElement
-  $container = document.getElementById("container") as HTMLElement
+  $input = document.getElementById("situationfile") as HTMLInputElement
+  const $container = document.getElementById("container") as HTMLElement
   $output = document.getElementById("output") as HTMLInputElement
-  if ($situationfile === null || $container === null || $output === null) {
+  if ($input === null || $container === null || $output === null) {
     console.error(
       "Failed to get required HTML Elements, missing at least one of $situationfile, $container, $output"
     )
@@ -64,6 +69,35 @@ function init() {
     )
   }
 
+  // Setup SVG Groups
+  const $groupBackground = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "g"
+  )
+  $groupBackground.setAttribute("id", "group-background")
+  const $groupObjects = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "g"
+  )
+  $groupObjects.setAttribute("id", "group-objects")
+  const $groupOverlay = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "g"
+  )
+  $groupOverlay.setAttribute("id", "group-overlay")
+  $container.append($groupBackground, $groupObjects, $groupOverlay)
+
+  $svgElements = {
+    $svg: $container,
+    $groupBackground,
+    $groupObjects,
+    $groupOverlay,
+  }
+
+  // setup SVG background
+  drawGrid()
+
+  // Setup SVG Scaling
   const slider = document.getElementById("zoomRange") as HTMLInputElement | null
   const zoomValue = document.getElementById("zoomValue")
   if (slider === null) {
@@ -83,14 +117,14 @@ function init() {
   setUpEventHandlers($container)
 
   const loadSituationFile = () => {
-    const loadResult = parse($situationfile.value)
+    const loadResult = parse($input.value)
     objects = loadResult.objects
     scene = loadResult.scene
 
     redrawAll()
   }
 
-  $situationfile.onblur = () => loadSituationFile()
+  $input.onblur = () => loadSituationFile()
   loadSituationFile()
 }
 
@@ -229,4 +263,4 @@ export function updateSelectedObject(obj?: IObject) {
   selectedObject = obj
 }
 
-export { $container, scene, objects, selectedObject, $tableElements, $output }
+export { $svgElements, scene, objects, selectedObject, $tableElements, $output }

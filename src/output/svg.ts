@@ -1,6 +1,6 @@
 import { redrawObjects } from "."
 import {
-  $container,
+  $svgElements,
   objects,
   selectedObject,
   updateSelectedObject,
@@ -10,28 +10,30 @@ import { getColorFromMaterial } from "../objects/helper"
 
 const gridSize: number = 10
 const defaultRadius: number = 10000
+const width = (): number => $svgElements.$svg.clientWidth
+const height = (): number => $svgElements.$svg.clientHeight
 
 export function drawGrid() {
   const style = "stroke:rgb(50,50,50);stroke-width:0.1"
 
-  for (var y = gridSize; y < $container.clientWidth; y += gridSize) {
+  for (var y = gridSize; y < width(); y += gridSize) {
     const $line = document.createElementNS("http://www.w3.org/2000/svg", "line")
     $line.setAttribute("x1", "" + y)
     $line.setAttribute("y1", "" + 0)
     $line.setAttribute("x2", "" + y)
-    $line.setAttribute("y2", "" + $container.clientHeight)
+    $line.setAttribute("y2", "" + height())
     $line.setAttribute("style", style)
-    $container.appendChild($line)
+    $svgElements.$groupBackground.appendChild($line)
   }
 
-  for (var y = gridSize; y < $container.clientHeight; y += gridSize) {
+  for (var y = gridSize; y < height(); y += gridSize) {
     const $line = document.createElementNS("http://www.w3.org/2000/svg", "line")
     $line.setAttribute("x1", "" + 0)
     $line.setAttribute("y1", "" + y)
-    $line.setAttribute("x2", "" + $container.clientWidth)
+    $line.setAttribute("x2", "" + width())
     $line.setAttribute("y2", "" + y)
     $line.setAttribute("style", style)
-    $container.appendChild($line)
+    $svgElements.$groupBackground.appendChild($line)
   }
 }
 
@@ -39,11 +41,11 @@ export function drawHorizontalLine(y: number) {
   const $line = document.createElementNS("http://www.w3.org/2000/svg", "line")
   $line.setAttribute("x1", "" + 0)
   $line.setAttribute("y1", "" + y)
-  $line.setAttribute("x2", "" + $container.clientWidth)
+  $line.setAttribute("x2", "" + width())
   $line.setAttribute("y2", "" + y)
   $line.setAttribute("style", "stroke:rgb(255,0,0);stroke-width:2")
 
-  $container.appendChild($line)
+  $svgElements.$groupBackground.appendChild($line)
 }
 
 export function drawPoly(
@@ -69,7 +71,7 @@ export function drawPoly(
   $polygon.setAttribute("id", "svg-" + id)
   configureEventHandlers($polygon, id)
 
-  $container.appendChild($polygon)
+  $svgElements.$groupObjects.appendChild($polygon)
 }
 
 function drawCircle(
@@ -95,7 +97,7 @@ function drawCircle(
   )
   configureEventHandlers($circle, id)
 
-  $container.appendChild($circle)
+  $svgElements.$groupObjects.appendChild($circle)
 }
 
 function rotShift(
