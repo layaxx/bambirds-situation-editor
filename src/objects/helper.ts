@@ -1,6 +1,5 @@
-import { selectedObject } from "../app"
 import { redrawObjects } from "../output"
-import { IObject } from "./data"
+import { IObject, Point } from "./types"
 
 export function getArea(object: IObject) {
   if (object.shape === "rect") {
@@ -59,8 +58,12 @@ export function _scaleObject(obj: IObject) {
   }
 }
 
-export function handleMoveObject(key: string, isHighSpeed?: boolean) {
-  if (!selectedObject) {
+export function handleMoveObject(
+  obj: IObject,
+  key: string,
+  isHighSpeed?: boolean
+) {
+  if (!obj) {
     return
   }
 
@@ -85,12 +88,12 @@ export function handleMoveObject(key: string, isHighSpeed?: boolean) {
       return
   }
 
-  translatePolyObject(selectedObject, xOffset, yOffset)
+  translatePolyObject(obj, xOffset, yOffset)
 
-  selectedObject.x += xOffset
-  selectedObject.y += yOffset
+  obj.x += xOffset
+  obj.y += yOffset
 
-  redrawObjects(selectedObject)
+  redrawObjects([obj])
 }
 
 export function translatePolyObject(
@@ -109,36 +112,44 @@ export function translatePolyObject(
   }
 }
 
-export function handleRotateObject(key: string, isHighSpeed?: boolean) {
-  if (!selectedObject) {
+export function handleRotateObject(
+  obj: IObject,
+  key: string,
+  isHighSpeed?: boolean
+) {
+  if (!obj) {
     return
   }
 
   const offset = 0.1 * (isHighSpeed ? 10 : 1)
-  if (!selectedObject.params || selectedObject.params[2] === undefined) {
-    console.error("Cannot rotate Object", selectedObject)
+  if (!obj.params || obj.params[2] === undefined) {
+    console.error("Cannot rotate Object", obj)
     return
   }
-  if (selectedObject.shape === "poly") {
+  if (obj.shape === "poly") {
     console.error("Cannot rotate poly objects")
   }
   switch (key) {
     case "ArrowLeft":
-      ;(selectedObject.params[2] as number) -= offset
+      ;(obj.params[2] as number) -= offset
       break
     case "ArrowRight":
-      ;(selectedObject.params[2] as number) += offset
+      ;(obj.params[2] as number) += offset
       break
     default:
       console.log("Unknown rotation direction: ", key, " ignoring.")
       return
   }
 
-  redrawObjects(selectedObject)
+  redrawObjects([obj])
 }
 
-export function handleScaleObject(key: string, isHighSpeed?: boolean) {
-  if (!selectedObject) {
+export function handleScaleObject(
+  obj: IObject,
+  key: string,
+  isHighSpeed?: boolean
+) {
+  if (!obj) {
     return
   }
 
@@ -146,17 +157,39 @@ export function handleScaleObject(key: string, isHighSpeed?: boolean) {
 
   switch (key) {
     case "ArrowUp":
-      selectedObject.scale += offset
-      _scaleObject(selectedObject)
+      obj.scale += offset
+      _scaleObject(obj)
       break
     case "ArrowDown":
-      selectedObject.scale -= offset
-      _scaleObject(selectedObject)
+      obj.scale -= offset
+      _scaleObject(obj)
       break
     default:
       console.log("Unknown scaling direction: ", key, " ignoring.")
       return
   }
 
-  redrawObjects(selectedObject)
+  redrawObjects([obj])
+}
+
+export function getObjectsWithinBoundary(
+  objects: IObject[],
+  upperLeft: Point,
+  lowerRight: Point
+) {
+  // by center point, because easier
+  const result: IObject[] = []
+
+  for (const object of objects) {
+    const isInBoundaryXAxis =
+      upperLeft.x <= object.x && object.x <= lowerRight.x
+    const isInBoundaryYAxis =
+      upperLeft.y <= object.y && object.y <= lowerRight.y
+    const isInBoundary = isInBoundaryXAxis && isInBoundaryYAxis
+    if (isInBoundary) {
+      result.push(object)
+    }
+  }
+
+  return result
 }

@@ -1,15 +1,23 @@
-import { IObject } from "./objects/data"
+import { IObject } from "./objects/types"
 import {
+  getObjectsWithinBoundary,
   handleMoveObject,
   handleRotateObject,
   handleScaleObject,
   translatePolyObject,
 } from "./objects/helper"
-import { redrawAll, redrawObjects } from "./output"
+import { redrawAll, redrawObjects, removeObjects } from "./output"
 import { exportFile } from "./output/prolog"
-import { drawGrid, drawHorizontalLine, snapToGrid } from "./output/svg"
-import { updateTable } from "./output/table"
+import {
+  drawGrid,
+  hideSelectionRectangle,
+  initializeSelectionRectangle,
+  setUpGroups,
+  snapToGrid,
+  updateSelectionRectangle,
+} from "./output/svg"
 import parse from "./parser/situationFileParser"
+import { updateTable } from "./output/table"
 
 var $input: HTMLInputElement
 var $output: HTMLInputElement
@@ -28,7 +36,7 @@ var $tableElements: {
   a: HTMLInputElement
 }
 var objects: IObject[]
-var selectedObject: IObject | undefined
+var selectedObjects: IObject[] = []
 var scene: any
 
 function init() {
@@ -69,30 +77,7 @@ function init() {
     )
   }
 
-  // Setup SVG Groups
-  const $groupBackground = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "g"
-  )
-  $groupBackground.setAttribute("id", "group-background")
-  const $groupObjects = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "g"
-  )
-  $groupObjects.setAttribute("id", "group-objects")
-  const $groupOverlay = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "g"
-  )
-  $groupOverlay.setAttribute("id", "group-overlay")
-  $container.append($groupBackground, $groupObjects, $groupOverlay)
-
-  $svgElements = {
-    $svg: $container,
-    $groupBackground,
-    $groupObjects,
-    $groupOverlay,
-  }
+  $svgElements = setUpGroups($container)
 
   // setup SVG background
   drawGrid()
@@ -121,7 +106,7 @@ function init() {
     objects = loadResult.objects
     scene = loadResult.scene
 
-    redrawAll()
+    redrawAll(objects)
   }
 
   $input.onblur = () => loadSituationFile()
@@ -142,42 +127,71 @@ function setUpEventHandlers(svg: HTMLElement) {
       return
     }
     event.preventDefault()
-    if (!selectedObject) {
+    if (!selectedObjects.length) {
       return
     }
     switch (event.key) {
       case "Delete":
-        const index = objects.findIndex(({ id }) => id === selectedObject?.id)
-        objects.splice(index, 1)
-        redrawObjects({ id: selectedObject.id } as IObject)
-        selectedObject = undefined
-        updateTable()
+        const indicesToBeDeleted: number[] = []
+
+        objects.forEach((obj, index) => {
+          if (selectedObjects.includes(obj)) indicesToBeDeleted.push(index)
+        })
+
+        const hasBeenDeleted: IObject[] = []
+
+        indicesToBeDeleted
+          .reverse()
+          .forEach((index) => hasBeenDeleted.push(...objects.splice(index, 1)))
+
+        removeObjects(hasBeenDeleted)
+        selectedObjects = []
+        updateTable(...selectedObjects)
         break
       case "ArrowLeft":
       case "ArrowRight":
         if (event.altKey) {
           // Rotate
-          handleRotateObject(event.key, event.ctrlKey)
+          if (selectedObjects.length > 1) {
+            console.warn(
+              "Cannot currently correctly handle multiple selected objects"
+            )
+          }
+          selectedObjects.forEach((obj) =>
+            handleRotateObject(obj, event.key, event.ctrlKey)
+          )
+          updateTable(...selectedObjects)
           break
         }
       case "ArrowUp":
       case "ArrowDown":
         if (event.altKey) {
           // Scale
-          handleScaleObject(event.key, event.ctrlKey)
+          if (selectedObjects.length > 1) {
+            console.warn(
+              "Cannot currently correctly handle multiple selected objects"
+            )
+          }
+          selectedObjects.forEach((obj) =>
+            handleScaleObject(obj, event.key, event.ctrlKey)
+          )
+          updateTable(...selectedObjects)
           break
         }
-        handleMoveObject(event.key, event.ctrlKey)
+        selectedObjects.forEach((obj) =>
+          handleMoveObject(obj, event.key, event.ctrlKey)
+        )
+        updateTable(...selectedObjects)
         break
       case "d":
         if (event.ctrlKey) {
           const newObject = {
-            ...selectedObject,
-            id: selectedObject.id + "d" + count,
+            ...selectedObjects[0],
+            id: selectedObjects[0].id + "d" + count,
           }
           count++
           objects.push(newObject)
-          redrawObjects(newObject, selectedObject)
+          redrawObjects(selectedObjects, [newObject])
         }
         break
     }
@@ -210,57 +224,109 @@ function setUpEventHandlers(svg: HTMLElement) {
   }
 
   var mouseStartPosition: { x: number; y: number },
-    preDragCoordinates: { x: number; y: number },
-    isDrag: boolean
+    preDragCoordinates: { x: number; y: number }[],
+    isDrag: boolean,
+    isSelect: boolean,
+    $selectionRectangle: SVGElement | undefined
 
   function startDrag(event: MouseEvent | TouchEvent) {
+    if (event.ctrlKey) return
     if (
       !event.target ||
       (event.target as HTMLElement).tagName === "svg" ||
-      !selectedObject
-    )
+      !selectedObjects
+    ) {
+      if (event.target && (event.target as HTMLElement).tagName === "svg") {
+        isSelect = true
+        mouseStartPosition = getMousePosition(event)
+        $selectionRectangle = initializeSelectionRectangle(
+          mouseStartPosition.x,
+          mouseStartPosition.y
+        )
+        console.log("Start selecting")
+      }
       return
+    }
 
     console.log("start drag")
-    const { x, y } = selectedObject
-    preDragCoordinates = { x, y }
+    preDragCoordinates = selectedObjects.map(({ x, y }) => ({ x, y }))
     isDrag = true
     mouseStartPosition = getMousePosition(event)
   }
 
   function drag(event: MouseEvent | TouchEvent) {
-    if (selectedObject && isDrag) {
+    if (isSelect) {
+      event.preventDefault()
+      var currentMousePosition = getMousePosition(event)
+      updateSelectionRectangle(
+        $selectionRectangle!,
+        mouseStartPosition,
+        currentMousePosition
+      )
+    }
+    if (selectedObjects && isDrag) {
       event.preventDefault()
       var currentMousePosition = getMousePosition(event)
 
-      var newX =
-        preDragCoordinates.x + (currentMousePosition.x - mouseStartPosition.x)
-      var newY =
-        preDragCoordinates.y + (currentMousePosition.y - mouseStartPosition.y)
+      selectedObjects.forEach((object, index) => {
+        var newX =
+          preDragCoordinates[index].x +
+          (currentMousePosition.x - mouseStartPosition.x)
+        var newY =
+          preDragCoordinates[index].y +
+          (currentMousePosition.y - mouseStartPosition.y)
 
-      if (event.ctrlKey) {
-        newX = snapToGrid(newX)
-        newY = snapToGrid(newY)
-      }
+        if (event.ctrlKey) {
+          newX = snapToGrid(newX)
+          newY = snapToGrid(newY)
+        }
 
-      const xOffset = newX - selectedObject.x
-      const yOffset = newY - selectedObject.y
-      selectedObject.x = newX
-      selectedObject.y = newY
-      if (selectedObject.shape === "poly") {
-        translatePolyObject(selectedObject, xOffset, yOffset)
-      }
-      redrawObjects(selectedObject)
+        const xOffset = newX - object.x
+        const yOffset = newY - object.y
+        object.x = newX
+        object.y = newY
+        if (object.shape === "poly") {
+          translatePolyObject(object, xOffset, yOffset)
+        }
+      })
+      redrawObjects(selectedObjects)
     }
   }
 
-  function endDrag() {
+  function endDrag(event: MouseEvent | TouchEvent) {
+    if (isSelect) {
+      // Add all objects inside rectangle to selectedObjects
+      const currentMousePosition = getMousePosition(event)
+      const upperLeftCorner = {
+        x: Math.min(currentMousePosition.x, mouseStartPosition.x),
+        y: Math.min(currentMousePosition.y, mouseStartPosition.y),
+      }
+      const lowerRightCorner = {
+        x: Math.max(currentMousePosition.x, mouseStartPosition.x),
+        y: Math.max(currentMousePosition.y, mouseStartPosition.y),
+      }
+      updateSelectedObject(
+        getObjectsWithinBoundary(objects, upperLeftCorner, lowerRightCorner)
+      )
+      hideSelectionRectangle($selectionRectangle)
+    }
     isDrag = false
+    isSelect = false
   }
 }
 
-export function updateSelectedObject(obj?: IObject) {
-  selectedObject = obj
+export function updateSelectedObject(objs: IObject[]) {
+  const oldSelectedObject = [...selectedObjects]
+  selectedObjects = [...objs]
+  redrawObjects(selectedObjects, oldSelectedObject)
+  updateTable(...selectedObjects)
 }
 
-export { $svgElements, scene, objects, selectedObject, $tableElements, $output }
+export {
+  $svgElements,
+  scene,
+  objects,
+  selectedObjects,
+  $tableElements,
+  $output,
+}

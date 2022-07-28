@@ -1,17 +1,38 @@
 import { redrawObjects } from "."
-import {
-  $svgElements,
-  objects,
-  selectedObject,
-  updateSelectedObject,
-} from "../app"
-import { IObject } from "../objects/data"
+import { $svgElements, selectedObjects, updateSelectedObject } from "../app"
+import { IObject } from "../objects/types"
 import { getColorFromMaterial } from "../objects/helper"
 
 const gridSize: number = 10
 const defaultRadius: number = 10000
 const width = (): number => $svgElements.$svg.clientWidth
 const height = (): number => $svgElements.$svg.clientHeight
+
+export function setUpGroups($svg: HTMLElement) {
+  const $groupBackground = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "g"
+  )
+  $groupBackground.setAttribute("id", "group-background")
+  const $groupObjects = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "g"
+  )
+  $groupObjects.setAttribute("id", "group-objects")
+  const $groupOverlay = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "g"
+  )
+  $groupOverlay.setAttribute("id", "group-overlay")
+  $svg.append($groupBackground, $groupObjects, $groupOverlay)
+
+  return {
+    $svg,
+    $groupBackground,
+    $groupObjects,
+    $groupOverlay,
+  }
+}
 
 export function drawGrid() {
   const style = "stroke:rgb(50,50,50);stroke-width:0.1"
@@ -49,7 +70,7 @@ export function drawHorizontalLine(y: number) {
 }
 
 export function drawPoly(
-  id: string,
+  object: IObject,
   color: string,
   points: { x: number; y: number }[]
 ) {
@@ -65,17 +86,17 @@ export function drawPoly(
   $polygon.setAttribute(
     "style",
     `fill:${
-      selectedObject && selectedObject.id === id ? "red" : color
+      selectedObjects.includes(object) ? "red" : color
     };stroke:rgb(0,0,0);stroke-width:0.5`
   )
-  $polygon.setAttribute("id", "svg-" + id)
-  configureEventHandlers($polygon, id)
+  $polygon.setAttribute("id", "svg-" + object.id)
+  configureEventHandlers($polygon, object)
 
   $svgElements.$groupObjects.appendChild($polygon)
 }
 
 function drawCircle(
-  id: string,
+  object: IObject,
   color: string,
   cx: number,
   cy: number,
@@ -88,14 +109,14 @@ function drawCircle(
   $circle.setAttribute("cx", "" + cx)
   $circle.setAttribute("cy", "" + cy)
   $circle.setAttribute("r", "" + radius)
-  $circle.setAttribute("id", "svg-" + id)
+  $circle.setAttribute("id", "svg-" + object.id)
   $circle.setAttribute(
     "style",
     `fill:${
-      selectedObject && selectedObject.id === id ? "red" : color
+      selectedObjects.includes(object) ? "red" : color
     };stroke:rgb(0,0,0);stroke-width:0.5`
   )
-  configureEventHandlers($circle, id)
+  configureEventHandlers($circle, object)
 
   $svgElements.$groupObjects.appendChild($circle)
 }
@@ -130,15 +151,11 @@ export function drawShape(obj: IObject) {
         [XRa, YRa],
         [XRa, -YRa],
       ]).map(([x, y]: [number, number]) => ({ x, y }))
-      drawPoly(
-        obj.id,
-        getColorFromMaterial(obj.material) ?? "lightgray",
-        points_
-      )
+      drawPoly(obj, getColorFromMaterial(obj.material) ?? "lightgray", points_)
       break
     case "ball":
       drawCircle(
-        obj.id,
+        obj,
         getColorFromMaterial(obj.material) ?? obj.color ?? "purple",
         obj.x,
         obj.y,
@@ -147,29 +164,47 @@ export function drawShape(obj: IObject) {
       break
     case "poly":
       const [_, ...points] = obj.params
-      console.log(points)
       drawPoly(
-        obj.id,
+        obj,
         getColorFromMaterial(obj.material) ?? "lightgray",
         (points as [number, number][]).map(([x, y]) => ({ x, y }))
       )
       break
     case "unknown":
       console.log("draw unknown shape")
-      drawCircle(obj.id, obj.material, obj.x, obj.y, defaultRadius)
+      drawCircle(obj, obj.material, obj.x, obj.y, defaultRadius)
       break
     default:
       console.log("Not sure how to draw", obj)
   }
 }
 
-function configureEventHandlers($element: SVGElement, id: string) {
-  const obj = objects.find(({ id: id_ }) => id === id_)
-  $element.onmousedown = () => {
-    if (obj === selectedObject) return
-    const oldSelectedObject = selectedObject
-    updateSelectedObject(obj)
-    redrawObjects(oldSelectedObject, obj)
+function configureEventHandlers($element: SVGElement, object: IObject) {
+  if (!object) {
+    console.error("Failed to set up event handlers for ", object)
+    return
+  }
+  $element.onmousedown = (event) => {
+    const indexIfSelected = selectedObjects.indexOf(object)
+
+    console.log(indexIfSelected)
+
+    const oldSelectedObject = [...selectedObjects]
+    if (event.ctrlKey) {
+      if (indexIfSelected !== -1) {
+        // deselect
+        selectedObjects.splice(indexIfSelected, 1)
+        console.log("deselect Object")
+      } else {
+        // add to selection
+        selectedObjects.push(object)
+        console.log("add Object to selection")
+      }
+    } else {
+      if (indexIfSelected !== -1) return
+      updateSelectedObject([object])
+    }
+    redrawObjects([object], oldSelectedObject)
   }
 }
 
@@ -179,4 +214,58 @@ export function snapToGrid(coordinate: number) {
     return coordinate - rest
   }
   return coordinate + (gridSize - rest)
+}
+
+export function initializeSelectionRectangle(x: number, y: number): SVGElement {
+  const $selectionRectangle = getSelectionRectangle()
+  $selectionRectangle.removeAttribute("hidden")
+  $selectionRectangle.setAttribute("width", "1")
+  $selectionRectangle.setAttribute("height", "1")
+  $selectionRectangle.setAttribute("x", "" + x)
+  $selectionRectangle.setAttribute("y", "" + y)
+  $selectionRectangle.setAttribute(
+    "style",
+    "stroke-width:1;stroke:purple;fill-opacity:.1"
+  )
+  $svgElements.$groupOverlay.appendChild($selectionRectangle)
+
+  return $selectionRectangle
+}
+
+export function updateSelectionRectangle(
+  $selectionRectangle: SVGElement,
+  start: { x: number; y: number },
+  end: { x: number; y: number }
+) {
+  // via https://stackoverflow.com/a/61221651
+  $selectionRectangle.setAttribute("x", "" + Math.min(start.x, end.x))
+  $selectionRectangle.setAttribute("y", "" + Math.min(start.y, end.y))
+  $selectionRectangle.setAttribute("width", "" + Math.abs(start.x - end.x))
+  $selectionRectangle.setAttribute("height", "" + Math.abs(start.y - end.y))
+}
+
+function getSelectionRectangle() {
+  const $existingRectangle = $svgElements.$groupOverlay.querySelector(
+    "#selectionRectangle"
+  ) as SVGAElement | null
+  if ($existingRectangle) {
+    return $existingRectangle
+  }
+
+  const $newRectangle = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "rect"
+  )
+  $newRectangle.setAttribute("style", "stroke-width:1;stroke:purple")
+  $newRectangle.setAttribute("id", "selectionRectangle")
+  $svgElements.$groupOverlay.appendChild($newRectangle)
+
+  return $newRectangle
+}
+
+export function hideSelectionRectangle($rectangle: SVGElement | undefined) {
+  if (!$rectangle) {
+    return
+  }
+  $rectangle.setAttribute("hidden", "true")
 }

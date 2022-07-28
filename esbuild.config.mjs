@@ -6,6 +6,7 @@ esbuildServe(
     entryPoints: ["src/app.ts"],
     bundle: true,
     outfile: "build/main.js",
+    sourcemap: true,
   },
   { root: "./" }
 )

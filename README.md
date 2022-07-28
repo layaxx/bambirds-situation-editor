@@ -14,7 +14,7 @@ Controls are described on the page
 
 ## TODO
 
-- Multi Object Selection
+- Multi Object Selection [mostly done, multi-scaling and multi-rotating not perfect]
 - Allow adding new Objects (not just duplicating existing objects)
 - Case Based Reasoning Visualizations:
   - Load DB and visualize Cases

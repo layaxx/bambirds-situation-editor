@@ -1,28 +1,39 @@
-import { $svgElements, objects, scene, selectedObject } from "../app"
-import { IObject } from "../objects/data"
+import { $svgElements, scene, selectedObjects } from "../app"
+import { IObject } from "../objects/types"
 import { drawHorizontalLine, drawShape } from "./svg"
 import { updateTable } from "./table"
 
-export function redrawAll() {
+export function redrawAll(objects: IObject[]) {
+  console.log(objects.length)
   $svgElements.$groupObjects.replaceChildren()
 
   drawHorizontalLine(scene.groundY)
   objects.forEach(drawShape)
-  updateTable(selectedObject)
+  updateTable(...selectedObjects)
 }
 
-export function redrawObjects(...objects: (IObject | undefined)[]) {
-  for (var object of objects) {
-    if (!object) continue
-    try {
-      const toBeRemoved = $svgElements.$groupObjects.querySelector(
-        "#svg-" + object.id
-      )
-      if (toBeRemoved !== null) {
-        $svgElements.$groupObjects.removeChild(toBeRemoved)
-      }
-    } catch {}
+export function removeObjects(objects: IObject[]) {
+  objects.forEach(removeObject)
+}
+
+function removeObject(object: IObject) {
+  try {
+    const toBeRemoved = $svgElements.$groupObjects.querySelector(
+      "#svg-" + object.id
+    )
+    if (toBeRemoved !== null) {
+      toBeRemoved.setAttribute("hidden", "true")
+      $svgElements.$groupObjects.removeChild(toBeRemoved)
+    }
+  } catch {}
+}
+
+export function redrawObjects(
+  selectedObjects: IObject[],
+  unselectedObjects: IObject[] = []
+) {
+  for (var object of [...selectedObjects, ...unselectedObjects]) {
+    removeObject(object)
     drawShape(object)
   }
-  updateTable(objects[objects.length - 1])
 }

@@ -1,40 +1,71 @@
 import { redrawObjects } from "."
 import { $tableElements } from "../app"
-import { IObject } from "../objects/data"
+import { IObject } from "../objects/types"
 import { _scaleObject } from "../objects/helper"
 
-export function updateTable(obj?: IObject) {
-  $tableElements.id.innerText = (obj && obj.id) || "None selected"
-  $tableElements.x.value = "" + (obj ? obj.x : "")
+export function updateTable(...objs: IObject[]) {
+  const isMultiple = objs.length > 1
+
+  if (isMultiple) {
+    $tableElements.id.innerText = "Multiple Objects selected"
+    disableInputs()
+    return
+  }
+
+  const [object] = objs
+
+  if (!object) {
+    $tableElements.id.innerText = "None selected"
+    disableInputs()
+    return
+  }
+
+  enableInputs()
+
+  $tableElements.id.innerText = object.id
+  $tableElements.x.value = "" + object.x
   $tableElements.x.onchange = (event) => {
-    if (!obj) return
-    obj.x = parseFloat((event.target as HTMLInputElement)?.value)
-    redrawObjects(obj)
+    object.x = parseFloat((event.target as HTMLInputElement)?.value)
+    redrawObjects([object])
   }
-  $tableElements.y.value = "" + (obj ? obj.y : "")
+  $tableElements.y.value = "" + object.y
   $tableElements.y.onchange = (event) => {
-    if (!obj) return
-    obj.y = parseFloat((event.target as HTMLInputElement)?.value)
-    redrawObjects(obj)
+    object.y = parseFloat((event.target as HTMLInputElement)?.value)
+    redrawObjects([object])
   }
-  $tableElements.s.value = "" + (obj ? obj.scale : "")
+  $tableElements.s.value = "" + object.scale
   $tableElements.s.onchange = (event) => {
-    if (!obj) return
-    obj.scale = parseFloat((event.target as HTMLInputElement)?.value)
-    _scaleObject(obj)
-    redrawObjects(obj)
+    object.scale = parseFloat((event.target as HTMLInputElement)?.value)
+    _scaleObject(object)
+    redrawObjects([object])
   }
   $tableElements.a.value =
-    "" + (obj && obj.shape === "rect" ? obj.params[2] : "")
+    "" + (object.shape === "rect" ? object.params[2] : "")
   $tableElements.a.onchange = (event) => {
-    if (!obj) return
-    if (!obj.params || obj.params[2] === undefined) {
-      console.error("Cannot rotate Object", obj)
+    if (!object.params || object.params[2] === undefined) {
+      console.error("Cannot rotate Object", object)
       return
     }
+    object.params[2] = parseFloat((event.target as HTMLInputElement)?.value)
 
-    obj.params[2] = parseFloat((event.target as HTMLInputElement)?.value)
-
-    redrawObjects(obj)
+    redrawObjects([object])
   }
+}
+
+function disableInputs() {
+  $tableElements.x.value = ""
+  $tableElements.x.setAttribute("disabled", "true")
+  $tableElements.y.value = ""
+  $tableElements.y.setAttribute("disabled", "true")
+  $tableElements.s.value = ""
+  $tableElements.s.setAttribute("disabled", "true")
+  $tableElements.a.value = ""
+  $tableElements.a.setAttribute("disabled", "true")
+}
+
+function enableInputs() {
+  $tableElements.x.removeAttribute("disabled")
+  $tableElements.y.removeAttribute("disabled")
+  $tableElements.s.removeAttribute("disabled")
+  $tableElements.a.removeAttribute("disabled")
 }

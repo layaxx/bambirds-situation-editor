@@ -13,3 +13,8 @@ export interface IObject {
   params: (number | number[])[]
   unscaledParams: (number | number[])[]
 }
+
+export type Point = {
+  x: number
+  y: number
+}
