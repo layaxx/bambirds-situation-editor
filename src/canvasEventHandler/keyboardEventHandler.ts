@@ -9,6 +9,7 @@ import {
   getCenterFromObjects,
   handleScaleObject,
   handleMoveObject,
+  _scaleObject,
 } from "../objects/helper"
 import { removeObjects, redrawObjects, updateCenter } from "../output"
 import { updateTable } from "../output/table"
@@ -61,7 +62,28 @@ export function setUpKeyboardEventHandlers() {
               center.y + Math.sin(angle) * vector.x + Math.cos(angle) * vector.y
 
             if (object.shape === "poly") {
-              console.error("Cannot rotate poly objects")
+              const [first, ...rest] = object.unscaledParams
+              object.unscaledParams = [
+                first,
+                ...rest.map((input) => {
+                  if (typeof input === "number") {
+                    return [1, 1]
+                  }
+                  const [x1, y1] = input
+                  const vector = { x: x1 - center.x, y: y1 - center.y }
+                  const newX =
+                    center.x +
+                    Math.cos(angle) * vector.x -
+                    Math.sin(angle) * vector.y
+                  const newY =
+                    center.y +
+                    Math.sin(angle) * vector.x +
+                    Math.cos(angle) * vector.y
+
+                  return [newX, newY]
+                }),
+              ]
+              _scaleObject(object)
             } else if (object.shape == "ball") {
               // dont need to rotate balls
             } else if (!object.params || object.params[2] === undefined) {
