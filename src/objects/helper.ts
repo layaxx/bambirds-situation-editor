@@ -1,5 +1,3 @@
-import { $svgElements } from "../app"
-import { redrawObjects } from "../output"
 import { IObject, Point } from "../types"
 
 export function getArea(object: IObject) {
@@ -10,25 +8,6 @@ export function getArea(object: IObject) {
     return Math.pow(object.params[0] as number, 2) * Math.PI
   }
   return object.area
-}
-
-export function getColorFromMaterial(
-  material: string | undefined
-): string | undefined {
-  switch (material) {
-    case "ice":
-      return "#99B3FF"
-    case "stone":
-      return "#808080"
-    case "wood":
-      return "#E6991A"
-    case "pork":
-      return "#1AFF1A"
-    case "tnt":
-      return "#E6E600"
-    default:
-      return material
-  }
 }
 
 export function _scaleObject(obj: IObject) {

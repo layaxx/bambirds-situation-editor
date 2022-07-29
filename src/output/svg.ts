@@ -1,7 +1,16 @@
-import { redrawObjects } from "."
 import { $svgElements, selectedObjects, updateSelectedObjects } from "../app"
 import { IObject, Point } from "../types"
-import { getCenterFromObjects, getColorFromMaterial } from "../objects/helper"
+import { getCenterFromObjects } from "../objects/helper"
+import {
+  CENTER_CROSS_COLOR,
+  CIRCLE_STROKE_COLOR,
+  FALLBACK_COLOR,
+  getColorFromMaterial,
+  GRID_COLOR,
+  HORIZON_LINE_COLOR,
+  SELECTED_OBJECT_COLOR,
+  SELECTION_RECTANGLE_COLOR,
+} from "../objects/colors"
 
 const gridSize: number = 10
 const defaultRadius: number = 10000
@@ -35,7 +44,7 @@ export function setUpGroups($svg: HTMLElement) {
 }
 
 export function drawGrid() {
-  const style = "stroke:rgb(50,50,50);stroke-width:0.1"
+  const style = `stroke:${GRID_COLOR};stroke-width:0.1`
 
   for (var y = gridSize; y < width(); y += gridSize) {
     const $line = document.createElementNS("http://www.w3.org/2000/svg", "line")
@@ -64,7 +73,7 @@ export function drawHorizontalLine(y: number) {
   $line.setAttribute("y1", "" + y)
   $line.setAttribute("x2", "" + width())
   $line.setAttribute("y2", "" + y)
-  $line.setAttribute("style", "stroke:rgb(255,0,0);stroke-width:2")
+  $line.setAttribute("style", `stroke:${HORIZON_LINE_COLOR};stroke-width:2`)
 
   $svgElements.$groupBackground.appendChild($line)
 }
@@ -74,7 +83,6 @@ export function drawPoly(
   color: string,
   points: { x: number; y: number }[]
 ) {
-  //   <polygon points="200,10 250,190 160,210" style="fill:lime;stroke:purple;stroke-width:1" />
   const $polygon = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "polygon"
@@ -86,8 +94,8 @@ export function drawPoly(
   $polygon.setAttribute(
     "style",
     `fill:${
-      selectedObjects.includes(object) ? "red" : color
-    };stroke:rgb(0,0,0);stroke-width:0.5`
+      selectedObjects.includes(object) ? SELECTED_OBJECT_COLOR : color
+    };stroke:${CIRCLE_STROKE_COLOR};stroke-width:0.5`
   )
   $polygon.setAttribute("id", "svg-" + object.id)
   configureEventHandlers($polygon, object)
@@ -113,8 +121,8 @@ function drawCircle(
   $circle.setAttribute(
     "style",
     `fill:${
-      selectedObjects.includes(object) ? "red" : color
-    };stroke:rgb(0,0,0);stroke-width:0.5`
+      selectedObjects.includes(object) ? SELECTED_OBJECT_COLOR : color
+    };stroke:${CIRCLE_STROKE_COLOR};stroke-width:0.5`
   )
   configureEventHandlers($circle, object)
 
@@ -151,12 +159,16 @@ export function drawShape(obj: IObject) {
         [XRa, YRa],
         [XRa, -YRa],
       ]).map(([x, y]: [number, number]) => ({ x, y }))
-      drawPoly(obj, getColorFromMaterial(obj.material) ?? "lightgray", points_)
+      drawPoly(
+        obj,
+        getColorFromMaterial(obj.material) ?? FALLBACK_COLOR,
+        points_
+      )
       break
     case "ball":
       drawCircle(
         obj,
-        getColorFromMaterial(obj.material) ?? obj.color ?? "purple",
+        getColorFromMaterial(obj.material) ?? obj.color ?? FALLBACK_COLOR,
         obj.x,
         obj.y,
         (obj.params[0] as number | undefined) ?? defaultRadius
@@ -166,7 +178,7 @@ export function drawShape(obj: IObject) {
       const [_, ...points] = obj.params
       drawPoly(
         obj,
-        getColorFromMaterial(obj.material) ?? "lightgray",
+        getColorFromMaterial(obj.material) ?? FALLBACK_COLOR,
         (points as [number, number][]).map(([x, y]) => ({ x, y }))
       )
       break
@@ -187,9 +199,6 @@ function configureEventHandlers($element: SVGElement, object: IObject) {
   $element.onmousedown = (event) => {
     const indexIfSelected = selectedObjects.indexOf(object)
 
-    console.log(indexIfSelected)
-
-    const oldSelectedObject = [...selectedObjects]
     if (event.ctrlKey) {
       if (indexIfSelected !== -1) {
         // deselect
@@ -224,7 +233,7 @@ export function initializeSelectionRectangle(x: number, y: number): SVGElement {
   $selectionRectangle.setAttribute("y", "" + y)
   $selectionRectangle.setAttribute(
     "style",
-    "stroke-width:1;stroke:purple;fill-opacity:.1"
+    "stroke-width:1;stroke:" + SELECTION_RECTANGLE_COLOR + ";fill-opacity:.1"
   )
   $svgElements.$groupOverlay.appendChild($selectionRectangle)
 
@@ -255,7 +264,6 @@ function getSelectionRectangle() {
     "http://www.w3.org/2000/svg",
     "rect"
   )
-  $newRectangle.setAttribute("style", "stroke-width:1;stroke:purple")
   $newRectangle.setAttribute("id", "selectionRectangle")
   $svgElements.$groupOverlay.appendChild($newRectangle)
 
@@ -284,7 +292,7 @@ export function showCenter(objects: IObject[]) {
 
 function drawCrossAt({ x, y }: Point) {
   const crossSize = 20
-  const style = "stroke:black;stroke-width:2;opacity:.4"
+  const style = "stroke:" + CENTER_CROSS_COLOR + ";stroke-width:2;opacity:.4"
 
   const $horizontalLine = document.createElementNS(
     "http://www.w3.org/2000/svg",
