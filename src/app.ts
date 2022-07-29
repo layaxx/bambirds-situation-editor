@@ -1,18 +1,20 @@
-import { IObject } from "./objects/types"
+import { IObject, Point } from "./objects/types"
 import {
+  getCenterFromObjects,
   getObjectsWithinBoundary,
   handleMoveObject,
   handleRotateObject,
   handleScaleObject,
   translatePolyObject,
 } from "./objects/helper"
-import { redrawAll, redrawObjects, removeObjects } from "./output"
+import { redrawAll, redrawObjects, removeObjects, updateCenter } from "./output"
 import { exportFile } from "./output/prolog"
 import {
   drawGrid,
   hideSelectionRectangle,
   initializeSelectionRectangle,
   setUpGroups,
+  showCenter,
   snapToGrid,
   updateSelectionRectangle,
 } from "./output/svg"
@@ -119,6 +121,11 @@ function setUpEventHandlers(svg: HTMLElement) {
   /* CONTROLS */
   document.addEventListener("keydown", handleKeyPress)
 
+  var multiZoom: { vectors: Point[]; origins: Point[]; level: number } = {
+    vectors: [],
+    origins: [],
+    level: 1,
+  }
   var count = 0
   function handleKeyPress(event: KeyboardEvent) {
     if (
@@ -147,6 +154,7 @@ function setUpEventHandlers(svg: HTMLElement) {
         removeObjects(hasBeenDeleted)
         selectedObjects = []
         updateTable(...selectedObjects)
+        updateCenter([])
         break
       case "ArrowLeft":
       case "ArrowRight":
@@ -161,6 +169,7 @@ function setUpEventHandlers(svg: HTMLElement) {
             handleRotateObject(obj, event.key, event.ctrlKey)
           )
           updateTable(...selectedObjects)
+          updateCenter(selectedObjects)
           break
         }
       case "ArrowUp":
@@ -172,9 +181,15 @@ function setUpEventHandlers(svg: HTMLElement) {
               "Cannot currently correctly handle multiple selected objects"
             )
           }
-          selectedObjects.forEach((obj) =>
+          multiZoom.level += event.key === "ArrowUp" ? +0.1 : -0.1
+          selectedObjects.forEach((obj, index) => {
             handleScaleObject(obj, event.key, event.ctrlKey)
-          )
+            const center = getCenterFromObjects(selectedObjects)
+            if (selectedObjects.length > 1) {
+              obj.x = center.x + multiZoom.level * multiZoom.vectors[index].x
+              obj.y = center.y + multiZoom.level * multiZoom.vectors[index].y
+            }
+          })
           updateTable(...selectedObjects)
           break
         }
@@ -182,6 +197,7 @@ function setUpEventHandlers(svg: HTMLElement) {
           handleMoveObject(obj, event.key, event.ctrlKey)
         )
         updateTable(...selectedObjects)
+        updateCenter(selectedObjects)
         break
       case "d":
         if (event.ctrlKey) {
@@ -290,6 +306,7 @@ function setUpEventHandlers(svg: HTMLElement) {
         }
       })
       redrawObjects(selectedObjects)
+      updateCenter(selectedObjects)
     }
   }
 
@@ -305,9 +322,26 @@ function setUpEventHandlers(svg: HTMLElement) {
         x: Math.max(currentMousePosition.x, mouseStartPosition.x),
         y: Math.max(currentMousePosition.y, mouseStartPosition.y),
       }
-      updateSelectedObject(
-        getObjectsWithinBoundary(objects, upperLeftCorner, lowerRightCorner)
+      const newSelectedObjects = getObjectsWithinBoundary(
+        objects,
+        upperLeftCorner,
+        lowerRightCorner
       )
+      updateSelectedObject(newSelectedObjects)
+      const center = getCenterFromObjects(newSelectedObjects)
+      multiZoom = {
+        vectors: newSelectedObjects.map(({ x, y }) => ({
+          x: x - center.x,
+          y: y - center.y,
+        })),
+        origins: newSelectedObjects.map(({ x, y }) => ({ x, y })),
+        level:
+          newSelectedObjects.reduce(
+            (accumulator, current) => accumulator + current.scale,
+            0
+          ) / newSelectedObjects.length,
+      }
+      console.log(multiZoom)
       hideSelectionRectangle($selectionRectangle)
     }
     isDrag = false
@@ -319,6 +353,9 @@ export function updateSelectedObject(objs: IObject[]) {
   const oldSelectedObject = [...selectedObjects]
   selectedObjects = [...objs]
   redrawObjects(selectedObjects, oldSelectedObject)
+
+  updateCenter(selectedObjects)
+
   updateTable(...selectedObjects)
 }
 

@@ -1,6 +1,6 @@
 import { $svgElements, scene, selectedObjects } from "../app"
 import { IObject } from "../objects/types"
-import { drawHorizontalLine, drawShape } from "./svg"
+import { drawHorizontalLine, drawShape, showCenter } from "./svg"
 import { updateTable } from "./table"
 
 export function redrawAll(objects: IObject[]) {
@@ -22,7 +22,6 @@ function removeObject(object: IObject) {
       "#svg-" + object.id
     )
     if (toBeRemoved !== null) {
-      toBeRemoved.setAttribute("hidden", "true")
       $svgElements.$groupObjects.removeChild(toBeRemoved)
     }
   } catch {}
@@ -36,4 +35,14 @@ export function redrawObjects(
     removeObject(object)
     drawShape(object)
   }
+}
+
+export function updateCenter(objects: IObject[]) {
+  try {
+    const toBeRemoved = $svgElements.$groupOverlay.querySelector("#svg-center")
+    if (toBeRemoved !== null) {
+      $svgElements.$groupOverlay.removeChild(toBeRemoved)
+    }
+    showCenter(objects)
+  } catch {}
 }

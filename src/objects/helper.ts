@@ -1,3 +1,4 @@
+import { $svgElements } from "../app"
 import { redrawObjects } from "../output"
 import { IObject, Point } from "./types"
 
@@ -192,4 +193,20 @@ export function getObjectsWithinBoundary(
   }
 
   return result
+}
+
+export function getCenterFromObjects(objects: IObject[]): Point {
+  var minX = Number.MAX_VALUE
+  var maxX = 0
+  var minY = Number.MAX_VALUE
+  var maxY = 0
+
+  objects.forEach((object) => {
+    minX = Math.min(object.x, minX)
+    maxX = Math.max(object.x, maxX)
+    minY = Math.min(object.y, minY)
+    maxY = Math.max(object.y, maxY)
+  })
+
+  return { x: (minX + maxX) / 2, y: (minY + maxY) / 2 }
 }

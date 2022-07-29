@@ -1,7 +1,7 @@
 import { redrawObjects } from "."
 import { $svgElements, selectedObjects, updateSelectedObject } from "../app"
-import { IObject } from "../objects/types"
-import { getColorFromMaterial } from "../objects/helper"
+import { IObject, Point } from "../objects/types"
+import { getCenterFromObjects, getColorFromMaterial } from "../objects/helper"
 
 const gridSize: number = 10
 const defaultRadius: number = 10000
@@ -193,18 +193,17 @@ function configureEventHandlers($element: SVGElement, object: IObject) {
     if (event.ctrlKey) {
       if (indexIfSelected !== -1) {
         // deselect
-        selectedObjects.splice(indexIfSelected, 1)
+        updateSelectedObject(selectedObjects.filter((obj) => obj !== object))
         console.log("deselect Object")
       } else {
         // add to selection
-        selectedObjects.push(object)
+        updateSelectedObject([...selectedObjects, object])
         console.log("add Object to selection")
       }
     } else {
       if (indexIfSelected !== -1) return
       updateSelectedObject([object])
     }
-    redrawObjects([object], oldSelectedObject)
   }
 }
 
@@ -268,4 +267,49 @@ export function hideSelectionRectangle($rectangle: SVGElement | undefined) {
     return
   }
   $rectangle.setAttribute("hidden", "true")
+}
+
+export function showCenter(objects: IObject[]) {
+  if (!objects.length) return
+
+  if (objects.length === 1) {
+    const [{ x, y }] = objects
+    drawCrossAt({ x, y })
+    return
+  }
+
+  const { x, y } = getCenterFromObjects(objects)
+  drawCrossAt({ x, y })
+}
+
+function drawCrossAt({ x, y }: Point) {
+  const crossSize = 20
+  const style = "stroke:black;stroke-width:2;opacity:.4"
+
+  const $horizontalLine = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "line"
+  )
+  $horizontalLine.setAttribute("x1", "" + (x - crossSize))
+  $horizontalLine.setAttribute("y1", "" + y)
+  $horizontalLine.setAttribute("x2", "" + (x + crossSize))
+  $horizontalLine.setAttribute("y2", "" + y)
+  $horizontalLine.setAttribute("style", style)
+
+  const $verticalLine = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "line"
+  )
+  $verticalLine.setAttribute("x1", "" + x)
+  $verticalLine.setAttribute("y1", "" + (y + crossSize))
+  $verticalLine.setAttribute("x2", "" + x)
+  $verticalLine.setAttribute("y2", "" + (y - crossSize))
+  $verticalLine.setAttribute("style", style)
+
+  const $group = document.createElementNS("http://www.w3.org/2000/svg", "g")
+  $group.setAttribute("id", "svg-center")
+
+  $group.append($horizontalLine, $verticalLine)
+
+  $svgElements.$groupOverlay.append($group)
 }
