@@ -1,9 +1,8 @@
-import { IObject, Point } from "./objects/types"
+import { IObject, SelectionMeta, SVGElements, TableElements } from "./types"
 import {
   getCenterFromObjects,
   getObjectsWithinBoundary,
   handleMoveObject,
-  handleRotateObject,
   handleScaleObject,
   translatePolyObject,
 } from "./objects/helper"
@@ -14,7 +13,6 @@ import {
   hideSelectionRectangle,
   initializeSelectionRectangle,
   setUpGroups,
-  showCenter,
   snapToGrid,
   updateSelectionRectangle,
 } from "./output/svg"
@@ -23,20 +21,9 @@ import { updateTable } from "./output/table"
 
 var $input: HTMLInputElement
 var $output: HTMLInputElement
-var $svgElements: {
-  $svg: HTMLElement
-  $groupBackground: SVGElement
-  $groupObjects: SVGElement
-  $groupOverlay: SVGElement
-}
+var $svgElements: SVGElements
 var $keepPredicates: HTMLInputElement
-var $tableElements: {
-  id: HTMLElement
-  x: HTMLInputElement
-  y: HTMLInputElement
-  s: HTMLInputElement
-  a: HTMLInputElement
-}
+var $tableElements: TableElements
 var objects: IObject[]
 var selectedObjects: IObject[] = []
 var scene: any
@@ -55,17 +42,16 @@ function init() {
   $keepPredicates = document.getElementById(
     "keepDerivedPredicates"
   ) as HTMLInputElement
-
   document.getElementById("exportButton")?.addEventListener("click", () => {
     exportFile($keepPredicates.checked)
   })
 
   $tableElements = {
-    id: document.getElementById("selected-object-id") as HTMLElement,
-    x: document.getElementById("selected-object-x") as HTMLInputElement,
-    y: document.getElementById("selected-object-y") as HTMLInputElement,
-    s: document.getElementById("selected-object-s") as HTMLInputElement,
-    a: document.getElementById("selected-object-a") as HTMLInputElement,
+    id: document.getElementById("selected-object-id") as TableElements["id"],
+    x: document.getElementById("selected-object-x") as TableElements["x"],
+    y: document.getElementById("selected-object-y") as TableElements["y"],
+    s: document.getElementById("selected-object-s") as TableElements["s"],
+    a: document.getElementById("selected-object-a") as TableElements["a"],
   }
   if (
     $tableElements.id === null ||
@@ -117,16 +103,19 @@ function init() {
 
 init()
 
+var selectionMeta: SelectionMeta = {
+  angle: 0,
+  scale: 1,
+  center: { x: 0, y: 0 },
+  origins: [],
+  vectors: [],
+}
+var uuidCounter = 1
+
 function setUpEventHandlers(svg: HTMLElement) {
   /* CONTROLS */
   document.addEventListener("keydown", handleKeyPress)
 
-  var multiZoom: { vectors: Point[]; origins: Point[]; level: number } = {
-    vectors: [],
-    origins: [],
-    level: 1,
-  }
-  var count = 0
   function handleKeyPress(event: KeyboardEvent) {
     if (
       new Set(["TEXTAREA", "INPUT"]).has((event.target as HTMLElement)?.tagName)
@@ -160,52 +149,76 @@ function setUpEventHandlers(svg: HTMLElement) {
       case "ArrowRight":
         if (event.altKey) {
           // Rotate
-          if (selectedObjects.length > 1) {
-            console.warn(
-              "Cannot currently correctly handle multiple selected objects"
-            )
-          }
-          selectedObjects.forEach((obj) =>
-            handleRotateObject(obj, event.key, event.ctrlKey)
-          )
+          const offset = 0.01 * (event.ctrlKey ? 10 : 1)
+          const angle = event.key === "ArrowRight" ? +offset : -offset
+          const center = getCenterFromObjects(selectedObjects)
+          // rotate center of objects
+          selectedObjects.forEach((object, index) => {
+            const vector = { x: object.x - center.x, y: object.y - center.y }
+
+            object.x =
+              center.x + Math.cos(angle) * vector.x - Math.sin(angle) * vector.y
+            object.y =
+              center.y + Math.sin(angle) * vector.x + Math.cos(angle) * vector.y
+
+            if (object.shape === "poly") {
+              console.error("Cannot rotate poly objects")
+            } else if (object.shape == "ball") {
+              // dont need to rotate balls
+            } else if (!object.params || object.params[2] === undefined) {
+              console.error("Cannot rotate invalid object", object)
+            } else {
+              switch (event.key) {
+                case "ArrowLeft":
+                  ;(object.params[2] as number) -= offset
+                  break
+                case "ArrowRight":
+                  ;(object.params[2] as number) += offset
+                  break
+              }
+            }
+          })
+
+          selectionMeta.center = getCenterFromObjects(selectedObjects)
+
+          redrawObjects(selectedObjects)
           updateTable(...selectedObjects)
-          updateCenter(selectedObjects)
+          updateCenter(selectedObjects) // TODO: Why does the center change??
           break
         }
       case "ArrowUp":
       case "ArrowDown":
         if (event.altKey) {
           // Scale
-          if (selectedObjects.length > 1) {
-            console.warn(
-              "Cannot currently correctly handle multiple selected objects"
-            )
-          }
-          multiZoom.level += event.key === "ArrowUp" ? +0.1 : -0.1
+          selectionMeta.scale += event.key === "ArrowUp" ? +0.1 : -0.1
           selectedObjects.forEach((obj, index) => {
             handleScaleObject(obj, event.key, event.ctrlKey)
-            const center = getCenterFromObjects(selectedObjects)
+            const center = selectionMeta.center
             if (selectedObjects.length > 1) {
-              obj.x = center.x + multiZoom.level * multiZoom.vectors[index].x
-              obj.y = center.y + multiZoom.level * multiZoom.vectors[index].y
+              obj.x =
+                center.x + selectionMeta.scale * selectionMeta.vectors[index].x
+              obj.y =
+                center.y + selectionMeta.scale * selectionMeta.vectors[index].y
             }
           })
-          updateTable(...selectedObjects)
-          break
+        } else {
+          // Move
+          selectedObjects.forEach((obj) =>
+            handleMoveObject(obj, event.key, event.ctrlKey)
+          )
         }
-        selectedObjects.forEach((obj) =>
-          handleMoveObject(obj, event.key, event.ctrlKey)
-        )
+        selectionMeta.center = getCenterFromObjects(selectedObjects)
         updateTable(...selectedObjects)
+        redrawObjects(selectedObjects)
         updateCenter(selectedObjects)
         break
       case "d":
         if (event.ctrlKey) {
           const newObject = {
             ...selectedObjects[0],
-            id: selectedObjects[0].id + "d" + count,
+            id: selectedObjects[0].id + "d" + uuidCounter,
           }
-          count++
+          uuidCounter++
           objects.push(newObject)
           redrawObjects(selectedObjects, [newObject])
         }
@@ -327,21 +340,7 @@ function setUpEventHandlers(svg: HTMLElement) {
         upperLeftCorner,
         lowerRightCorner
       )
-      updateSelectedObject(newSelectedObjects)
-      const center = getCenterFromObjects(newSelectedObjects)
-      multiZoom = {
-        vectors: newSelectedObjects.map(({ x, y }) => ({
-          x: x - center.x,
-          y: y - center.y,
-        })),
-        origins: newSelectedObjects.map(({ x, y }) => ({ x, y })),
-        level:
-          newSelectedObjects.reduce(
-            (accumulator, current) => accumulator + current.scale,
-            0
-          ) / newSelectedObjects.length,
-      }
-      console.log(multiZoom)
+      updateSelectedObjects(newSelectedObjects)
       hideSelectionRectangle($selectionRectangle)
     }
     isDrag = false
@@ -349,14 +348,33 @@ function setUpEventHandlers(svg: HTMLElement) {
   }
 }
 
-export function updateSelectedObject(objs: IObject[]) {
+export function updateSelectedObjects(objects: IObject[]) {
   const oldSelectedObject = [...selectedObjects]
-  selectedObjects = [...objs]
+  selectedObjects = [...objects]
   redrawObjects(selectedObjects, oldSelectedObject)
 
   updateCenter(selectedObjects)
 
   updateTable(...selectedObjects)
+
+  const center = getCenterFromObjects(objects)
+
+  selectionMeta = {
+    center,
+    vectors: objects.map(({ x, y }) => ({
+      x: x - center.x,
+      y: y - center.y,
+    })),
+    origins: objects.map(({ x, y }) => ({ x, y })),
+    scale:
+      objects.length === 0
+        ? 1
+        : objects.reduce(
+            (accumulator, current) => accumulator + current.scale,
+            0
+          ) / objects.length,
+    angle: 0.0,
+  }
 }
 
 export {

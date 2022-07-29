@@ -1,5 +1,5 @@
 import { $svgElements, scene, selectedObjects } from "../app"
-import { IObject } from "../objects/types"
+import { IObject } from "../types"
 import { drawHorizontalLine, drawShape, showCenter } from "./svg"
 import { updateTable } from "./table"
 

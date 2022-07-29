@@ -1,4 +1,4 @@
-import { IObject } from "../objects/types"
+import { IObject } from "../types"
 
 interface IFormPredicate {
   id: string

@@ -1,6 +1,6 @@
 import { redrawObjects } from "."
 import { $tableElements } from "../app"
-import { IObject } from "../objects/types"
+import { IObject } from "../types"
 import { _scaleObject } from "../objects/helper"
 
 export function updateTable(...objs: IObject[]) {

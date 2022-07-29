@@ -1,6 +1,6 @@
 {
   "name": "situation-editor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "repository": "https://github.com/layaxx/bambirds-situation-editor.git",
   "author": "Yannick Lang <yannick-stephan.lang@stud.uni-bamberg.de>",
@@ -13,12 +13,12 @@
     "dev": "concurrently \"yarn start\" \"yarn type-check:watch\""
   },
   "dependencies": {
-    "@picocss/pico": "^1.5.3",
-    "concurrently": "^7.3.0",
-    "esbuild": "^0.14.49",
-    "typescript": "^4.7.4"
+    "@picocss/pico": "^1.5.3"
   },
   "devDependencies": {
-    "esbuild-serve": "^1.0.1"
+    "concurrently": "^7.3.0",
+    "esbuild": "^0.14.49",
+    "esbuild-serve": "^1.0.1",
+    "typescript": "^4.7.4"
   }
 }

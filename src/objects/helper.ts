@@ -1,6 +1,6 @@
 import { $svgElements } from "../app"
 import { redrawObjects } from "../output"
-import { IObject, Point } from "./types"
+import { IObject, Point } from "../types"
 
 export function getArea(object: IObject) {
   if (object.shape === "rect") {
@@ -93,8 +93,6 @@ export function handleMoveObject(
 
   obj.x += xOffset
   obj.y += yOffset
-
-  redrawObjects([obj])
 }
 
 export function translatePolyObject(
@@ -111,38 +109,6 @@ export function translatePolyObject(
     ]
     _scaleObject(obj) // needed to translate unscaledParams to actual params
   }
-}
-
-export function handleRotateObject(
-  obj: IObject,
-  key: string,
-  isHighSpeed?: boolean
-) {
-  if (!obj) {
-    return
-  }
-
-  const offset = 0.1 * (isHighSpeed ? 10 : 1)
-  if (!obj.params || obj.params[2] === undefined) {
-    console.error("Cannot rotate Object", obj)
-    return
-  }
-  if (obj.shape === "poly") {
-    console.error("Cannot rotate poly objects")
-  }
-  switch (key) {
-    case "ArrowLeft":
-      ;(obj.params[2] as number) -= offset
-      break
-    case "ArrowRight":
-      ;(obj.params[2] as number) += offset
-      break
-    default:
-      console.log("Unknown rotation direction: ", key, " ignoring.")
-      return
-  }
-
-  redrawObjects([obj])
 }
 
 export function handleScaleObject(
@@ -169,8 +135,6 @@ export function handleScaleObject(
       console.log("Unknown scaling direction: ", key, " ignoring.")
       return
   }
-
-  redrawObjects([obj])
 }
 
 export function getObjectsWithinBoundary(

@@ -1,6 +1,6 @@
 import { redrawObjects } from "."
-import { $svgElements, selectedObjects, updateSelectedObject } from "../app"
-import { IObject, Point } from "../objects/types"
+import { $svgElements, selectedObjects, updateSelectedObjects } from "../app"
+import { IObject, Point } from "../types"
 import { getCenterFromObjects, getColorFromMaterial } from "../objects/helper"
 
 const gridSize: number = 10
@@ -193,16 +193,16 @@ function configureEventHandlers($element: SVGElement, object: IObject) {
     if (event.ctrlKey) {
       if (indexIfSelected !== -1) {
         // deselect
-        updateSelectedObject(selectedObjects.filter((obj) => obj !== object))
+        updateSelectedObjects(selectedObjects.filter((obj) => obj !== object))
         console.log("deselect Object")
       } else {
         // add to selection
-        updateSelectedObject([...selectedObjects, object])
+        updateSelectedObjects([...selectedObjects, object])
         console.log("add Object to selection")
       }
     } else {
       if (indexIfSelected !== -1) return
-      updateSelectedObject([object])
+      updateSelectedObjects([object])
     }
   }
 }
