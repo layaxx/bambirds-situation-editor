@@ -9,8 +9,7 @@ import {
   getCenterFromObjects,
   handleScaleObject,
   handleMoveObject,
-  _scaleObject,
-  translatePolyObject,
+  scaleObjectInternal,
 } from "../objects/helper"
 import { removeObjects, redrawObjects, updateCenter } from "../output"
 import { updateTable } from "../output/table"
@@ -25,118 +24,140 @@ export function setUpKeyboardEventHandlers() {
     ) {
       return
     }
+
     event.preventDefault()
-    if (!selectedObjects.length) {
+    if (selectedObjects.length === 0) {
       return
     }
+
     switch (event.key) {
       case "Delete":
-        const indicesToBeDeleted: number[] = []
-
-        objects.forEach((obj, index) => {
-          if (selectedObjects.includes(obj)) indicesToBeDeleted.push(index)
-        })
-
-        const hasBeenDeleted: IObject[] = []
-
-        indicesToBeDeleted
-          .reverse()
-          .forEach((index) => hasBeenDeleted.push(...objects.splice(index, 1)))
-
-        updateSelectedObjects([])
-        removeObjects(hasBeenDeleted) // needed because updateSelectedObjects() draws old objects that should have been deleted
+        handleDelete()
         break
       case "ArrowLeft":
       case "ArrowRight":
         if (event.altKey) {
-          // Rotate
-          const offset = 0.01 * (event.ctrlKey ? 10 : 1)
-          const angle = event.key === "ArrowRight" ? +offset : -offset
-          const center = getCenterFromObjects(selectedObjects)
-          // rotate center of objects
-          selectedObjects.forEach((object) => {
-            const vector = { x: object.x - center.x, y: object.y - center.y }
-
-            object.x =
-              center.x + Math.cos(angle) * vector.x - Math.sin(angle) * vector.y
-            object.y =
-              center.y + Math.sin(angle) * vector.x + Math.cos(angle) * vector.y
-
-            if (object.shape === "poly") {
-              const [first, ...rest] = object.vectors
-              object.vectors = [
-                first,
-                ...rest.map((input): [number, number] => {
-                  if (typeof input === "number") {
-                    return [1, 1]
-                  }
-                  const [x1, y1] = input
-                  const newX = Math.cos(angle) * x1 - Math.sin(angle) * y1
-                  const newY = Math.sin(angle) * x1 + Math.cos(angle) * y1
-
-                  return [newX, newY]
-                }),
-              ]
-              _scaleObject(object)
-            } else if (object.shape == "ball") {
-              // dont need to rotate balls
-            } else if (!object.params || object.params[2] === undefined) {
-              console.error("Cannot rotate invalid object", object)
-            } else {
-              switch (event.key) {
-                case "ArrowLeft":
-                  ;(object.params[2] as number) -= offset
-                  break
-                case "ArrowRight":
-                  ;(object.params[2] as number) += offset
-                  break
-              }
-            }
-          })
-
-          selectionMeta.center = getCenterFromObjects(selectedObjects)
-
-          redrawObjects(selectedObjects)
-          updateTable(...selectedObjects)
-          updateCenter(selectedObjects) // TODO: Why does the center change??
+          handleRotate(event.key, event.ctrlKey)
           break
         }
+
+      // eslint-disable-next-line no-fallthrough
       case "ArrowUp":
       case "ArrowDown":
         if (event.altKey) {
           // Scale
-          selectionMeta.scale += event.key === "ArrowUp" ? +0.1 : -0.1
-          selectedObjects.forEach((obj, index) => {
-            const center = selectionMeta.center
-            if (selectedObjects.length > 1) {
-              obj.x =
-                center.x + selectionMeta.scale * selectionMeta.vectors[index].x
-              obj.y =
-                center.y + selectionMeta.scale * selectionMeta.vectors[index].y
-            }
-            handleScaleObject(obj, event.key, event.ctrlKey)
-          })
+          handleScale(event.key, event.ctrlKey)
         } else {
           // Move
-          selectedObjects.forEach((obj) =>
-            handleMoveObject(obj, event.key, event.ctrlKey)
-          )
+          for (const object of selectedObjects) {
+            handleMoveObject(object, event.key, event.ctrlKey)
+          }
         }
+
         selectionMeta.center = getCenterFromObjects(selectedObjects)
         updateTable(...selectedObjects)
         redrawObjects(selectedObjects)
         updateCenter(selectedObjects)
         break
       case "d":
-        if (event.ctrlKey) {
-          const newObject = {
-            ...selectedObjects[0],
-            id: selectedObjects[0].id + "d" + getUID(),
-          }
-          objects.push(newObject)
-          redrawObjects(selectedObjects, [newObject])
-        }
+        handleDuplicate(event.ctrlKey)
         break
+      default:
     }
+  }
+}
+
+function handleDelete() {
+  const indicesToBeDeleted: number[] = []
+
+  for (const [index, object] of objects.entries()) {
+    if (selectedObjects.includes(object)) indicesToBeDeleted.push(index)
+  }
+
+  const hasBeenDeleted: IObject[] = []
+
+  for (const index of indicesToBeDeleted.reverse())
+    hasBeenDeleted.push(...objects.splice(index, 1))
+
+  updateSelectedObjects([])
+  removeObjects(hasBeenDeleted) // Needed because updateSelectedObjects() draws old objects that should have been deleted
+}
+
+function handleRotate(key: string, ctrlKey: boolean) {
+  // Rotate
+  const offset = 0.01 * (ctrlKey ? 10 : 1)
+  const angle = key === "ArrowRight" ? Number(offset) : -offset
+  const center = getCenterFromObjects(selectedObjects)
+  // Rotate center of objects
+  for (const object of selectedObjects) {
+    const vector = { x: object.x - center.x, y: object.y - center.y }
+
+    object.x =
+      center.x + Math.cos(angle) * vector.x - Math.sin(angle) * vector.y
+    object.y =
+      center.y + Math.sin(angle) * vector.x + Math.cos(angle) * vector.y
+
+    if (object.shape === "poly") {
+      const [first, ...rest] = object.vectors
+      object.vectors = [
+        first,
+        ...rest.map((input): [number, number] => {
+          if (typeof input === "number") {
+            return [1, 1]
+          }
+
+          const [x1, y1] = input
+          const newX = Math.cos(angle) * x1 - Math.sin(angle) * y1
+          const newY = Math.sin(angle) * x1 + Math.cos(angle) * y1
+
+          return [newX, newY]
+        }),
+      ]
+      scaleObjectInternal(object)
+    } else if (object.shape === "ball") {
+      // Dont need to rotate balls
+    } else if (!object.params || object.params[2] === undefined) {
+      console.error("Cannot rotate invalid object", object)
+    } else {
+      switch (key) {
+        case "ArrowLeft":
+          ;(object.params[2] as number) -= offset
+          break
+        case "ArrowRight":
+          ;(object.params[2] as number) += offset
+          break
+        default:
+      }
+    }
+  }
+
+  selectionMeta.center = getCenterFromObjects(selectedObjects)
+
+  redrawObjects(selectedObjects)
+  updateTable(...selectedObjects)
+  updateCenter(selectedObjects) // TODO: Why does the center change??
+}
+
+function handleScale(key: string, ctrlKey: boolean) {
+  selectionMeta.scale += key === "ArrowUp" ? +0.1 : -0.1
+  for (const [index, object] of selectedObjects.entries()) {
+    const center = selectionMeta.center
+    if (selectedObjects.length > 1) {
+      object.x = center.x + selectionMeta.scale * selectionMeta.vectors[index].x
+      object.y = center.y + selectionMeta.scale * selectionMeta.vectors[index].y
+    }
+
+    handleScaleObject(object, key, ctrlKey)
+  }
+}
+
+function handleDuplicate(ctrlKey: boolean) {
+  if (ctrlKey) {
+    const newObject = {
+      ...selectedObjects[0],
+      id: `${selectedObjects[0].id}d${getUID()}`,
+    }
+    objects.push(newObject)
+    redrawObjects(selectedObjects, [newObject])
   }
 }

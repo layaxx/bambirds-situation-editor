@@ -13,16 +13,15 @@ import {
 import { updateTable } from "../output/table"
 
 function getMousePosition(svg: HTMLElement, event: MouseEvent | TouchEvent) {
-  var CTM = (svg as unknown as SVGGraphicsElement).getScreenCTM()
+  const CTM = (svg as unknown as SVGGraphicsElement).getScreenCTM()
   if (!CTM) {
     throw new Error("Could not determine Mouse Location")
   }
-  var mouseEvent: MouseEvent
-  if (event instanceof TouchEvent && event.touches) {
-    mouseEvent = event.touches[0] as unknown as MouseEvent
-  } else {
-    mouseEvent = event as MouseEvent
-  }
+
+  const mouseEvent: MouseEvent =
+    event instanceof TouchEvent && event.touches
+      ? (event.touches[0] as unknown as MouseEvent)
+      : (event as MouseEvent)
   return {
     x: (mouseEvent.clientX - CTM.e) / CTM.a,
     y: (mouseEvent.clientY - CTM.f) / CTM.d,
@@ -38,11 +37,11 @@ export function setUpMouseEventHandlers(svg: HTMLElement) {
   svg.addEventListener("touchend", endDragOrSelect)
   svg.addEventListener("touchcancel", endDragOrSelect)
 
-  var mouseStartPosition: { x: number; y: number },
-    preDragCoordinates: { x: number; y: number }[],
-    isDrag: boolean,
-    isSelect: boolean,
-    $selectionRectangle: SVGElement | undefined
+  let mouseStartPosition: { x: number; y: number }
+  let preDragCoordinates: Array<{ x: number; y: number }>
+  let isDrag: boolean
+  let isSelect: boolean
+  let $selectionRectangle: SVGElement | undefined
 
   function startDragOrSelect(event: MouseEvent | TouchEvent) {
     if (event.ctrlKey) return
@@ -60,6 +59,7 @@ export function setUpMouseEventHandlers(svg: HTMLElement) {
         )
         console.log("Start selecting")
       }
+
       return
     }
 
@@ -72,22 +72,23 @@ export function setUpMouseEventHandlers(svg: HTMLElement) {
   function dragOrSelect(event: MouseEvent | TouchEvent) {
     if (isSelect) {
       event.preventDefault()
-      var currentMousePosition = getMousePosition(svg, event)
+      const currentMousePosition = getMousePosition(svg, event)
       updateSelectionRectangle(
         $selectionRectangle!,
         mouseStartPosition,
         currentMousePosition
       )
     }
+
     if (selectedObjects && isDrag) {
       event.preventDefault()
-      var currentMousePosition = getMousePosition(svg, event)
+      const currentMousePosition = getMousePosition(svg, event)
 
-      selectedObjects.forEach((object, index) => {
-        var newX =
+      for (const [index, object] of selectedObjects.entries()) {
+        let newX =
           preDragCoordinates[index].x +
           (currentMousePosition.x - mouseStartPosition.x)
-        var newY =
+        let newY =
           preDragCoordinates[index].y +
           (currentMousePosition.y - mouseStartPosition.y)
 
@@ -103,7 +104,8 @@ export function setUpMouseEventHandlers(svg: HTMLElement) {
         if (object.shape === "poly") {
           translatePolyObject(object, xOffset, yOffset)
         }
-      })
+      }
+
       redrawObjects(selectedObjects)
       updateCenter(selectedObjects)
       updateTable(...selectedObjects)
@@ -130,6 +132,7 @@ export function setUpMouseEventHandlers(svg: HTMLElement) {
       updateSelectedObjects(newSelectedObjects)
       hideSelectionRectangle($selectionRectangle)
     }
+
     isDrag = false
     isSelect = false
   }

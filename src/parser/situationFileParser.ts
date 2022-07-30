@@ -1,4 +1,4 @@
-import { IObject } from "../types"
+import { IObject, Scene } from "../types"
 
 interface IFormPredicate {
   id: string
@@ -10,138 +10,93 @@ interface IMaterialPredicate {
   material: string
 }
 
-export default function parse(text: string) {
+export default function parse(text: string): {
+  objects: IObject[]
+  scene: Scene
+} {
   const predicatesByType: Record<string, string[]> = {}
 
-  text.split("\n").forEach((line) => {
+  for (let line of text.split("\n")) {
     line = line.trim()
-    if (!line || !line.endsWith(".")) return
+    if (!line || !line.endsWith(".")) continue
 
     const predicateName = getPredicateName(line)
-    if (!predicatesByType[predicateName]) {
-      predicatesByType[predicateName] = [line]
-    } else {
+    if (predicatesByType[predicateName]) {
       predicatesByType[predicateName].push(line)
+    } else {
+      predicatesByType[predicateName] = [line]
     }
-  })
+  }
 
   const parsedMaterialPredicates = (predicatesByType.hasMaterial ?? []).map(
-    parseMaterialPredicate
+    (predicate) => parseMaterialPredicate(predicate)
   )
 
   const parsedFormPredicates = (predicatesByType.hasForm ?? []).map(
-    parseFormPredicate
+    (predicate) => parseFormPredicate(predicate)
   )
 
   const objs = (predicatesByType.shape ?? [])
-    .map((shapePredicate) => {
-      var parsedObject
-      try {
-        parsedObject = parseShapePredicate(shapePredicate)
-      } catch {}
-      if (!parsedObject) {
-        return null
-      }
-      const { id, x, y, shape, area, params } = parsedObject
+    .map((predicate) =>
+      parseShapeToObject(
+        predicate,
+        parsedMaterialPredicates,
+        parsedFormPredicates
+      )
+    )
+    .filter((object) => object !== undefined) as IObject[]
 
-      const material = getMaterialFor(id, parsedMaterialPredicates)
-      const form = getFormFor(id, parsedFormPredicates)
-      return {
-        id,
-        x,
-        y,
-        shape,
-        material,
-        params,
-        area,
-        form,
-        scale: 1,
-        unscaledParams: JSON.parse(JSON.stringify(params)),
-        vectors:
-          shape === "poly"
-            ? params.map((entry, index) => {
-                if (index === 0 || typeof entry === "number") return entry
-                const [x1, y1] = entry
-                const newX = x1 - x
-                const newY = y1 - y
-                return [newX, newY]
-              })
-            : undefined,
-      }
-    })
-    .filter((obj) => obj !== null) as IObject[]
-
-  ;(predicatesByType.bird ?? []).forEach((birdPredicate) => {
-    const birdID = getID(birdPredicate)
-    const obj = objs.find(({ id }) => id === birdID)
-    if (obj) {
-      obj.isBird = true
+  for (const birdPredicate of predicatesByType.bird ?? []) {
+    const birdID = getId(birdPredicate)
+    const object = objs.find(({ id }) => id === birdID)
+    if (object) {
+      object.isBird = true
     } else {
       console.error("Failed to set isBird property", birdPredicate, birdID)
     }
-  })
-  ;(predicatesByType.pig ?? []).forEach((pigPredicate) => {
-    const pigID = getID(pigPredicate)
-    const obj = objs.find(({ id }) => id === pigID)
-    if (obj) {
-      obj.isPig = true
+  }
+
+  for (const pigPredicate of predicatesByType.pig ?? []) {
+    const pigID = getId(pigPredicate)
+    const object = objs.find(({ id }) => id === pigID)
+    if (object) {
+      object.isPig = true
     } else {
       console.error("Failed to set isPig property", pigPredicate, pigID)
     }
-  })
-  ;(predicatesByType.hasColor ?? []).forEach((hasColorPredicate) => {
-    const [_, objID, color] = getGenericValues(hasColorPredicate)
-    const obj = objs.find(({ id }) => id === objID)
-    if (obj) {
-      obj.color = color as string
+  }
+
+  for (const hasColorPredicate of predicatesByType.hasColor ?? []) {
+    const [_, objectID, color] = getGenericValues(hasColorPredicate)
+    const object = objs.find(({ id }) => id === objectID)
+    if (object) {
+      object.color = color as string
     } else {
-      console.error("Failed to set hasColor property", hasColorPredicate, objID)
+      console.error(
+        "Failed to set hasColor property",
+        hasColorPredicate,
+        objectID
+      )
     }
-  })
+  }
 
   return {
     objects: objs,
-    scene: {
-      groundY: getGenericValues(predicatesByType["ground_plane"][0])[1],
-      derivedPredicates: [
-        ...(predicatesByType.belongsTo ?? []),
-        ...(predicatesByType.collapsesInDirection ?? []),
-        ...(predicatesByType.hasOrientation ?? []),
-        ...(predicatesByType.hasSize ?? []),
-        ...(predicatesByType.isAnchorPointFor ?? []),
-        ...(predicatesByType.isBelow ?? []),
-        ...(predicatesByType.isCollapsable ?? []),
-        ...(predicatesByType.isLeft ?? []),
-        ...(predicatesByType.isOn ?? []),
-        ...(predicatesByType.isOver ?? []),
-        ...(predicatesByType.isRight ?? []),
-        ...(predicatesByType.isTower ?? []),
-        ...(predicatesByType.protects ?? []),
-        ...(predicatesByType.structure ?? []),
-        ...(predicatesByType.supports ?? []),
-      ],
-      commonPredicates: [
-        ...(predicatesByType.hill ?? []),
-        ...(predicatesByType.ground_plane ?? []),
-        ...(predicatesByType.birdOrder ?? []),
-        ...(predicatesByType.sceneRepresentation ?? []),
-        ...(predicatesByType.scene_scale ?? []),
-        ...(predicatesByType.slingshotPivot ?? []),
-        "situation_name('edited_situation').",
-      ],
-    },
+    scene: getScene(predicatesByType),
   }
 }
 
-function getID(predicate: string | undefined): string {
+function getId(predicate: string | undefined): string {
   const [_, id] = getGenericValues(predicate)
   return id as string
 }
 
-function parseShapePredicate(predicate: string | undefined): IObject | null {
+function parseShapePredicate(
+  predicate: string | undefined
+): IObject | undefined {
   if (!predicate || getPredicateName(predicate) !== "shape") {
     console.error("Failed to parse Shape Predicate", predicate)
-    return null
+    return
   }
 
   const result = getGenericValues(predicate)
@@ -150,9 +105,9 @@ function parseShapePredicate(predicate: string | undefined): IObject | null {
     throw new Error("Expected 7 arguments in shape predicate: " + predicate)
   }
 
-  const [_, id, shape, x, y, area, params] = result
+  const [_, id, shape, x, y, area, parameters] = result
 
-  return { id, shape, x, y, area, params } as IObject
+  return { id, shape, x, y, area, params: parameters } as IObject
 }
 
 function parseMaterialPredicate(
@@ -183,22 +138,25 @@ function getPredicateName(predicate: string | undefined): string {
   if (!predicate) {
     return "unknownPredicate"
   }
+
   return predicate.split("(")[0]
 }
 
 function getMaterialFor(
-  idParam: string,
+  idParameter: string,
   materialPredicates: IMaterialPredicate[]
 ) {
-  const { material } = materialPredicates.find(({ id }) => id === idParam) ?? {
+  const { material } = materialPredicates.find(
+    ({ id }) => id === idParameter
+  ) ?? {
     material: undefined,
   }
 
   return material
 }
 
-function getFormFor(idParam: string, formPredicates: IFormPredicate[]) {
-  const { form } = formPredicates.find(({ id }) => id === idParam) ?? {
+function getFormFor(idParameter: string, formPredicates: IFormPredicate[]) {
+  const { form } = formPredicates.find(({ id }) => id === idParameter) ?? {
     form: undefined,
   }
 
@@ -207,7 +165,7 @@ function getFormFor(idParam: string, formPredicates: IFormPredicate[]) {
 
 function getGenericValues(
   predicate: string | undefined
-): (string | number | number[])[] {
+): Array<string | number | number[]> {
   if (!predicate) {
     console.error("Cannot determine values of undefined")
     return []
@@ -218,8 +176,98 @@ function getGenericValues(
   predicate = "[" + predicate.replace(name + "(", "").replace(").", "") + "]"
 
   const args = JSON.parse(
-    predicate.replace(/(['"])?([a-zA-Z][a-zA-Z0-9_]+)(['"])?/g, '"$2"')
-  )
+    predicate.replace(/(['"])?([a-zA-Z]\w+)(['"])?/g, '"$2"')
+  ) as Array<string | number | number[]>
 
   return [name.trim(), ...args]
+}
+
+function parseShapeToObject(
+  shapePredicate: string,
+  parsedMaterialPredicates: IMaterialPredicate[],
+  parsedFormPredicates: IFormPredicate[]
+): IObject | undefined {
+  let parsedObject
+  try {
+    parsedObject = parseShapePredicate(shapePredicate)
+  } catch {}
+
+  if (!parsedObject) {
+    return undefined
+  }
+
+  const { id, x, y, shape, area, params } = parsedObject
+
+  const material = getMaterialFor(id, parsedMaterialPredicates)
+  const form = getFormFor(id, parsedFormPredicates)
+  return {
+    id,
+    x,
+    y,
+    shape,
+    material,
+    params,
+    area,
+    form,
+    scale: 1,
+    unscaledParams: JSON.parse(JSON.stringify(params)) as Array<
+      number | number[]
+    >,
+    vectors:
+      shape === "poly"
+        ? params.map((entry, index) => {
+            if (index === 0 || typeof entry === "number") return entry
+            const [x1, y1] = entry
+            const newX = x1 - x
+            const newY = y1 - y
+            return [newX, newY]
+          })
+        : undefined,
+  } as IObject
+}
+
+function getScene(predicatesByType: Record<string, string[]>): Scene {
+  const groundY = getGenericValues(
+    predicatesByType.ground_plane[0]
+  )[1] as number
+
+  const derivedPredicateKeys = [
+    "belongsTo",
+    "collapsesInDirection",
+    "hasOrientation",
+    "hasSize",
+    "isAnchorPointFor",
+    "isBelow",
+    "isCollapsable",
+    "isLeft",
+    "isOn",
+    "isOver",
+    "isRight",
+    "isTower",
+    "protects",
+    "structure",
+    "supports",
+  ]
+
+  const derivedPredicates = derivedPredicateKeys.flatMap(
+    (key) => predicatesByType[key] ?? []
+  )
+  const commonPredicateKeys = [
+    "hill",
+    "ground_plane",
+    "birdOrder",
+    "sceneRepresentation",
+    "scene_scale",
+    "slingshotPivot",
+  ]
+  const commonPredicates = [
+    "situation_name('edited_situation').",
+    ...commonPredicateKeys.flatMap((key) => predicatesByType[key] ?? []),
+  ]
+
+  return {
+    groundY,
+    derivedPredicates,
+    commonPredicates,
+  }
 }

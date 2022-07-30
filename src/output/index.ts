@@ -8,12 +8,16 @@ export function redrawAll(objects: IObject[]) {
   $svgElements.$groupObjects.replaceChildren()
 
   drawHorizontalLine(scene.groundY)
-  objects.forEach(drawShape)
+  objects.forEach((object) => {
+    drawShape(object)
+  })
   updateTable(...selectedObjects)
 }
 
 export function removeObjects(objects: IObject[]) {
-  objects.forEach(removeObject)
+  objects.forEach((object) => {
+    removeObject(object)
+  })
 }
 
 function removeObject(object: IObject) {
@@ -22,7 +26,7 @@ function removeObject(object: IObject) {
       "#svg-" + object.id
     )
     if (toBeRemoved !== null) {
-      $svgElements.$groupObjects.removeChild(toBeRemoved)
+      toBeRemoved.remove()
     }
   } catch {}
 }
@@ -31,7 +35,7 @@ export function redrawObjects(
   selectedObjects: IObject[],
   unselectedObjects: IObject[] = []
 ) {
-  for (var object of [...selectedObjects, ...unselectedObjects]) {
+  for (const object of [...selectedObjects, ...unselectedObjects]) {
     removeObject(object)
     drawShape(object)
   }
@@ -41,8 +45,9 @@ export function updateCenter(objects: IObject[]) {
   try {
     const toBeRemoved = $svgElements.$groupOverlay.querySelector("#svg-center")
     if (toBeRemoved !== null) {
-      $svgElements.$groupOverlay.removeChild(toBeRemoved)
+      toBeRemoved.remove()
     }
+
     showCenter(objects)
   } catch {}
 }

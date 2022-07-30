@@ -1,57 +1,60 @@
-import { selectedObjects } from "../app"
 import { IObject, Point } from "../types"
 
 export function getArea(object: IObject) {
   if (object.shape === "rect") {
     return (object.params[0] as number) * (object.params[1] as number)
   }
+
   if (object.shape === "ball") {
-    return Math.pow(object.params[0] as number, 2) * Math.PI
+    return (object.params[0] as number) ** 2 * Math.PI
   }
+
   return object.area
 }
 
-export function _scaleObject(obj: IObject) {
-  switch (obj.shape) {
+export function scaleObjectInternal(object: IObject) {
+  switch (object.shape) {
     case "rect":
-      obj.params[0] = (obj.unscaledParams[0] as number) * (obj.scale as number)
-      obj.params[1] = (obj.unscaledParams[1] as number) * (obj.scale as number)
+      object.params[0] = (object.unscaledParams[0] as number) * object.scale
+      object.params[1] = (object.unscaledParams[1] as number) * object.scale
       break
     case "ball":
-      obj.params[0] = (obj.unscaledParams[0] as number) * (obj.scale as number)
+      object.params[0] = (object.unscaledParams[0] as number) * object.scale
       break
-    case "poly":
-      const [first, ...rest] = obj.vectors
+    case "poly": {
+      const [first, ...rest] = object.vectors
 
-      obj.params = [
+      object.params = [
         first,
         ...rest.map((input) => {
           if (typeof input === "number") return [1, 1]
           const [x, y] = input
-          return [obj.x + x * obj.scale, obj.y + y * obj.scale]
+          return [object.x + x * object.scale, object.y + y * object.scale]
         }),
       ]
       break
+    }
+
     default:
-      console.log("Not sure how to scale", obj)
+      console.log("Not sure how to scale", object)
   }
 }
 
 export function handleMoveObject(
-  obj: IObject,
+  object: IObject,
   key: string,
   isHighSpeed?: boolean
 ) {
-  if (!obj) {
+  if (!object) {
     return
   }
 
-  const offset = 1 * (isHighSpeed ? 10 : 1)
-  var xOffset = 0
-  var yOffset = 0
+  const offset = Number(isHighSpeed ? 10 : 1)
+  let xOffset = 0
+  let yOffset = 0
   switch (key) {
     case "ArrowUp":
-      yOffset = -offset // y = 0 is at the top
+      yOffset = -offset // Y = 0 is at the top
       break
     case "ArrowDown":
       yOffset = offset
@@ -63,38 +66,41 @@ export function handleMoveObject(
       xOffset = offset
       break
     default:
-      console.log("Unknown moving direction: ", key, " ignoring.")
+      console.log("Unknown moving direction:", key, "ignoring.")
       return
   }
 
-  translatePolyObject(obj, xOffset, yOffset)
+  translatePolyObject(object, xOffset, yOffset)
 
-  obj.x += xOffset
-  obj.y += yOffset
+  object.x += xOffset
+  object.y += yOffset
 }
 
 export function translatePolyObject(
-  obj: IObject,
+  object: IObject,
   xOffset: number,
   yOffset: number
 ) {
-  if (obj.shape === "poly") {
-    // @ts-ignore
-    const [first, ...rest]: [number, number[]] = obj.unscaledParams
-    obj.unscaledParams = [
+  if (object.shape === "poly") {
+    const [first, ...rest] = object.unscaledParams
+    object.unscaledParams = [
       first,
-      ...rest.map(([x, y]) => [x + xOffset, y + yOffset]), // y=0 is at top
+      ...rest.map((input) =>
+        typeof input === "number"
+          ? [input, input]
+          : [input[0] + xOffset, input[1] + yOffset]
+      ), // Y=0 is at top
     ]
-    _scaleObject(obj) // needed to translate unscaledParams to actual params
+    scaleObjectInternal(object) // Needed to translate unscaledParams to actual params
   }
 }
 
 export function handleScaleObject(
-  obj: IObject,
+  object: IObject,
   key: string,
   isHighSpeed?: boolean
 ) {
-  if (!obj) {
+  if (!object) {
     return
   }
 
@@ -102,16 +108,15 @@ export function handleScaleObject(
 
   switch (key) {
     case "ArrowUp":
-      obj.scale += offset
-      _scaleObject(obj)
+      object.scale += offset
+      scaleObjectInternal(object)
       break
     case "ArrowDown":
-      obj.scale -= offset
-      _scaleObject(obj)
+      object.scale -= offset
+      scaleObjectInternal(object)
       break
     default:
-      console.log("Unknown scaling direction: ", key, " ignoring.")
-      return
+      console.log("Unknown scaling direction:", key, "ignoring.")
   }
 }
 
@@ -120,7 +125,7 @@ export function getObjectsWithinBoundary(
   upperLeft: Point,
   lowerRight: Point
 ) {
-  // by center point, because easier
+  // By center point, because easier
   const result: IObject[] = []
 
   for (const object of objects) {
@@ -138,17 +143,17 @@ export function getObjectsWithinBoundary(
 }
 
 export function getCenterFromObjects(objects: IObject[]): Point {
-  var minX = Number.MAX_VALUE
-  var maxX = 0
-  var minY = Number.MAX_VALUE
-  var maxY = 0
+  let minX = Number.MAX_VALUE
+  let maxX = 0
+  let minY = Number.MAX_VALUE
+  let maxY = 0
 
-  objects.forEach((object) => {
+  for (const object of objects) {
     minX = Math.min(object.x, minX)
     maxX = Math.max(object.x, maxX)
     minY = Math.min(object.y, minY)
     maxY = Math.max(object.y, maxY)
-  })
+  }
 
   return { x: (minX + maxX) / 2, y: (minY + maxY) / 2 }
 }

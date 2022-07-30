@@ -10,9 +10,9 @@ export interface IObject {
   form: string
   area: number
   scale: number
-  params: (number | number[])[]
-  unscaledParams: (number | number[])[]
-  vectors: [number, ...[number, number][]]
+  params: Array<number | number[]>
+  unscaledParams: Array<number | number[]>
+  vectors: [number, ...Array<[number, number]>]
 }
 
 export type Point = {
@@ -41,4 +41,10 @@ export type SVGElements = {
   $groupBackground: SVGElement
   $groupObjects: SVGElement
   $groupOverlay: SVGElement
+}
+
+export type Scene = {
+  groundY: number
+  derivedPredicates: string[]
+  commonPredicates: string[]
 }

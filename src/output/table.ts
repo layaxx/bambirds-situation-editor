@@ -1,13 +1,13 @@
-import { redrawObjects, updateCenter } from "."
 import { $tableElements } from "../app"
 import { IObject } from "../types"
-import { _scaleObject } from "../objects/helper"
+import { scaleObjectInternal } from "../objects/helper"
+import { redrawObjects, updateCenter } from "."
 
 export function updateTable(...objs: IObject[]) {
   const isMultiple = objs.length > 1
 
   if (isMultiple) {
-    $tableElements.id.innerText = "Multiple Objects selected"
+    $tableElements.id.textContent = "Multiple Objects selected"
     disableInputs()
     return
   }
@@ -15,44 +15,48 @@ export function updateTable(...objs: IObject[]) {
   const [object] = objs
 
   if (!object) {
-    $tableElements.id.innerText = "None selected"
+    $tableElements.id.textContent = "None selected"
     disableInputs()
     return
   }
 
   enableInputs()
 
-  $tableElements.id.innerText = object.id
-  $tableElements.x.value = "" + object.x
-  $tableElements.x.onchange = (event) => {
-    object.x = parseFloat((event.target as HTMLInputElement)?.value)
+  $tableElements.id.textContent = object.id
+  $tableElements.x.value = String(object.x)
+  $tableElements.x.addEventListener("change", (event) => {
+    object.x = Number.parseFloat((event.target as HTMLInputElement)?.value)
     redrawObjects([object])
     updateCenter([object])
-  }
-  $tableElements.y.value = "" + object.y
-  $tableElements.y.onchange = (event) => {
-    object.y = parseFloat((event.target as HTMLInputElement)?.value)
+  })
+  $tableElements.y.value = String(object.y)
+  $tableElements.y.addEventListener("change", (event) => {
+    object.y = Number.parseFloat((event.target as HTMLInputElement)?.value)
     redrawObjects([object])
     updateCenter([object])
-  }
-  $tableElements.s.value = "" + object.scale
-  $tableElements.s.onchange = (event) => {
-    object.scale = parseFloat((event.target as HTMLInputElement)?.value)
-    _scaleObject(object)
+  })
+  $tableElements.s.value = String(object.scale)
+  $tableElements.s.addEventListener("change", (event) => {
+    object.scale = Number.parseFloat((event.target as HTMLInputElement)?.value)
+    scaleObjectInternal(object)
     redrawObjects([object])
     updateCenter([object])
-  }
-  $tableElements.a.value =
-    "" + (object.shape === "rect" ? object.params[2] : "")
-  $tableElements.a.onchange = (event) => {
+  })
+  $tableElements.a.value = String(
+    object.shape === "rect" ? object.params[2] : ""
+  )
+  $tableElements.a.addEventListener("change", (event) => {
     if (!object.params || object.params[2] === undefined) {
       console.error("Cannot rotate Object", object)
       return
     }
-    object.params[2] = parseFloat((event.target as HTMLInputElement)?.value)
+
+    object.params[2] = Number.parseFloat(
+      (event.target as HTMLInputElement)?.value
+    )
 
     redrawObjects([object])
-  }
+  })
 }
 
 function disableInputs() {

@@ -1,4 +1,10 @@
-import { IObject, SelectionMeta, SVGElements, TableElements } from "./types"
+import {
+  IObject,
+  Scene,
+  SelectionMeta,
+  SVGElements,
+  TableElements,
+} from "./types"
 import { getCenterFromObjects } from "./objects/helper"
 import { redrawAll, redrawObjects, updateCenter } from "./output"
 import { exportFile } from "./output/prolog"
@@ -7,27 +13,27 @@ import parse from "./parser/situationFileParser"
 import { updateTable } from "./output/table"
 import { setUpEventHandlers } from "./canvasEventHandler"
 
-var $input: HTMLInputElement
-var $output: HTMLInputElement
-var $svgElements: SVGElements
-var $keepPredicates: HTMLInputElement
-var $tableElements: TableElements
-var objects: IObject[]
-var selectedObjects: IObject[] = []
-var scene: any
-var selectionMeta: SelectionMeta = {
+let $input: HTMLInputElement
+let $output: HTMLInputElement
+let $svgElements: SVGElements
+let $keepPredicates: HTMLInputElement
+let $tableElements: TableElements
+let objects: IObject[]
+let selectedObjects: IObject[] = []
+let scene: Scene
+let selectionMeta: SelectionMeta = {
   angle: 0,
   scale: 1,
   center: { x: 0, y: 0 },
   origins: [],
   vectors: [],
 }
-var uuidCounter = 1
+let uuidCounter = 1
 
 function init() {
-  $input = document.getElementById("situationfile") as HTMLInputElement
-  const $container = document.getElementById("container") as HTMLElement
-  $output = document.getElementById("output") as HTMLInputElement
+  $input = document.querySelector("#situationfile")!
+  const $container = document.querySelector<HTMLElement>("#container")!
+  $output = document.querySelector("#output")!
   if ($input === null || $container === null || $output === null) {
     console.error(
       "Failed to get required HTML Elements, missing at least one of $situationfile, $container, $output"
@@ -35,19 +41,17 @@ function init() {
     return
   }
 
-  $keepPredicates = document.getElementById(
-    "keepDerivedPredicates"
-  ) as HTMLInputElement
-  document.getElementById("exportButton")?.addEventListener("click", () => {
+  $keepPredicates = document.querySelector("#keepDerivedPredicates")!
+  document.querySelector("#exportButton")?.addEventListener("click", () => {
     exportFile($keepPredicates.checked)
   })
 
   $tableElements = {
-    id: document.getElementById("selected-object-id") as TableElements["id"],
-    x: document.getElementById("selected-object-x") as TableElements["x"],
-    y: document.getElementById("selected-object-y") as TableElements["y"],
-    s: document.getElementById("selected-object-s") as TableElements["s"],
-    a: document.getElementById("selected-object-a") as TableElements["a"],
+    id: document.querySelector("#selected-object-id")!,
+    x: document.querySelector("#selected-object-x")!,
+    y: document.querySelector("#selected-object-y")!,
+    s: document.querySelector("#selected-object-s")!,
+    a: document.querySelector("#selected-object-a")!,
   }
   if (
     $tableElements.id === null ||
@@ -63,24 +67,25 @@ function init() {
 
   $svgElements = setUpGroups($container)
 
-  // setup SVG background
+  // Setup SVG background
   drawGrid()
 
   // Setup SVG Scaling
-  const slider = document.getElementById("zoomRange") as HTMLInputElement | null
-  const zoomValue = document.getElementById("zoomValue")
+  const slider = document.querySelector("#zoomRange")
+  const zoomValue = document.querySelector("#zoomValue")
   if (slider === null) {
     console.error("Failed to setup SVG Scaling")
   } else {
-    slider.oninput = function (event) {
-      const value = parseFloat(
-        (event.target as HTMLInputElement | null)?.value ?? "100"
+    slider.addEventListener("input", function (event) {
+      const value = Number.parseFloat(
+        (event.target as HTMLInputElement | undefined)?.value ?? "100"
       )
       if (zoomValue !== null) {
-        zoomValue.innerText = `${value}%`
+        zoomValue.textContent = `${value}%`
       }
+
       $container.style.transform = `scale(${value / 100})`
-    }
+    })
   }
 
   setUpEventHandlers($container)
@@ -93,7 +98,9 @@ function init() {
     redrawAll(objects)
   }
 
-  $input.onblur = () => loadSituationFile()
+  $input.addEventListener("blur", () => {
+    loadSituationFile()
+  })
   loadSituationFile()
 }
 
@@ -122,7 +129,7 @@ export function updateSelectedObjects(objects: IObject[]) {
             (accumulator, current) => accumulator + current.scale,
             0
           ) / objects.length,
-    angle: 0.0,
+    angle: 0,
   }
 }
 

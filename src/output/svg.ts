@@ -12,8 +12,8 @@ import {
   SELECTION_RECTANGLE_COLOR,
 } from "../objects/colors"
 
-const gridSize: number = 10
-const defaultRadius: number = 10000
+const gridSize = 10
+const defaultRadius = 10_000
 const width = (): number => $svgElements.$svg.clientWidth
 const height = (): number => $svgElements.$svg.clientHeight
 
@@ -46,42 +46,42 @@ export function setUpGroups($svg: HTMLElement) {
 export function drawGrid() {
   const style = `stroke:${GRID_COLOR};stroke-width:0.1`
 
-  for (var y = gridSize; y < width(); y += gridSize) {
+  for (let y = gridSize; y < width(); y += gridSize) {
     const $line = document.createElementNS("http://www.w3.org/2000/svg", "line")
-    $line.setAttribute("x1", "" + y)
-    $line.setAttribute("y1", "" + 0)
-    $line.setAttribute("x2", "" + y)
-    $line.setAttribute("y2", "" + height())
+    $line.setAttribute("x1", String(y))
+    $line.setAttribute("y1", String(0))
+    $line.setAttribute("x2", String(y))
+    $line.setAttribute("y2", String(height()))
     $line.setAttribute("style", style)
-    $svgElements.$groupBackground.appendChild($line)
+    $svgElements.$groupBackground.append($line)
   }
 
-  for (var y = gridSize; y < height(); y += gridSize) {
+  for (let y = gridSize; y < height(); y += gridSize) {
     const $line = document.createElementNS("http://www.w3.org/2000/svg", "line")
-    $line.setAttribute("x1", "" + 0)
-    $line.setAttribute("y1", "" + y)
-    $line.setAttribute("x2", "" + width())
-    $line.setAttribute("y2", "" + y)
+    $line.setAttribute("x1", String(0))
+    $line.setAttribute("y1", String(y))
+    $line.setAttribute("x2", String(width()))
+    $line.setAttribute("y2", String(y))
     $line.setAttribute("style", style)
-    $svgElements.$groupBackground.appendChild($line)
+    $svgElements.$groupBackground.append($line)
   }
 }
 
 export function drawHorizontalLine(y: number) {
   const $line = document.createElementNS("http://www.w3.org/2000/svg", "line")
-  $line.setAttribute("x1", "" + 0)
-  $line.setAttribute("y1", "" + y)
-  $line.setAttribute("x2", "" + width())
-  $line.setAttribute("y2", "" + y)
+  $line.setAttribute("x1", String(0))
+  $line.setAttribute("y1", String(y))
+  $line.setAttribute("x2", String(width()))
+  $line.setAttribute("y2", String(y))
   $line.setAttribute("style", `stroke:${HORIZON_LINE_COLOR};stroke-width:2`)
 
-  $svgElements.$groupBackground.appendChild($line)
+  $svgElements.$groupBackground.append($line)
 }
 
 export function drawPoly(
   object: IObject,
   color: string,
-  points: { x: number; y: number }[]
+  points: Array<{ x: number; y: number }>
 ) {
   const $polygon = document.createElementNS(
     "http://www.w3.org/2000/svg",
@@ -89,7 +89,7 @@ export function drawPoly(
   )
   $polygon.setAttribute(
     "points",
-    points.map((point) => point.x + "," + point.y).join(" ")
+    points.map((point) => `${point.x},${point.y}`).join(" ")
   )
   $polygon.setAttribute(
     "style",
@@ -100,7 +100,7 @@ export function drawPoly(
   $polygon.setAttribute("id", "svg-" + object.id)
   configureEventHandlers($polygon, object)
 
-  $svgElements.$groupObjects.appendChild($polygon)
+  $svgElements.$groupObjects.append($polygon)
 }
 
 function drawCircle(
@@ -114,9 +114,9 @@ function drawCircle(
     "http://www.w3.org/2000/svg",
     "circle"
   )
-  $circle.setAttribute("cx", "" + cx)
-  $circle.setAttribute("cy", "" + cy)
-  $circle.setAttribute("r", "" + radius)
+  $circle.setAttribute("cx", String(cx))
+  $circle.setAttribute("cy", String(cy))
+  $circle.setAttribute("r", String(radius))
   $circle.setAttribute("id", "svg-" + object.id)
   $circle.setAttribute(
     "style",
@@ -126,94 +126,103 @@ function drawCircle(
   )
   configureEventHandlers($circle, object)
 
-  $svgElements.$groupObjects.appendChild($circle)
+  $svgElements.$groupObjects.append($circle)
 }
 
 function rotShift(
   angle: number,
   cx: number,
   cy: number,
-  list: [number, number][]
-): [number, number][] {
+  list: Array<[number, number]>
+): Array<[number, number]> {
   const [[x, y], ...remainingList] = list
   const xr = x * Math.cos(angle) - y * Math.sin(angle)
   const yr = x * Math.sin(angle) + y * Math.cos(angle)
   const xrs = xr + cx
   const yrs = yr + cy
-  if (!remainingList || !remainingList.length) {
+  if (!remainingList || remainingList.length === 0) {
     return [[xrs, yrs]]
   }
+
   return [[xrs, yrs], ...rotShift(angle, cx, cy, remainingList)]
 }
 
-export function drawShape(obj: IObject) {
-  switch (obj.shape) {
-    case "rect":
-      const [w, h, angle] = obj.params
+export function drawShape(object: IObject) {
+  switch (object.shape) {
+    case "rect": {
+      const [w, h, angle] = object.params
 
-      const XRa = +h * 0.5 // TODO: not sure why but needs this scaling factor to work
-      const YRa = +w * 0.5 // TODO: not sure why but needs this scaling factor to work
-      const points_ = rotShift(angle as number, obj.x, obj.y, [
-        [-XRa, -YRa],
-        [-XRa, YRa],
-        [XRa, YRa],
-        [XRa, -YRa],
+      const halfHeight = Number(h) * 0.5
+      const halfWidth = Number(w) * 0.5
+      const points = rotShift(angle as number, object.x, object.y, [
+        [-halfHeight, -halfWidth],
+        [-halfHeight, halfWidth],
+        [halfHeight, halfWidth],
+        [halfHeight, -halfWidth],
       ]).map(([x, y]: [number, number]) => ({ x, y }))
       drawPoly(
-        obj,
-        getColorFromMaterial(obj.material) ?? FALLBACK_COLOR,
-        points_
+        object,
+        getColorFromMaterial(object.material) ?? FALLBACK_COLOR,
+        points
       )
       break
+    }
+
     case "ball":
       drawCircle(
-        obj,
-        getColorFromMaterial(obj.material) ?? obj.color ?? FALLBACK_COLOR,
-        obj.x,
-        obj.y,
-        (obj.params[0] as number | undefined) ?? defaultRadius
+        object,
+        getColorFromMaterial(object.material) ?? object.color ?? FALLBACK_COLOR,
+        object.x,
+        object.y,
+        (object.params[0] as number | undefined) ?? defaultRadius
       )
       break
-    case "poly":
-      const [_, ...points] = obj.params
+
+    case "poly": {
+      const [_, ...points] = object.params
       drawPoly(
-        obj,
-        getColorFromMaterial(obj.material) ?? FALLBACK_COLOR,
-        (points as [number, number][]).map(([x, y]) => ({ x, y }))
+        object,
+        getColorFromMaterial(object.material) ?? FALLBACK_COLOR,
+        (points as Array<[number, number]>).map(([x, y]) => ({ x, y }))
       )
       break
+    }
+
     case "unknown":
       console.log("draw unknown shape")
-      drawCircle(obj, obj.material, obj.x, obj.y, defaultRadius)
+      drawCircle(object, object.material, object.x, object.y, defaultRadius)
       break
     default:
-      console.log("Not sure how to draw", obj)
+      console.log("Not sure how to draw", object)
   }
 }
 
 function configureEventHandlers($element: SVGElement, object: IObject) {
   if (!object) {
-    console.error("Failed to set up event handlers for ", object)
+    console.error("Failed to set up event handlers for", object)
     return
   }
-  $element.onmousedown = (event) => {
+
+  $element.addEventListener("mousedown", (event) => {
     const indexIfSelected = selectedObjects.indexOf(object)
 
     if (event.ctrlKey) {
-      if (indexIfSelected !== -1) {
-        // deselect
-        updateSelectedObjects(selectedObjects.filter((obj) => obj !== object))
-        console.log("deselect Object")
-      } else {
-        // add to selection
+      if (indexIfSelected === -1) {
+        // Add to selection
         updateSelectedObjects([...selectedObjects, object])
         console.log("add Object to selection")
+      } else {
+        // Deselect
+        updateSelectedObjects(
+          selectedObjects.filter((selectedObject) => selectedObject !== object)
+        )
+        console.log("deselect Object")
       }
     } else {
       if (indexIfSelected !== -1) return
       updateSelectedObjects([object])
     }
-  }
+  })
 }
 
 export function snapToGrid(coordinate: number) {
@@ -221,6 +230,7 @@ export function snapToGrid(coordinate: number) {
   if (rest < gridSize / 2) {
     return coordinate - rest
   }
+
   return coordinate + (gridSize - rest)
 }
 
@@ -229,13 +239,13 @@ export function initializeSelectionRectangle(x: number, y: number): SVGElement {
   $selectionRectangle.removeAttribute("hidden")
   $selectionRectangle.setAttribute("width", "1")
   $selectionRectangle.setAttribute("height", "1")
-  $selectionRectangle.setAttribute("x", "" + x)
-  $selectionRectangle.setAttribute("y", "" + y)
+  $selectionRectangle.setAttribute("x", String(x))
+  $selectionRectangle.setAttribute("y", String(y))
   $selectionRectangle.setAttribute(
     "style",
     "stroke-width:1;stroke:" + SELECTION_RECTANGLE_COLOR + ";fill-opacity:.1"
   )
-  $svgElements.$groupOverlay.appendChild($selectionRectangle)
+  $svgElements.$groupOverlay.append($selectionRectangle)
 
   return $selectionRectangle
 }
@@ -245,17 +255,16 @@ export function updateSelectionRectangle(
   start: { x: number; y: number },
   end: { x: number; y: number }
 ) {
-  // via https://stackoverflow.com/a/61221651
-  $selectionRectangle.setAttribute("x", "" + Math.min(start.x, end.x))
-  $selectionRectangle.setAttribute("y", "" + Math.min(start.y, end.y))
-  $selectionRectangle.setAttribute("width", "" + Math.abs(start.x - end.x))
-  $selectionRectangle.setAttribute("height", "" + Math.abs(start.y - end.y))
+  // Via https://stackoverflow.com/a/61221651
+  $selectionRectangle.setAttribute("x", String(Math.min(start.x, end.x)))
+  $selectionRectangle.setAttribute("y", String(Math.min(start.y, end.y)))
+  $selectionRectangle.setAttribute("width", String(Math.abs(start.x - end.x)))
+  $selectionRectangle.setAttribute("height", String(Math.abs(start.y - end.y)))
 }
 
-function getSelectionRectangle() {
-  const $existingRectangle = $svgElements.$groupOverlay.querySelector(
-    "#selectionRectangle"
-  ) as SVGAElement | null
+function getSelectionRectangle(): SVGElement {
+  const $existingRectangle =
+    $svgElements.$groupOverlay.querySelector<SVGElement>("#selectionRectangle")
   if ($existingRectangle) {
     return $existingRectangle
   }
@@ -265,7 +274,7 @@ function getSelectionRectangle() {
     "rect"
   )
   $newRectangle.setAttribute("id", "selectionRectangle")
-  $svgElements.$groupOverlay.appendChild($newRectangle)
+  $svgElements.$groupOverlay.append($newRectangle)
 
   return $newRectangle
 }
@@ -274,11 +283,12 @@ export function hideSelectionRectangle($rectangle: SVGElement | undefined) {
   if (!$rectangle) {
     return
   }
+
   $rectangle.setAttribute("hidden", "true")
 }
 
 export function showCenter(objects: IObject[]) {
-  if (!objects.length) return
+  if (objects.length === 0) return
 
   if (objects.length === 1) {
     const [{ x, y }] = objects
@@ -298,20 +308,20 @@ function drawCrossAt({ x, y }: Point) {
     "http://www.w3.org/2000/svg",
     "line"
   )
-  $horizontalLine.setAttribute("x1", "" + (x - crossSize))
-  $horizontalLine.setAttribute("y1", "" + y)
-  $horizontalLine.setAttribute("x2", "" + (x + crossSize))
-  $horizontalLine.setAttribute("y2", "" + y)
+  $horizontalLine.setAttribute("x1", String(x - crossSize))
+  $horizontalLine.setAttribute("y1", String(y))
+  $horizontalLine.setAttribute("x2", String(x + crossSize))
+  $horizontalLine.setAttribute("y2", String(y))
   $horizontalLine.setAttribute("style", style)
 
   const $verticalLine = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "line"
   )
-  $verticalLine.setAttribute("x1", "" + x)
-  $verticalLine.setAttribute("y1", "" + (y + crossSize))
-  $verticalLine.setAttribute("x2", "" + x)
-  $verticalLine.setAttribute("y2", "" + (y - crossSize))
+  $verticalLine.setAttribute("x1", String(x))
+  $verticalLine.setAttribute("y1", String(y + crossSize))
+  $verticalLine.setAttribute("x2", String(x))
+  $verticalLine.setAttribute("y2", String(y - crossSize))
   $verticalLine.setAttribute("style", style)
 
   const $group = document.createElementNS("http://www.w3.org/2000/svg", "g")

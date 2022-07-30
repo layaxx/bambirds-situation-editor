@@ -10,7 +10,8 @@
     "type-check:watch": "yarn type-check -- --watch",
     "build": "yarn type-check && node esbuild.config.mjs",
     "start": "node esbuild.config.mjs -w",
-    "dev": "concurrently \"yarn start\" \"yarn type-check:watch\""
+    "dev": "concurrently \"yarn start\" \"yarn type-check:watch\"",
+    "lint": "xo"
   },
   "dependencies": {
     "@picocss/pico": "^1.5.3"
@@ -19,6 +20,67 @@
     "concurrently": "^7.3.0",
     "esbuild": "^0.14.49",
     "esbuild-serve": "^1.0.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "xo": "^0.51.0"
+  },
+  "xo": {
+    "prettier": true,
+    "ignores": [
+      "esbuild.config.mjs"
+    ],
+    "rules": {
+      "@typescript-eslint/consistent-type-assertions": "off",
+      "eslint-comments/no-unused-disable": "off",
+      "import/extensions": "off",
+      "import/no-cycle": "off",
+      "import/no-mutable-exports": "off",
+      "unicorn/filename-case": [
+        "error",
+        {
+          "case": "camelCase"
+        }
+      ],
+      "unicorn/no-array-for-each": "off",
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          "selector": "default",
+          "format": [
+            "camelCase"
+          ]
+        },
+        {
+          "selector": "variable",
+          "format": [
+            "camelCase",
+            "UPPER_CASE"
+          ],
+          "leadingUnderscore": "allow"
+        },
+        {
+          "selector": "parameter",
+          "format": [
+            "camelCase"
+          ],
+          "leadingUnderscore": "allow"
+        },
+        {
+          "selector": "memberLike",
+          "modifiers": [
+            "private"
+          ],
+          "format": [
+            "camelCase"
+          ],
+          "leadingUnderscore": "require"
+        },
+        {
+          "selector": "typeLike",
+          "format": [
+            "PascalCase"
+          ]
+        }
+      ]
+    }
   }
 }
