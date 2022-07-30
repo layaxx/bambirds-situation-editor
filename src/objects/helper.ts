@@ -1,3 +1,4 @@
+import { selectedObjects } from "../app"
 import { IObject, Point } from "../types"
 
 export function getArea(object: IObject) {
@@ -11,27 +12,25 @@ export function getArea(object: IObject) {
 }
 
 export function _scaleObject(obj: IObject) {
-  // TODO: does not work for poly shapes
   switch (obj.shape) {
     case "rect":
       obj.params[0] = (obj.unscaledParams[0] as number) * (obj.scale as number)
       obj.params[1] = (obj.unscaledParams[1] as number) * (obj.scale as number)
       break
     case "ball":
-      obj.params[0] = (obj.unscaledParams[0] as number) * obj.scale
+      obj.params[0] = (obj.unscaledParams[0] as number) * (obj.scale as number)
       break
     case "poly":
-      function func(
-        input: number | number[],
-        scaleFactor: number
-      ): number | number[] {
-        if (typeof input === "number") {
-          return (input *= scaleFactor)
-        }
-        return input.map((value) => (value *= scaleFactor))
-      }
-      const [first, ...rest] = obj.unscaledParams
-      obj.params = [first, ...rest.map((value) => func(value, obj.scale))]
+      const [first, ...rest] = obj.vectors
+
+      obj.params = [
+        first,
+        ...rest.map((input) => {
+          if (typeof input === "number") return [1, 1]
+          const [x, y] = input
+          return [obj.x + x * obj.scale, obj.y + y * obj.scale]
+        }),
+      ]
       break
     default:
       console.log("Not sure how to scale", obj)

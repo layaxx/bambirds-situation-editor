@@ -10,6 +10,7 @@ import {
   handleScaleObject,
   handleMoveObject,
   _scaleObject,
+  translatePolyObject,
 } from "../objects/helper"
 import { removeObjects, redrawObjects, updateCenter } from "../output"
 import { updateTable } from "../output/table"
@@ -53,7 +54,7 @@ export function setUpKeyboardEventHandlers() {
           const angle = event.key === "ArrowRight" ? +offset : -offset
           const center = getCenterFromObjects(selectedObjects)
           // rotate center of objects
-          selectedObjects.forEach((object, index) => {
+          selectedObjects.forEach((object) => {
             const vector = { x: object.x - center.x, y: object.y - center.y }
 
             object.x =
@@ -62,23 +63,16 @@ export function setUpKeyboardEventHandlers() {
               center.y + Math.sin(angle) * vector.x + Math.cos(angle) * vector.y
 
             if (object.shape === "poly") {
-              const [first, ...rest] = object.unscaledParams
-              object.unscaledParams = [
+              const [first, ...rest] = object.vectors
+              object.vectors = [
                 first,
-                ...rest.map((input) => {
+                ...rest.map((input): [number, number] => {
                   if (typeof input === "number") {
                     return [1, 1]
                   }
                   const [x1, y1] = input
-                  const vector = { x: x1 - center.x, y: y1 - center.y }
-                  const newX =
-                    center.x +
-                    Math.cos(angle) * vector.x -
-                    Math.sin(angle) * vector.y
-                  const newY =
-                    center.y +
-                    Math.sin(angle) * vector.x +
-                    Math.cos(angle) * vector.y
+                  const newX = Math.cos(angle) * x1 - Math.sin(angle) * y1
+                  const newY = Math.sin(angle) * x1 + Math.cos(angle) * y1
 
                   return [newX, newY]
                 }),
@@ -113,7 +107,6 @@ export function setUpKeyboardEventHandlers() {
           // Scale
           selectionMeta.scale += event.key === "ArrowUp" ? +0.1 : -0.1
           selectedObjects.forEach((obj, index) => {
-            handleScaleObject(obj, event.key, event.ctrlKey)
             const center = selectionMeta.center
             if (selectedObjects.length > 1) {
               obj.x =
@@ -121,6 +114,7 @@ export function setUpKeyboardEventHandlers() {
               obj.y =
                 center.y + selectionMeta.scale * selectionMeta.vectors[index].y
             }
+            handleScaleObject(obj, event.key, event.ctrlKey)
           })
         } else {
           // Move

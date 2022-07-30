@@ -1,4 +1,4 @@
-import { redrawObjects } from "."
+import { redrawObjects, updateCenter } from "."
 import { $tableElements } from "../app"
 import { IObject } from "../types"
 import { _scaleObject } from "../objects/helper"
@@ -27,17 +27,20 @@ export function updateTable(...objs: IObject[]) {
   $tableElements.x.onchange = (event) => {
     object.x = parseFloat((event.target as HTMLInputElement)?.value)
     redrawObjects([object])
+    updateCenter([object])
   }
   $tableElements.y.value = "" + object.y
   $tableElements.y.onchange = (event) => {
     object.y = parseFloat((event.target as HTMLInputElement)?.value)
     redrawObjects([object])
+    updateCenter([object])
   }
   $tableElements.s.value = "" + object.scale
   $tableElements.s.onchange = (event) => {
     object.scale = parseFloat((event.target as HTMLInputElement)?.value)
     _scaleObject(object)
     redrawObjects([object])
+    updateCenter([object])
   }
   $tableElements.a.value =
     "" + (object.shape === "rect" ? object.params[2] : "")

@@ -57,6 +57,16 @@ export default function parse(text: string) {
         form,
         scale: 1,
         unscaledParams: JSON.parse(JSON.stringify(params)),
+        vectors:
+          shape === "poly"
+            ? params.map((entry, index) => {
+                if (index === 0 || typeof entry === "number") return entry
+                const [x1, y1] = entry
+                const newX = x1 - x
+                const newY = y1 - y
+                return [newX, newY]
+              })
+            : undefined,
       }
     })
     .filter((obj) => obj !== null) as IObject[]

@@ -10,6 +10,7 @@ import {
   snapToGrid,
   updateSelectionRectangle,
 } from "../output/svg"
+import { updateTable } from "../output/table"
 
 function getMousePosition(svg: HTMLElement, event: MouseEvent | TouchEvent) {
   var CTM = (svg as unknown as SVGGraphicsElement).getScreenCTM()
@@ -105,6 +106,7 @@ export function setUpMouseEventHandlers(svg: HTMLElement) {
       })
       redrawObjects(selectedObjects)
       updateCenter(selectedObjects)
+      updateTable(...selectedObjects)
     }
   }
 

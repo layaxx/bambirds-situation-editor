@@ -12,6 +12,7 @@ export interface IObject {
   scale: number
   params: (number | number[])[]
   unscaledParams: (number | number[])[]
+  vectors: [number, ...[number, number][]]
 }
 
 export type Point = {
