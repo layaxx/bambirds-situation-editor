@@ -24,3 +24,11 @@ main.container {
 main>div {
     padding: 0rem 2rem;
 }
+
+#database {
+    white-space: nowrap;
+}
+
+textarea {
+    line-height: normal;
+}

@@ -22,7 +22,7 @@ export function scaleObjectInternal(object: IObject) {
       object.params[0] = (object.unscaledParams[0] as number) * object.scale
       break
     case "poly": {
-      const [first, ...rest] = object.vectors
+      const [first, ...rest] = object.vectors ?? [-1]
 
       object.params = [
         first,
@@ -156,4 +156,8 @@ export function getCenterFromObjects(objects: IObject[]): Point {
   }
 
   return { x: (minX + maxX) / 2, y: (minY + maxY) / 2 }
+}
+
+export function getCenterFromObject(object: IObject): Point {
+  return { x: object.x, y: object.y }
 }

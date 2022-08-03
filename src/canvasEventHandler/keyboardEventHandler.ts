@@ -98,7 +98,7 @@ function handleRotate(key: string, ctrlKey: boolean) {
       center.y + Math.sin(angle) * vector.x + Math.cos(angle) * vector.y
 
     if (object.shape === "poly") {
-      const [first, ...rest] = object.vectors
+      const [first, ...rest] = object.vectors ?? [-1]
       object.vectors = [
         first,
         ...rest.map((input): [number, number] => {
@@ -152,12 +152,16 @@ function handleScale(key: string, ctrlKey: boolean) {
 }
 
 function handleDuplicate(ctrlKey: boolean) {
+  const newObjects: IObject[] = []
   if (ctrlKey) {
-    const newObject = {
-      ...selectedObjects[0],
-      id: `${selectedObjects[0].id}d${getUID()}`,
-    }
-    objects.push(newObject)
-    redrawObjects(selectedObjects, [newObject])
+    selectedObjects.forEach((object) => {
+      const newObject = {
+        ...(JSON.parse(JSON.stringify(object)) as IObject),
+        id: `${object.id}d${getUID()}`,
+      }
+      newObjects.push(newObject)
+    })
+    objects.push(...newObjects)
+    redrawObjects(selectedObjects, newObjects)
   }
 }

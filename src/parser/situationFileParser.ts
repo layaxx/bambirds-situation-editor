@@ -1,14 +1,5 @@
-import { IObject, Scene } from "../types"
-
-interface IFormPredicate {
-  id: string
-  form: string
-}
-
-interface IMaterialPredicate {
-  id: string
-  material: string
-}
+import { IFormPredicate, IMaterialPredicate, IObject, Scene } from "../types"
+import { getGenericValues } from "./prologHelper"
 
 export default function parse(text: string): {
   objects: IObject[]
@@ -161,25 +152,6 @@ function getFormFor(idParameter: string, formPredicates: IFormPredicate[]) {
   }
 
   return form
-}
-
-function getGenericValues(
-  predicate: string | undefined
-): Array<string | number | number[]> {
-  if (!predicate) {
-    console.error("Cannot determine values of undefined")
-    return []
-  }
-
-  const name = predicate.split("(")[0]
-
-  predicate = "[" + predicate.replace(name + "(", "").replace(").", "") + "]"
-
-  const args = JSON.parse(
-    predicate.replace(/(['"])?([a-zA-Z]\w+)(['"])?/g, '"$2"')
-  ) as Array<string | number | number[]>
-
-  return [name.trim(), ...args]
 }
 
 function parseShapeToObject(

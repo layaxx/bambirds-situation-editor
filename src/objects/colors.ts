@@ -3,6 +3,7 @@ export const PORK_COLOR = "#1AFF1A" as const
 export const WOOD_COLOR = "#E6991A" as const
 export const STONE_COLOR = "#808080" as const
 export const ICE_COLOR = "#99B3FF" as const
+export const CBR_COLOR = "green" as const
 export const FALLBACK_COLOR = "lightgray" as const
 
 export const HORIZON_LINE_COLOR = "red" as const
@@ -28,6 +29,8 @@ export function getColorFromMaterial(
       return PORK_COLOR
     case "tnt":
       return TNT_COLOR
+    case "cbr":
+      return CBR_COLOR
     case undefined:
       return undefined
     default:

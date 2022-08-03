@@ -1,15 +1,23 @@
-import { $svgElements, scene, selectedObjects } from "../app"
+import {
+  $svgElements,
+  scene,
+  selectedObjects,
+  updateSelectedObjects,
+} from "../app"
 import { IObject } from "../types"
 import { drawHorizontalLine, drawShape, showCenter } from "./svg"
 import { updateTable } from "./table"
 
 export function redrawAll(objects: IObject[]) {
-  console.log(objects.length)
   $svgElements.$groupObjects.replaceChildren()
 
   drawHorizontalLine(scene.groundY)
   objects.forEach((object) => {
-    drawShape(object)
+    drawShape(
+      object,
+      $svgElements.$groupObjects,
+      clickEventListenerFactory(object)
+    )
   })
   updateTable(...selectedObjects)
 }
@@ -37,7 +45,11 @@ export function redrawObjects(
 ) {
   for (const object of [...selectedObjects, ...unselectedObjects]) {
     removeObject(object)
-    drawShape(object)
+    drawShape(
+      object,
+      $svgElements.$groupObjects,
+      clickEventListenerFactory(object)
+    )
   }
 }
 
@@ -50,4 +62,29 @@ export function updateCenter(objects: IObject[]) {
 
     showCenter(objects)
   } catch {}
+}
+
+function clickEventListenerFactory(
+  object: IObject
+): (this: SVGElement, ev: MouseEvent) => any {
+  return (event) => {
+    const indexIfSelected = selectedObjects.indexOf(object)
+
+    if (event.ctrlKey) {
+      if (indexIfSelected === -1) {
+        // Add to selection
+        updateSelectedObjects([...selectedObjects, object])
+        console.log("add Object to selection")
+      } else {
+        // Deselect
+        updateSelectedObjects(
+          selectedObjects.filter((selectedObject) => selectedObject !== object)
+        )
+        console.log("deselect Object")
+      }
+    } else {
+      if (indexIfSelected !== -1) return
+      updateSelectedObjects([object])
+    }
+  }
 }

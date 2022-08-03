@@ -300,24 +300,35 @@ supports(wood8,wood14).
         ></svg>
       </div>
 
-      <div>
-        <p>Selected Object: <span id="selected-object-id"></span></p>
-        <div class="grid">
-          <label
-            >X Coordinate: <input type="number" id="selected-object-x" />
-          </label>
-          <label
-            >Y Coordinate: <input type="number" id="selected-object-y" />
-          </label>
+      <div class="grid">
+        <div>
+          <p>Selected Object: <span id="selected-object-id"></span></p>
+          <div class="grid">
+            <label
+              >X Coordinate: <input type="number" id="selected-object-x" />
+            </label>
+            <label
+              >Y Coordinate: <input type="number" id="selected-object-y" />
+            </label>
+          </div>
+          <div class="grid">
+            <label
+              >Scale:
+              <input type="number" id="selected-object-s" min="0" step="0.1" />
+            </label>
+            <label
+              >Angle: <input type="number" id="selected-object-a" step="0.1" />
+            </label>
+          </div>
         </div>
-        <div class="grid">
-          <label
-            >Scale:
-            <input type="number" id="selected-object-s" min="0" step="0.1" />
-          </label>
-          <label
-            >Angle: <input type="number" id="selected-object-a" step="0.1" />
-          </label>
+        <div>
+          <p>Case Analysis</p>
+          <small
+            >Analysis of cases in this webapp ignores possible obstacles to
+            shot. i.e. not applicable === "definitely not applicable";
+            applicable === "applicable iff free shot possible"</small
+          >
+          <div id="analysis-results"></div>
         </div>
       </div>
 
@@ -354,6 +365,38 @@ supports(wood8,wood14).
           </tr>
         </tbody>
       </table>
+
+      <div>
+        <h2>CBR Analysis</h2>
+        <div class="grid">
+          <div>
+            <label>Input database.pl</label>
+            <textarea id="database" rows="10" cols="50">
+:- module(cbr_database, [effect/3, shot/3, case/3, case_shape/6, case_hasMaterial/6, case_hasForm/2]).
+:- discontiguous cbr_database:effect/3.
+:- discontiguous cbr_database:shot/3.
+:- discontiguous cbr_database:case/3.
+:- discontiguous cbr_database:case_shape/6.
+:- discontiguous cbr_database:case_hasMaterial/6.
+:- discontiguous cbr_database:case_hasForm/2.
+:- discontiguous cbr_database:case_pig/5.
+% 2
+case_shape(c2ice11,rect, 617.5,293.5,297,[11,27,1.57079633]).
+case_hasMaterial(c2ice11,ice,612,280,11,27).
+case_hasForm(c2ice11,bar).
+effect(c2,c2ice11,moved).
+case_shape(c2pig1,ball, 639,300,113,[6]).
+case_hasMaterial(c2pig1,pork,635,296,8,8).
+case_pig(c2pig1,635,296,8,8).
+effect(c2,c2pig1,moved).
+shot(s2,600.5224513691651,298.99999999999994).
+case(c2,[c2ice11, c2pig1],s2).
+% 3
+
+            </textarea>
+          </div>
+        </div>
+      </div>
     </main>
 
     <footer style="text-align: center; color: white">

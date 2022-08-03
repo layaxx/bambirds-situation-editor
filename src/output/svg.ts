@@ -1,6 +1,6 @@
 import { $svgElements, selectedObjects, updateSelectedObjects } from "../app"
 import { IObject, Point } from "../types"
-import { getCenterFromObjects } from "../objects/helper"
+import { getCenterFromObject, getCenterFromObjects } from "../objects/helper"
 import {
   CENTER_CROSS_COLOR,
   CIRCLE_STROKE_COLOR,
@@ -79,6 +79,7 @@ export function drawHorizontalLine(y: number) {
 }
 
 export function drawPoly(
+  $target: SVGElement,
   object: IObject,
   color: string,
   points: Array<{ x: number; y: number }>
@@ -98,24 +99,25 @@ export function drawPoly(
     };stroke:${CIRCLE_STROKE_COLOR};stroke-width:0.5`
   )
   $polygon.setAttribute("id", "svg-" + object.id)
-  configureEventHandlers($polygon, object)
 
-  $svgElements.$groupObjects.append($polygon)
+  $target.append($polygon)
+
+  return $polygon
 }
 
 function drawCircle(
+  $target: SVGElement,
   object: IObject,
   color: string,
-  cx: number,
-  cy: number,
+  center: Point,
   radius: number
 ) {
   const $circle = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "circle"
   )
-  $circle.setAttribute("cx", String(cx))
-  $circle.setAttribute("cy", String(cy))
+  $circle.setAttribute("cx", String(center.x))
+  $circle.setAttribute("cy", String(center.y))
   $circle.setAttribute("r", String(radius))
   $circle.setAttribute("id", "svg-" + object.id)
   $circle.setAttribute(
@@ -124,9 +126,10 @@ function drawCircle(
       selectedObjects.includes(object) ? SELECTED_OBJECT_COLOR : color
     };stroke:${CIRCLE_STROKE_COLOR};stroke-width:0.5`
   )
-  configureEventHandlers($circle, object)
 
-  $svgElements.$groupObjects.append($circle)
+  $target.append($circle)
+
+  return $circle
 }
 
 function rotShift(
@@ -147,7 +150,12 @@ function rotShift(
   return [[xrs, yrs], ...rotShift(angle, cx, cy, remainingList)]
 }
 
-export function drawShape(object: IObject) {
+export function drawShape(
+  object: IObject,
+  $target: SVGElement,
+  clickEventListener?: (this: SVGElement, ev: MouseEvent) => any
+) {
+  let newElement: SVGElement | undefined
   switch (object.shape) {
     case "rect": {
       const [w, h, angle] = object.params
@@ -160,7 +168,8 @@ export function drawShape(object: IObject) {
         [halfHeight, halfWidth],
         [halfHeight, -halfWidth],
       ]).map(([x, y]: [number, number]) => ({ x, y }))
-      drawPoly(
+      newElement = drawPoly(
+        $target,
         object,
         getColorFromMaterial(object.material) ?? FALLBACK_COLOR,
         points
@@ -169,18 +178,19 @@ export function drawShape(object: IObject) {
     }
 
     case "ball":
-      drawCircle(
+      newElement = drawCircle(
+        $target,
         object,
         getColorFromMaterial(object.material) ?? object.color ?? FALLBACK_COLOR,
-        object.x,
-        object.y,
+        getCenterFromObject(object),
         (object.params[0] as number | undefined) ?? defaultRadius
       )
       break
 
     case "poly": {
       const [_, ...points] = object.params
-      drawPoly(
+      newElement = drawPoly(
+        $target,
         object,
         getColorFromMaterial(object.material) ?? FALLBACK_COLOR,
         (points as Array<[number, number]>).map(([x, y]) => ({ x, y }))
@@ -190,39 +200,21 @@ export function drawShape(object: IObject) {
 
     case "unknown":
       console.log("draw unknown shape")
-      drawCircle(object, object.material, object.x, object.y, defaultRadius)
+      newElement = drawCircle(
+        $target,
+        object,
+        getColorFromMaterial(object.material) ?? FALLBACK_COLOR,
+        getCenterFromObject(object),
+        defaultRadius
+      )
       break
     default:
       console.log("Not sure how to draw", object)
   }
-}
 
-function configureEventHandlers($element: SVGElement, object: IObject) {
-  if (!object) {
-    console.error("Failed to set up event handlers for", object)
-    return
+  if (newElement && clickEventListener) {
+    newElement.addEventListener("click", clickEventListener)
   }
-
-  $element.addEventListener("mousedown", (event) => {
-    const indexIfSelected = selectedObjects.indexOf(object)
-
-    if (event.ctrlKey) {
-      if (indexIfSelected === -1) {
-        // Add to selection
-        updateSelectedObjects([...selectedObjects, object])
-        console.log("add Object to selection")
-      } else {
-        // Deselect
-        updateSelectedObjects(
-          selectedObjects.filter((selectedObject) => selectedObject !== object)
-        )
-        console.log("deselect Object")
-      }
-    } else {
-      if (indexIfSelected !== -1) return
-      updateSelectedObjects([object])
-    }
-  })
 }
 
 export function snapToGrid(coordinate: number) {
@@ -292,15 +284,15 @@ export function showCenter(objects: IObject[]) {
 
   if (objects.length === 1) {
     const [{ x, y }] = objects
-    drawCrossAt({ x, y })
+    drawCrossAt({ x, y }, $svgElements.$groupOverlay)
     return
   }
 
   const { x, y } = getCenterFromObjects(objects)
-  drawCrossAt({ x, y })
+  drawCrossAt({ x, y }, $svgElements.$groupOverlay)
 }
 
-function drawCrossAt({ x, y }: Point) {
+export function drawCrossAt({ x, y }: Point, svg: SVGElement) {
   const crossSize = 20
   const style = "stroke:" + CENTER_CROSS_COLOR + ";stroke-width:2;opacity:.4"
 
@@ -329,5 +321,5 @@ function drawCrossAt({ x, y }: Point) {
 
   $group.append($horizontalLine, $verticalLine)
 
-  $svgElements.$groupOverlay.append($group)
+  svg.append($group)
 }

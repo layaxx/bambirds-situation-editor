@@ -12,12 +12,16 @@ import { drawGrid, setUpGroups } from "./output/svg"
 import parse from "./parser/situationFileParser"
 import { updateTable } from "./output/table"
 import { setUpEventHandlers } from "./canvasEventHandler"
+import parseDatabase from "./parser/databaseParser"
+import { analyzeCase } from "./output/caseBasedReasoning"
 
 let $input: HTMLInputElement
 let $output: HTMLInputElement
 let $svgElements: SVGElements
 let $keepPredicates: HTMLInputElement
 let $tableElements: TableElements
+let $databaseInput: HTMLInputElement
+let $CBRResults: HTMLElement
 let objects: IObject[]
 let selectedObjects: IObject[] = []
 let scene: Scene
@@ -90,6 +94,7 @@ function init() {
 
   setUpEventHandlers($container)
 
+  // Load Situation File
   const loadSituationFile = () => {
     const loadResult = parse($input.value)
     objects = loadResult.objects
@@ -102,6 +107,34 @@ function init() {
     loadSituationFile()
   })
   loadSituationFile()
+
+  // Load Database
+  $databaseInput = document.querySelector("#database")!
+  $CBRResults = document.querySelector("#analysis-results")!
+  if ($databaseInput === null) {
+    console.warn("Failed to get HTML Elements for Database")
+  }
+
+  const loadDatabase = () => {
+    const cases = parseDatabase($databaseInput.value)
+    $CBRResults.replaceChildren()
+    $svgElements.$groupOverlay.replaceChildren()
+
+    const reloadButton = document.createElement("button")
+    reloadButton.addEventListener("click", loadDatabase)
+    reloadButton.textContent = "Reload"
+    $CBRResults.append(reloadButton)
+
+    $CBRResults.append(
+      ...cases.map((caseParameter) => analyzeCase(caseParameter, objects))
+    )
+    console.log("cases", cases)
+  }
+
+  $databaseInput.addEventListener("blur", () => {
+    loadDatabase()
+  })
+  loadDatabase()
 }
 
 init()
