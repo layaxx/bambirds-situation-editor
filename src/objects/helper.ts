@@ -1,6 +1,6 @@
 import { IObject, Point } from "../types"
 
-export function getArea(object: IObject) {
+export function getArea(object: IObject): number {
   if (object.shape === "rect") {
     return (object.params[0] as number) * (object.params[1] as number)
   }
@@ -12,7 +12,7 @@ export function getArea(object: IObject) {
   return object.area
 }
 
-export function scaleObjectInternal(object: IObject) {
+export function scaleObjectInternal(object: IObject): void {
   switch (object.shape) {
     case "rect":
       object.params[0] = (object.unscaledParams[0] as number) * object.scale
@@ -44,12 +44,12 @@ export function handleMoveObject(
   object: IObject,
   key: string,
   isHighSpeed?: boolean
-) {
+): void {
   if (!object) {
     return
   }
 
-  const offset = Number(isHighSpeed ? 10 : 1)
+  const offset = isHighSpeed ? 10 : 1
   let xOffset = 0
   let yOffset = 0
   switch (key) {
@@ -70,27 +70,32 @@ export function handleMoveObject(
       return
   }
 
-  translatePolyObject(object, xOffset, yOffset)
-
   object.x += xOffset
   object.y += yOffset
+
+  if (object.shape === "poly") translatePolyObject(object, xOffset, yOffset)
 }
 
 export function translatePolyObject(
   object: IObject,
   xOffset: number,
   yOffset: number
-) {
+): void {
   if (object.shape === "poly") {
-    const [first, ...rest] = object.unscaledParams
-    object.unscaledParams = [
-      first,
-      ...rest.map((input) =>
-        typeof input === "number"
-          ? [input, input]
-          : [input[0] + xOffset, input[1] + yOffset]
-      ), // Y=0 is at top
-    ]
+    object.unscaledParams = object.unscaledParams.map((value, index) => {
+      if (index === 0) {
+        return value
+      }
+
+      if (typeof value === "number") {
+        // This should actually never happen and is just a fallback
+        return [value, value]
+      }
+
+      const [x, y] = value
+      return [x + xOffset, y + yOffset]
+    })
+
     scaleObjectInternal(object) // Needed to translate unscaledParams to actual params
   }
 }
@@ -99,7 +104,7 @@ export function handleScaleObject(
   object: IObject,
   key: string,
   isHighSpeed?: boolean
-) {
+): void {
   if (!object) {
     return
   }
@@ -124,7 +129,7 @@ export function getObjectsWithinBoundary(
   objects: IObject[],
   upperLeft: Point,
   lowerRight: Point
-) {
+): IObject[] {
   // By center point, because easier
   const result: IObject[] = []
 
@@ -143,21 +148,13 @@ export function getObjectsWithinBoundary(
 }
 
 export function getCenterFromObjects(objects: IObject[]): Point {
-  let minX = Number.MAX_VALUE
-  let maxX = 0
-  let minY = Number.MAX_VALUE
-  let maxY = 0
+  let sumX = 0
+  let sumY = 0
 
   for (const object of objects) {
-    minX = Math.min(object.x, minX)
-    maxX = Math.max(object.x, maxX)
-    minY = Math.min(object.y, minY)
-    maxY = Math.max(object.y, maxY)
+    sumX += object.x
+    sumY += object.y
   }
 
-  return { x: (minX + maxX) / 2, y: (minY + maxY) / 2 }
-}
-
-export function getCenterFromObject(object: IObject): Point {
-  return { x: object.x, y: object.y }
+  return { x: sumX / objects.length, y: sumY / objects.length }
 }

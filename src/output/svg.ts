@@ -1,6 +1,6 @@
 import { $svgElements, selectedObjects, updateSelectedObjects } from "../app"
-import { IObject, Point } from "../types"
-import { getCenterFromObject, getCenterFromObjects } from "../objects/helper"
+import { IObject, Point, SVGElements } from "../types"
+import { getCenterFromObjects } from "../objects/helper"
 import {
   CENTER_CROSS_COLOR,
   CIRCLE_STROKE_COLOR,
@@ -17,7 +17,7 @@ const defaultRadius = 10_000
 const width = (): number => $svgElements.$svg.clientWidth
 const height = (): number => $svgElements.$svg.clientHeight
 
-export function setUpGroups($svg: HTMLElement) {
+export function setUpGroups($svg: HTMLElement): SVGElements {
   const $groupBackground = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "g"
@@ -43,7 +43,7 @@ export function setUpGroups($svg: HTMLElement) {
   }
 }
 
-export function drawGrid() {
+export function drawGrid(): void {
   const style = `stroke:${GRID_COLOR};stroke-width:0.1`
 
   for (let y = gridSize; y < width(); y += gridSize) {
@@ -67,7 +67,7 @@ export function drawGrid() {
   }
 }
 
-export function drawHorizontalLine(y: number) {
+export function drawHorizontalLine(y: number): void {
   const $line = document.createElementNS("http://www.w3.org/2000/svg", "line")
   $line.setAttribute("x1", String(0))
   $line.setAttribute("y1", String(y))
@@ -111,7 +111,7 @@ function drawCircle(
   color: string,
   center: Point,
   radius: number
-) {
+): SVGElement {
   const $circle = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "circle"
@@ -154,7 +154,7 @@ export function drawShape(
   object: IObject,
   $target: SVGElement,
   clickEventListener?: (this: SVGElement, ev: MouseEvent) => any
-) {
+): void {
   let newElement: SVGElement | undefined
   switch (object.shape) {
     case "rect": {
@@ -182,7 +182,7 @@ export function drawShape(
         $target,
         object,
         getColorFromMaterial(object.material) ?? object.color ?? FALLBACK_COLOR,
-        getCenterFromObject(object),
+        getCenterFromObjects([object]),
         (object.params[0] as number | undefined) ?? defaultRadius
       )
       break
@@ -204,7 +204,7 @@ export function drawShape(
         $target,
         object,
         getColorFromMaterial(object.material) ?? FALLBACK_COLOR,
-        getCenterFromObject(object),
+        getCenterFromObjects([object]),
         defaultRadius
       )
       break
@@ -217,7 +217,7 @@ export function drawShape(
   }
 }
 
-export function snapToGrid(coordinate: number) {
+export function snapToGrid(coordinate: number): number {
   const rest = coordinate % gridSize
   if (rest < gridSize / 2) {
     return coordinate - rest
@@ -246,7 +246,7 @@ export function updateSelectionRectangle(
   $selectionRectangle: SVGElement,
   start: { x: number; y: number },
   end: { x: number; y: number }
-) {
+): void {
   // Via https://stackoverflow.com/a/61221651
   $selectionRectangle.setAttribute("x", String(Math.min(start.x, end.x)))
   $selectionRectangle.setAttribute("y", String(Math.min(start.y, end.y)))
@@ -271,7 +271,9 @@ function getSelectionRectangle(): SVGElement {
   return $newRectangle
 }
 
-export function hideSelectionRectangle($rectangle: SVGElement | undefined) {
+export function hideSelectionRectangle(
+  $rectangle: SVGElement | undefined
+): void {
   if (!$rectangle) {
     return
   }
@@ -279,7 +281,7 @@ export function hideSelectionRectangle($rectangle: SVGElement | undefined) {
   $rectangle.setAttribute("hidden", "true")
 }
 
-export function showCenter(objects: IObject[]) {
+export function showCenter(objects: IObject[]): void {
   if (objects.length === 0) return
 
   if (objects.length === 1) {
@@ -292,7 +294,7 @@ export function showCenter(objects: IObject[]) {
   drawCrossAt({ x, y }, $svgElements.$groupOverlay)
 }
 
-export function drawCrossAt({ x, y }: Point, svg: SVGElement) {
+export function drawCrossAt({ x, y }: Point, svg: SVGElement): void {
   const crossSize = 20
   const style = "stroke:" + CENTER_CROSS_COLOR + ";stroke-width:2;opacity:.4"
 

@@ -136,7 +136,7 @@ function getPredicateName(predicate: string | undefined): string {
 function getMaterialFor(
   idParameter: string,
   materialPredicates: IMaterialPredicate[]
-) {
+): string | undefined {
   const { material } = materialPredicates.find(
     ({ id }) => id === idParameter
   ) ?? {
@@ -146,7 +146,10 @@ function getMaterialFor(
   return material
 }
 
-function getFormFor(idParameter: string, formPredicates: IFormPredicate[]) {
+function getFormFor(
+  idParameter: string,
+  formPredicates: IFormPredicate[]
+): string | undefined {
   const { form } = formPredicates.find(({ id }) => id === idParameter) ?? {
     form: undefined,
   }

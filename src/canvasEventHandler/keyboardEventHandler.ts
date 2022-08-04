@@ -15,10 +15,10 @@ import { removeObjects, redrawObjects, updateCenter } from "../output"
 import { updateTable } from "../output/table"
 import { IObject } from "../types"
 
-export function setUpKeyboardEventHandlers() {
+export function setUpKeyboardEventHandlers(): void {
   document.addEventListener("keydown", handleKeyPress)
 
-  function handleKeyPress(event: KeyboardEvent) {
+  function handleKeyPress(event: KeyboardEvent): void {
     if (
       new Set(["TEXTAREA", "INPUT"]).has((event.target as HTMLElement)?.tagName)
     ) {
@@ -41,8 +41,7 @@ export function setUpKeyboardEventHandlers() {
           break
         }
 
-      // eslint-disable-next-line no-fallthrough
-      case "ArrowUp":
+      case "ArrowUp": // eslint-disable-line no-fallthrough
       case "ArrowDown":
         if (event.altKey) {
           // Scale
@@ -67,7 +66,7 @@ export function setUpKeyboardEventHandlers() {
   }
 }
 
-function handleDelete() {
+function handleDelete(): void {
   const indicesToBeDeleted: number[] = []
 
   for (const [index, object] of objects.entries()) {
@@ -83,7 +82,7 @@ function handleDelete() {
   removeObjects(hasBeenDeleted) // Needed because updateSelectedObjects() draws old objects that should have been deleted
 }
 
-function handleRotate(key: string, ctrlKey: boolean) {
+function handleRotate(key: string, ctrlKey: boolean): void {
   // Rotate
   const offset = 0.01 * (ctrlKey ? 10 : 1)
   const angle = key === "ArrowRight" ? Number(offset) : -offset
@@ -132,13 +131,12 @@ function handleRotate(key: string, ctrlKey: boolean) {
   }
 
   selectionMeta.center = getCenterFromObjects(selectedObjects)
-
   redrawObjects(selectedObjects)
   updateTable(...selectedObjects)
   updateCenter(selectedObjects) // TODO: Why does the center change??
 }
 
-function handleScale(key: string, ctrlKey: boolean) {
+function handleScale(key: string, ctrlKey: boolean): void {
   selectionMeta.scale += key === "ArrowUp" ? +0.1 : -0.1
   for (const [index, object] of selectedObjects.entries()) {
     const center = selectionMeta.center
@@ -151,7 +149,7 @@ function handleScale(key: string, ctrlKey: boolean) {
   }
 }
 
-function handleDuplicate(ctrlKey: boolean) {
+function handleDuplicate(ctrlKey: boolean): void {
   const newObjects: IObject[] = []
   if (ctrlKey) {
     selectedObjects.forEach((object) => {

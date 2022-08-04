@@ -82,7 +82,7 @@ export function analyzeCase(
 /**
  *  From https://github.com/bryc/code/blob/master/jshash/experimental/cyrb53.js
  */
-function cyrb53Hash(input: string, seed = 0) {
+function cyrb53Hash(input: string, seed = 0): number {
   let h1 = 0xde_ad_be_ef ^ seed // eslint-disable-line no-bitwise
   let h2 = 0x41_c6_ce_57 ^ seed // eslint-disable-line no-bitwise
   for (let i = 0, ch; i < input.length; i++) {
@@ -100,7 +100,10 @@ function cyrb53Hash(input: string, seed = 0) {
   return 4_294_967_296 * (2_097_151 & h2) + (h1 >>> 0) // eslint-disable-line no-bitwise
 }
 
-function toggleOverlay(caseParameter: Case, transformation: Transformation) {
+function toggleOverlay(
+  caseParameter: Case,
+  transformation: Transformation
+): void {
   const id = `case-${caseParameter.id}_${cyrb53Hash(
     JSON.stringify({ transformation })
   ).toString(16)}`

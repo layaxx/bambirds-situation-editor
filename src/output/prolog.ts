@@ -2,7 +2,7 @@ import { $output, objects, scene } from "../app"
 import { FALLBACK_COLOR } from "../objects/colors"
 import { getArea } from "../objects/helper"
 
-export function exportFile(keepDerivedInformation = false) {
+export function exportFile(keepDerivedInformation = false): void {
   const predicates = [
     ...scene.commonPredicates,
     ...(keepDerivedInformation ? scene.derivedPredicates : []),

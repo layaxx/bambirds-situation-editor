@@ -3,7 +3,7 @@ import { IObject } from "../types"
 import { scaleObjectInternal } from "../objects/helper"
 import { redrawObjects, updateCenter } from "."
 
-export function updateTable(...objs: IObject[]) {
+export function updateTable(...objs: IObject[]): void {
   const isMultiple = objs.length > 1
 
   if (isMultiple) {
@@ -59,7 +59,7 @@ export function updateTable(...objs: IObject[]) {
   })
 }
 
-function disableInputs() {
+function disableInputs(): void {
   $tableElements.x.value = ""
   $tableElements.x.setAttribute("disabled", "true")
   $tableElements.y.value = ""
@@ -70,7 +70,7 @@ function disableInputs() {
   $tableElements.a.setAttribute("disabled", "true")
 }
 
-function enableInputs() {
+function enableInputs(): void {
   $tableElements.x.removeAttribute("disabled")
   $tableElements.y.removeAttribute("disabled")
   $tableElements.s.removeAttribute("disabled")

@@ -139,7 +139,7 @@ function init() {
 
 init()
 
-export function updateSelectedObjects(objects: IObject[]) {
+export function updateSelectedObjects(objects: IObject[]): void {
   const oldSelectedObject = [...selectedObjects]
   selectedObjects = [...objects]
   redrawObjects(selectedObjects, oldSelectedObject)
@@ -166,7 +166,7 @@ export function updateSelectedObjects(objects: IObject[]) {
   }
 }
 
-export function getUID() {
+export function getUID(): number {
   return uuidCounter++
 }
 

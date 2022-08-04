@@ -15,7 +15,6 @@ Controls are described on the page
 ## TODO
 
 - Allow adding new Objects (not just duplicating existing objects)
+- Scaling and rotating multiple objects in combination does not work as intended
 - Case Based Reasoning Visualizations:
-  - Load DB and visualize Cases
-  - Show matching Cases
   - Edit cases
