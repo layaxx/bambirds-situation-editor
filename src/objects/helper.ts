@@ -224,3 +224,26 @@ export function getCenterFromObjects(objects: IObject[]): Point {
 
   return { x: sumX / objects.length, y: sumY / objects.length }
 }
+
+/**
+ * Helper function to quickly convert an IObject to a Point representing its center
+ *
+ * @param object - AngryBirds object whose center shall be returned
+ *
+ * @returns the center of the object as Point
+ */
+export function getCenter({ x, y }: IObject): Point {
+  return { x, y }
+}
+
+export function getVectorBetween(point1: Point, point2: Point): Point {
+  return { x: point1.x - point2.x, y: point1.y - point2.y }
+}
+
+export function scaleVector({ x, y }: Point, factor: number): Point {
+  return { x: x * factor, y: y * factor }
+}
+
+export function addVectors(vector1: Point, vector2: Point): Point {
+  return { x: vector1.x + vector2.x, y: vector1.y + vector2.y }
+}

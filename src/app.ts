@@ -1,11 +1,16 @@
 import {
   IObject,
+  Point,
   Scene,
   SelectionMeta,
   SVGElements,
   TableElements,
 } from "./types"
-import { getCenterFromObjects } from "./objects/helper"
+import {
+  getCenter,
+  getCenterFromObjects,
+  getVectorBetween,
+} from "./objects/helper"
 import { redrawAll, redrawObjects, updateCenter } from "./output"
 import { exportFile } from "./output/prolog"
 import { drawGrid, setUpGroups } from "./output/svg"
@@ -130,7 +135,6 @@ function init() {
     $CBRResults.append(
       ...cases.map((caseParameter) => analyzeCase(caseParameter, objects))
     )
-    console.log("cases", cases)
   }
 
   $databaseInput.addEventListener("blur", () => {
@@ -156,13 +160,11 @@ export function updateSelectedObjects(objects: IObject[]): void {
 
   const center = getCenterFromObjects(objects)
 
+  const origins: Point[] = objects.map((object) => getCenter(object))
   selectionMeta = {
     center,
-    vectors: objects.map(({ x, y }) => ({
-      x: x - center.x,
-      y: y - center.y,
-    })),
-    origins: objects.map(({ x, y }) => ({ x, y })),
+    vectors: origins.map((point) => getVectorBetween(point, center)),
+    origins,
     scale:
       objects.length === 0
         ? 1

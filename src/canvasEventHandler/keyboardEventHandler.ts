@@ -10,6 +10,7 @@ import {
   handleScaleObject,
   handleMoveObject,
   scaleObjectInternal,
+  getVectorBetween,
 } from "../objects/helper"
 import { removeObjects, redrawObjects, updateCenter } from "../output"
 import { updateTable } from "../output/table"
@@ -69,7 +70,10 @@ export function setUpKeyboardEventHandlers(): void {
         updateCenter(selectedObjects)
         break
       case "d":
-        handleDuplicate(event.ctrlKey)
+        if (event.ctrlKey) {
+          handleDuplicate()
+        }
+
         break
       default:
     }
@@ -112,7 +116,7 @@ function handleRotate(key: string, ctrlKey: boolean): void {
   const center = getCenterFromObjects(selectedObjects)
   // Rotate center of objects
   for (const object of selectedObjects) {
-    const vector = { x: object.x - center.x, y: object.y - center.y }
+    const vector = getVectorBetween(object, center)
 
     object.x =
       center.x + Math.cos(angle) * vector.x - Math.sin(angle) * vector.y
@@ -156,7 +160,7 @@ function handleRotate(key: string, ctrlKey: boolean): void {
   selectionMeta.center = getCenterFromObjects(selectedObjects)
   redrawObjects(selectedObjects)
   updateTable(...selectedObjects)
-  updateCenter(selectedObjects) // TODO: Why does the center change??
+  // Not needed: updateCenter(selectedObjects): center does not change when rotating
 }
 
 /**
@@ -168,7 +172,9 @@ function handleRotate(key: string, ctrlKey: boolean): void {
  * @param ctrlKey - increases speed of scaling tenfold iff true
  */
 function handleScale(key: string, ctrlKey: boolean): void {
-  selectionMeta.scale += key === "ArrowUp" ? +0.1 : -0.1 // TODO: ignores tenfold speed increase?
+  const offset = 0.1 * (ctrlKey ? 10 : 1)
+
+  selectionMeta.scale += key === "ArrowUp" ? offset : -offset
   for (const [index, object] of selectedObjects.entries()) {
     const center = selectionMeta.center
     if (selectedObjects.length > 1) {
@@ -183,19 +189,17 @@ function handleScale(key: string, ctrlKey: boolean): void {
 /**
  * Adds copies of all selected objects to list of all objects
  *
- * @param ctrlKey TODO: what is this??
  */
-function handleDuplicate(ctrlKey: boolean): void {
+function handleDuplicate(): void {
   const newObjects: IObject[] = []
-  if (ctrlKey) {
-    selectedObjects.forEach((object) => {
-      const newObject = {
-        ...(JSON.parse(JSON.stringify(object)) as IObject),
-        id: `${object.id}d${getUID()}`,
-      }
-      newObjects.push(newObject)
-    })
-    objects.push(...newObjects)
-    redrawObjects(selectedObjects, newObjects)
-  }
+
+  selectedObjects.forEach((object) => {
+    const newObject = {
+      ...(JSON.parse(JSON.stringify(object)) as IObject),
+      id: `${object.id}d${getUID()}`,
+    }
+    newObjects.push(newObject)
+  })
+  objects.push(...newObjects)
+  redrawObjects(selectedObjects, newObjects)
 }

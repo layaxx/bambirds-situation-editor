@@ -1,5 +1,12 @@
 import { $svgElements } from "../app"
-import { scaleObjectInternal } from "../objects/helper"
+import {
+  addVectors,
+  getArea,
+  getCenter,
+  getVectorBetween,
+  scaleObjectInternal,
+  scaleVector,
+} from "../objects/helper"
 import { Case, IObject, Transformation } from "../types"
 import { drawCrossAt, drawShape } from "./svg"
 
@@ -136,7 +143,7 @@ function toggleOverlay(
     caseParameter.objects.forEach((object) => {
       drawShape(
         {
-          ...transformObject(object, transformation),
+          ...transformObject(object, transformation, caseParameter.objects[0]),
           material: "cbr",
         },
         newElement
@@ -156,16 +163,31 @@ function toggleOverlay(
  *
  * @param object - the object a copy of which shall be transformed
  * @param transformation - the transformation that is applied
+ * @param relativeToObject - the object relative to which the given object is scaled
  *
  * @returns the transformed copy of object
  */
 function transformObject(
   object: IObject,
-  transformation: Transformation
+  transformation: Transformation,
+  relativeToObject: IObject
 ): IObject {
+  // Expected location is vector in case scaled by transformation.scale
+
+  const scaledVector = scaleVector(
+    getVectorBetween(getCenter(object), getCenter(relativeToObject)),
+    transformation.scale
+  )
+
+  const translatedPosition = addVectors(getCenter(relativeToObject), {
+    x: transformation.deltaX,
+    y: transformation.deltaY,
+  })
+  const { x, y } = addVectors(translatedPosition, scaledVector)
+
   const transformedObject = {
-    x: (object.x + transformation.deltaX) * transformation.scale,
-    y: (object.y + transformation.deltaY) * transformation.scale,
+    x,
+    y,
     area: object.area * transformation.scale ** 2,
     scale: transformation.scale,
 
@@ -232,7 +254,7 @@ function getTransformations(
       matchedObject
     )
 
-    if (hasMatches(rest, transformation)) {
+    if (hasMatches(rest, transformation, object)) {
       transformations.push(transformation)
     }
   }
@@ -265,30 +287,32 @@ function getPossibleMatches(
  *
  * @param input - array of two-member-array of the form [[object, [list, of, possible, matches, ...]], ...]
  * @param transformation - the transformation to be applied to objects
+ * @param relativeToObject - the object relative to which the transformations are applied. Important for scaling
  *
  * @returns true iff all objects have a match for the given transformation
  */
 function hasMatches(
   input: Array<[IObject, IObject[]]>,
-  transformation: Transformation
+  transformation: Transformation,
+  relativeToObject: IObject
 ): boolean {
-  if (input.length === 0) {
-    return true
-  }
-
-  const [[caseObject, potentialMatches], ...rest] = input
-
-  const transformedCaseObject = transformObject(caseObject, transformation)
-
-  const hasMatch = potentialMatches.some((regularObject) => {
-    return (
-      transformedCaseObject.material === regularObject.material &&
-      transformedCaseObject.shape === regularObject.shape &&
-      coordinatesWithinThreshold(transformedCaseObject, regularObject)
+  return input.every(([caseObject, potentialMatches]) => {
+    const transformedCaseObject = transformObject(
+      caseObject,
+      transformation,
+      relativeToObject
     )
-  })
 
-  return hasMatch && hasMatches(rest, transformation)
+    const hasMatch = potentialMatches.some((regularObject) => {
+      return (
+        transformedCaseObject.material === regularObject.material &&
+        transformedCaseObject.shape === regularObject.shape &&
+        coordinatesWithinThreshold(transformedCaseObject, regularObject)
+      )
+    })
+
+    return hasMatch
+  })
 }
 
 /**
@@ -307,7 +331,7 @@ function getTransformationBetweenTwoObjects(
   return {
     deltaX: regularObject.x - caseObject.x,
     deltaY: regularObject.y - caseObject.y,
-    scale: Math.sqrt(regularObject.area / caseObject.area),
+    scale: Math.sqrt(getArea(regularObject) / getArea(caseObject)),
   }
 }
 
@@ -324,17 +348,13 @@ function coordinatesWithinThreshold(
   object1: IObject,
   object2: IObject
 ): boolean {
-  const threshold = 30
+  const threshold = { x: 30, y: 30, area: 30 }
 
-  const isInX =
-    object1.x - threshold <= object2.x && object2.x <= object1.x + threshold
+  const isInX = Math.abs(object1.x - object2.x) < threshold.x
+  const isInY = Math.abs(object1.y - object2.y) < threshold.y
 
-  const isInY =
-    object1.y - threshold <= object2.y && object2.y <= object1.y + threshold
-
-  const isInA =
-    object1.area - threshold <= object2.area &&
-    object2.area <= object1.area + threshold
+  // TODO: area is currently easily out of threshold after scaling
+  const isInA = Math.abs(getArea(object1) - getArea(object2)) < threshold.area
 
   return isInX && isInY && isInA
 }
