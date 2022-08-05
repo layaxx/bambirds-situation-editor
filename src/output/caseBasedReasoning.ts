@@ -80,7 +80,14 @@ export function analyzeCase(
 }
 
 /**
+ * Generates a 53-bit Hash from a given string input and optionally a given seed number
+ *
  *  From https://github.com/bryc/code/blob/master/jshash/experimental/cyrb53.js
+ *
+ * @param input - the string that shall be hashed
+ * @param seed - optional number which allows for two identical strings to have different hash values
+ *
+ * @returns the computed hash (as a number)
  */
 function cyrb53Hash(input: string, seed = 0): number {
   let h1 = 0xde_ad_be_ef ^ seed // eslint-disable-line no-bitwise
@@ -100,6 +107,14 @@ function cyrb53Hash(input: string, seed = 0): number {
   return 4_294_967_296 * (2_097_151 & h2) + (h1 >>> 0) // eslint-disable-line no-bitwise
 }
 
+/**
+ * Toggles the overlay for the given combination of case and transformation.
+ *
+ * If the overlay does not exist already, it is created, otherwise its hidden state is toggled
+ *
+ * @param caseParameter - the case
+ * @param transformation - the transformation that shall be applied to the case
+ */
 function toggleOverlay(
   caseParameter: Case,
   transformation: Transformation
@@ -136,6 +151,14 @@ function toggleOverlay(
   }
 }
 
+/**
+ * Applies a given transformation to a copy of the given object and returns that copy
+ *
+ * @param object - the object a copy of which shall be transformed
+ * @param transformation - the transformation that is applied
+ *
+ * @returns the transformed copy of object
+ */
 function transformObject(
   object: IObject,
   transformation: Transformation
@@ -146,7 +169,7 @@ function transformObject(
     area: object.area * transformation.scale ** 2,
     scale: transformation.scale,
 
-    // Can be used unchanges
+    // Can be used unchanged
     unscaledParams: object.unscaledParams,
     params: object.params,
     vectors: object.vectors,
@@ -163,6 +186,17 @@ function transformObject(
   return transformedObject
 }
 
+/**
+ * Finds all possible Transformations of the given case such that it matches the current objects.
+ *
+ * Currently obsolete as its is the same as {@link getTransformations}, but could be used in the
+ * future to apply found transformations to the shots that are associated with the given case.
+ *
+ * @param caseParameter - the case for which transformations shall be found iff they exist
+ * @param objects - the objects of the current scene
+ *
+ * @returns array of transformations that make case match the current scene
+ */
 function isCaseApplicable(
   caseParameter: Case,
   objects: IObject[]
@@ -176,6 +210,14 @@ function isCaseApplicable(
   return transformations
 }
 
+/**
+ * Finds all possible Transformations of the given case such that it matches the current objects.
+ *
+ * @param caseObjects - the case for which transformations shall be determined
+ * @param objects - the objects of the current scene
+ *
+ * @returns array of transformations that make case match the current scene
+ */
 function getTransformations(
   caseObjects: IObject[],
   objects: IObject[]
@@ -198,6 +240,15 @@ function getTransformations(
   return transformations
 }
 
+/**
+ * For each object of caseObject, finds objects of allObjects that
+ * might possibly match after a transformation.
+ *
+ * @param caseObjects - array of objects for which possible matches shall be determined
+ * @param allObjects - array of objects from which possible matches are taken
+ *
+ * @returns an array of two-member-array, of the form [[caseObject1, [possibleMatch1, possibleMatch2, ...]], ....]
+ */
 function getPossibleMatches(
   caseObjects: IObject[],
   allObjects: IObject[]
@@ -208,6 +259,15 @@ function getPossibleMatches(
   ])
 }
 
+/**
+ * Determines if every object has a match in the array of possible
+ * matches for the given transformation.
+ *
+ * @param input - array of two-member-array of the form [[object, [list, of, possible, matches, ...]], ...]
+ * @param transformation - the transformation to be applied to objects
+ *
+ * @returns true iff all objects have a match for the given transformation
+ */
 function hasMatches(
   input: Array<[IObject, IObject[]]>,
   transformation: Transformation
@@ -231,6 +291,15 @@ function hasMatches(
   return hasMatch && hasMatches(rest, transformation)
 }
 
+/**
+ * Returns a transformation such that if it is applied to caseObject,
+ * caseObject then matches regularObject in coordinates and size
+ *
+ * @param caseObject - the first object
+ * @param regularObject - the second object
+ *
+ * @returns the transformation necessary to transform caseObject into regularObject
+ */
 function getTransformationBetweenTwoObjects(
   caseObject: IObject,
   regularObject: IObject
@@ -242,6 +311,15 @@ function getTransformationBetweenTwoObjects(
   }
 }
 
+/**
+ * Determines whether object1 and object2 are similar enough in size and position to be
+ * considered matching.
+ *
+ * @param object1 - the first object
+ * @param object2 - the second object
+ *
+ * @returns true iff both objects are similar enough in position and size
+ */
 function coordinatesWithinThreshold(
   object1: IObject,
   object2: IObject
@@ -261,6 +339,14 @@ function coordinatesWithinThreshold(
   return isInX && isInY && isInA
 }
 
+/**
+ * Returns an array of objects that have the same material and form as the given object
+ *
+ * @param object - the reference object
+ * @param allObjects - list of all available objects
+ *
+ * @returns array with objects that have the same material and form as the reference object
+ */
 function getObjectsWithSameMaterialAndForm(
   object: IObject,
   allObjects: IObject[]

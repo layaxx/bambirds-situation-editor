@@ -1,6 +1,13 @@
 import { Case, IObject } from "../types"
 import { getGenericValues } from "./prologHelper"
 
+/**
+ * Parses a database.pl file from the Case Based Reasoning module into
+ * javascript representations of the cases
+ *
+ * @param text - text content of the database.pl file
+ * @returns an array of parsed cases
+ */
 export default function parseDatabase(text: string): Case[] {
   const allCases: Array<Case | undefined> = []
   let currentCase: string[] = []
@@ -30,6 +37,14 @@ export default function parseDatabase(text: string): Case[] {
   )
 }
 
+/**
+ * Generates a case from a given ID and an array of prolog predicates that belong to this case
+ *
+ * @param caseID - id of the new case
+ * @param currentCasePredicates - string representations of predicates describing the new case
+ *
+ * @returns the new case
+ */
 function generateCase(
   caseID: number,
   currentCasePredicates: string[]

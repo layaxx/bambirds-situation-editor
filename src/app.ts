@@ -34,6 +34,11 @@ let selectionMeta: SelectionMeta = {
 }
 let uuidCounter = 1
 
+/**
+ * Sets up everything needed for the Situation Editor,
+ * loads and displays all objects,
+ * loads and evaluates all cases
+ */
 function init() {
   $input = document.querySelector("#situationfile")!
   const $container = document.querySelector<HTMLElement>("#container")!
@@ -70,9 +75,6 @@ function init() {
   }
 
   $svgElements = setUpGroups($container)
-
-  // Setup SVG background
-  drawGrid()
 
   // Setup SVG Scaling
   const slider = document.querySelector("#zoomRange")
@@ -139,6 +141,12 @@ function init() {
 
 init()
 
+/**
+ * Updates {@link selectedObjects} and {@link selectionMeta} to reflect the new given objects,
+ * redraws the given objects and their center and updates the table
+ *
+ * @param objects - new selected objects
+ */
 export function updateSelectedObjects(objects: IObject[]): void {
   const oldSelectedObject = [...selectedObjects]
   selectedObjects = [...objects]
@@ -166,6 +174,10 @@ export function updateSelectedObjects(objects: IObject[]): void {
   }
 }
 
+/**
+ * Returns the current value of a counter and increases counter,
+ * i.e. returns strictly increasing values on each call
+ */
 export function getUID(): number {
   return uuidCounter++
 }

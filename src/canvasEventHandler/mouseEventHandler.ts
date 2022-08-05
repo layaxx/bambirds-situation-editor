@@ -11,7 +11,7 @@ import {
 } from "../objects/helper"
 import { redrawObjects, updateCenter } from "../output"
 import {
-  hideSelectionRectangle,
+  hideElement,
   initializeSelectionRectangle,
   snapToGrid,
   updateSelectionRectangle,
@@ -19,6 +19,14 @@ import {
 import { updateTable } from "../output/table"
 import { Point } from "../types"
 
+/**
+ * Returns the mouse/touch position over the given SVG canvas from the given mouse/touch event
+ *
+ * @param svg - the canvas on which the position is determined
+ * @param event - the mouse of touch event whose position shall be calculates
+ *
+ * @returns the point on the canvas where the event occurred
+ */
 function getMousePosition(
   svg: HTMLElement,
   event: MouseEvent | TouchEvent
@@ -38,6 +46,12 @@ function getMousePosition(
   }
 }
 
+/**
+ * Sets up all relevant mouse/touch event handlers on the given SVG canvas such that
+ * Selection and dragging of objects are possible
+ *
+ * @param svg - the SVG canvas to which the event handlers will be added
+ */
 export function setUpMouseEventHandlers(svg: HTMLElement): void {
   svg.addEventListener("mousedown", startDragOrSelect)
   svg.addEventListener("mousemove", dragOrSelect)
@@ -47,12 +61,22 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
   svg.addEventListener("touchend", endDragOrSelect)
   svg.addEventListener("touchcancel", endDragOrSelect)
 
-  let mouseStartPosition: { x: number; y: number }
-  let preDragCoordinates: Array<{ x: number; y: number }>
+  /** Position of the mouse/touch at the beginning of a drag */
+  let mouseStartPosition: Point
+  /** Coordinates of the selected Objects at the beginning of drag */
+  let preDragCoordinates: Point[]
+  /** Boolean variable indicating whether drag is active */
   let isDrag: boolean
+  /** Boolean variable indicating whether a selection is ongoing */
   let isSelect: boolean
+  /** Selection rectangle if it exists */
   let $selectionRectangle: SVGElement | undefined
 
+  /**
+   * Event handler to start a drag or selection process
+   *
+   * @param event - mouse of drag event that initiates he process
+   */
   function startDragOrSelect(event: MouseEvent | TouchEvent): void {
     if (event.ctrlKey) return
     if (
@@ -63,10 +87,7 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
       if (event.target && (event.target as HTMLElement).tagName === "svg") {
         isSelect = true
         mouseStartPosition = getMousePosition(svg, event)
-        $selectionRectangle = initializeSelectionRectangle(
-          mouseStartPosition.x,
-          mouseStartPosition.y
-        )
+        $selectionRectangle = initializeSelectionRectangle(mouseStartPosition)
         console.log("Start selecting")
       }
 
@@ -79,6 +100,11 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
     mouseStartPosition = getMousePosition(svg, event)
   }
 
+  /**
+   * Event handler for carrying out the actual selection or drag process
+   *
+   * @param event - mouse or touch event for current state
+   */
   function dragOrSelect(event: MouseEvent | TouchEvent): void {
     if (isSelect) {
       event.preventDefault()
@@ -123,6 +149,11 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
     }
   }
 
+  /**
+   * Event handler that finishes the ongoing drag or selection process
+   *
+   * @param event - mouse or touch event that concludes the process
+   */
   function endDragOrSelect(event: MouseEvent | TouchEvent): void {
     if (isSelect) {
       // Add all objects inside rectangle to selectedObjects
@@ -141,7 +172,7 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
         lowerRightCorner
       )
       updateSelectedObjects(newSelectedObjects)
-      hideSelectionRectangle($selectionRectangle)
+      hideElement($selectionRectangle)
       console.log(`Selected ${newSelectedObjects.length} objects`)
     }
 

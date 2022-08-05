@@ -1,3 +1,9 @@
+/**
+ * Parses a generic Prolog predicate and returns a list of the name and all parameters
+ *
+ * @param predicate - string representation of the prolog predicate
+ * @returns array of name and all parameters
+ */
 export function getGenericValues(
   predicate: string | undefined
 ): Array<string | number | number[]> {

@@ -77,14 +77,30 @@ export default function parse(text: string): {
   }
 }
 
+/**
+ * Returns the id of a given prolog predicate under the assumption that the id is the first
+ * parameter to the predicate, i.e. the predicate
+ * takes the form of predicate_name(id, optionally, however, many, [other, parameters])
+ *
+ * @param predicate - string representation of the prolog predicate
+ * @returns the first parameter of the predicate, assumed to be an ID
+ */
 function getId(predicate: string | undefined): string {
   const [_, id] = getGenericValues(predicate)
   return id as string
 }
 
+/**
+ * Parses a prolog "shape/6" predicate.
+ *
+ * expects the predicate to be like: shape(id, shape, xCoordinate, yCoordinate, area, parameters)
+ *
+ * @param predicate - string representation of the shape predicate
+ * @returns a Partial AngryBirds Object or undefined if parsing fails
+ */
 function parseShapePredicate(
   predicate: string | undefined
-): IObject | undefined {
+): Pick<IObject, "id" | "shape" | "x" | "y" | "area" | "params"> | undefined {
   if (!predicate || getPredicateName(predicate) !== "shape") {
     console.error("Failed to parse Shape Predicate", predicate)
     return
@@ -98,9 +114,20 @@ function parseShapePredicate(
 
   const [_, id, shape, x, y, area, parameters] = result
 
-  return { id, shape, x, y, area, params: parameters } as IObject
+  return { id, shape, x, y, area, params: parameters } as Pick<
+    IObject,
+    "id" | "shape" | "x" | "y" | "area" | "params"
+  >
 }
 
+/**
+ * Parses a prolog "hasMaterial/6" predicate.
+ *
+ * expects the predicate to be like: hasMaterial(id, material, ...whatever)
+ *
+ * @param predicate - string representation of the hasMaterial predicate
+ * @returns a parsed MaterialPredicate object, with "unknown" values if parsing failed
+ */
 function parseMaterialPredicate(
   predicate: string | undefined
 ): IMaterialPredicate {
@@ -114,6 +141,14 @@ function parseMaterialPredicate(
   return { id, material } as IMaterialPredicate
 }
 
+/**
+ * Parses a prolog "hasForm/2" predicate.
+ *
+ * expects the predicate to be like: hasForm(id, form)
+ *
+ * @param predicate - string representation of the hasForm predicate
+ * @returns a parsed FormPredicate object, with "unknown" values if parsing failed
+ */
 function parseFormPredicate(predicate: string | undefined): IFormPredicate {
   if (!predicate || getPredicateName(predicate) !== "hasForm") {
     console.error("Failed to parse hasForm Predicate", predicate)
@@ -125,6 +160,12 @@ function parseFormPredicate(predicate: string | undefined): IFormPredicate {
   return { id, form } as IFormPredicate
 }
 
+/**
+ * Returns the name of the given prolog predicate
+ *
+ * @param predicate - string representation of the predicate to be parsed
+ * @returns the name of the predicate
+ */
 function getPredicateName(predicate: string | undefined): string {
   if (!predicate) {
     return "unknownPredicate"
@@ -133,6 +174,15 @@ function getPredicateName(predicate: string | undefined): string {
   return predicate.split("(")[0]
 }
 
+/**
+ * Tries to find a matching material for the object with the
+ * given ID from the given parsed material predicates
+ *
+ * @param idParameter - id of the object
+ * @param materialPredicates - list of parsed material predicates
+ *
+ * @returns the material of the object, possibly undefined
+ */
 function getMaterialFor(
   idParameter: string,
   materialPredicates: IMaterialPredicate[]
@@ -146,6 +196,15 @@ function getMaterialFor(
   return material
 }
 
+/**
+ * Tries to find a matching form for the object with the
+ * given ID from the given parsed form predicates
+ *
+ * @param idParameter - id of the object
+ * @param formPredicates - list of parsed form predicates
+ *
+ * @returns the form of the object, possibly undefined
+ */
 function getFormFor(
   idParameter: string,
   formPredicates: IFormPredicate[]
@@ -157,6 +216,16 @@ function getFormFor(
   return form
 }
 
+/**
+ * Takes a shape predicate and lists of parsed material and form predicates and constructs
+ * and AngryBirds object from the shape predicate
+ *
+ * @param shapePredicate - string representation of the shape predicate
+ * @param parsedMaterialPredicates - array of parsed material predicates
+ * @param parsedFormPredicates - array of parsed form predicates
+ *
+ * @returns the new AngryBirds object
+ */
 function parseShapeToObject(
   shapePredicate: string,
   parsedMaterialPredicates: IMaterialPredicate[],
@@ -201,6 +270,13 @@ function parseShapeToObject(
   } as IObject
 }
 
+/**
+ * Returns Scene information, including y-coordinates of ground plane,
+ * derived and common predicates
+ *
+ * @param predicatesByType - name to values mapping of all parsed predicates
+ * @returns the parsed scene
+ */
 function getScene(predicatesByType: Record<string, string[]>): Scene {
   const groundY = getGenericValues(
     predicatesByType.ground_plane[0]

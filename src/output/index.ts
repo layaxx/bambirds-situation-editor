@@ -5,13 +5,16 @@ import {
   updateSelectedObjects,
 } from "../app"
 import { IObject } from "../types"
-import { drawHorizontalLine, drawShape, showCenter } from "./svg"
+import { drawGrid, drawHorizontalLine, drawShape, showCenter } from "./svg"
 import { updateTable } from "./table"
 
 export function redrawAll(objects: IObject[]): void {
   $svgElements.$groupObjects.replaceChildren()
+  $svgElements.$groupBackground.replaceChildren()
 
-  drawHorizontalLine(scene.groundY)
+  drawGrid()
+
+  drawHorizontalLine(scene.groundY, $svgElements.$groupBackground)
   objects.forEach((object) => {
     drawShape(
       object,

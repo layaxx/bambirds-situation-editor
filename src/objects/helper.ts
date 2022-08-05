@@ -1,5 +1,18 @@
 import { IObject, Point } from "../types"
 
+/**
+ * Calculates the area of a given object.
+ *
+ * TODO: currently only works for shapes "rect" and "ball" but not for "poly"
+ *
+ * Area of a rectangle is determined as width * height
+ *
+ * Area of a ball (i.e. circle) is determined as radius squared * PI
+ *
+ * @param object - object whose area is to be calculated
+ *
+ * @returns the area of the given object
+ */
 export function getArea(object: IObject): number {
   if (object.shape === "rect") {
     return (object.params[0] as number) * (object.params[1] as number)
@@ -12,6 +25,12 @@ export function getArea(object: IObject): number {
   return object.area
 }
 
+/**
+ * Helper function that ensures a given objects params match its internal state,
+ * i.e. the params are equal to the unscaledParams scaled by the objects scaleFactor
+ *
+ * @param object - object whose scale shall be ensured to be correctly represented
+ */
 export function scaleObjectInternal(object: IObject): void {
   switch (object.shape) {
     case "rect":
@@ -40,15 +59,24 @@ export function scaleObjectInternal(object: IObject): void {
   }
 }
 
+/**
+ * Handles the movement of a given object considering the given key presses.
+ *
+ * Valid keys are the arrow keys, which correspond to the appropriate movement of the object,
+ * i.e. "ArrowUp" moves the object up, etc.
+ *
+ * Objects are moved 1 or 10 pixels in the appropriate direction, depending on the truthiness
+ * of isHighSpeed
+ *
+ * @param object - object that shall be moved
+ * @param key - key corresponding to the direction in which the object is moved
+ * @param isHighSpeed - increases movement speed tenfold iff true
+ */
 export function handleMoveObject(
   object: IObject,
   key: string,
   isHighSpeed?: boolean
 ): void {
-  if (!object) {
-    return
-  }
-
   const offset = isHighSpeed ? 10 : 1
   let xOffset = 0
   let yOffset = 0
@@ -76,6 +104,17 @@ export function handleMoveObject(
   if (object.shape === "poly") translatePolyObject(object, xOffset, yOffset)
 }
 
+/**
+ * Translates a poly objects params by a given offset.
+ *
+ * Can be used to ensure a poly objects params match with its center coordinates.
+ *
+ * Has no effect on non poly objects
+ *
+ * @param object - object that shall be translated
+ * @param xOffset - offset in x direction in which the object is translated
+ * @param yOffset - offset in y direction in which the object is translated. Remember y = 0 is at the top
+ */
 export function translatePolyObject(
   object: IObject,
   xOffset: number,
@@ -100,16 +139,25 @@ export function translatePolyObject(
   }
 }
 
+/**
+ * Handles the Scaling of a given object considering the given key presses.
+ *
+ * Valid keys are the "ArrowUp" and "ArrowDown" keys,
+ * which correspond an appropriate change in scaling of the object,
+ * i.e. "ArrowUp" scales the object up, etc.
+ *
+ * Objects scale is increased/decreased by 1 or 0.1 depending on the truthiness of isHighSpeed
+ *
+ * @param object - object that shall be scaled
+ * @param key - key corresponding to whether scale shall be increased or decreased
+ * @param isHighSpeed - increases scaling offset tenfold iff true
+ */
 export function handleScaleObject(
   object: IObject,
   key: string,
   isHighSpeed?: boolean
 ): void {
-  if (!object) {
-    return
-  }
-
-  const offset = 0.1 * (isHighSpeed ? 10 : 1)
+  const offset = isHighSpeed ? 1 : 0.1
 
   switch (key) {
     case "ArrowUp":
@@ -125,6 +173,16 @@ export function handleScaleObject(
   }
 }
 
+/**
+ * Returns an array of objects from given objects whose center is between the rectangle
+ * defined by the given points.
+ *
+ * @param objects - array of objects that shall be considered
+ * @param upperLeft - upper left corner of the boundary
+ * @param lowerRight - lower right corner of the boundary
+ *
+ * @returns array of objects whose center is inside the boundary
+ */
 export function getObjectsWithinBoundary(
   objects: IObject[],
   upperLeft: Point,
@@ -147,6 +205,14 @@ export function getObjectsWithinBoundary(
   return result
 }
 
+/**
+ * Calculates the center of an array of objects by calculating the average of their
+ * centers x and y coordinates
+ *
+ * @param objects - array of objects whose center shall be calculated
+ *
+ * @returns point representing the average of the objects centers
+ */
 export function getCenterFromObjects(objects: IObject[]): Point {
   let sumX = 0
   let sumY = 0

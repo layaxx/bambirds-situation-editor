@@ -3,6 +3,14 @@ import { IObject } from "../types"
 import { scaleObjectInternal } from "../objects/helper"
 import { redrawObjects, updateCenter } from "."
 
+/**
+ * Updates the table to reflect the given objects
+ *
+ * Sets up event handler to allow for changing properties of the object if
+ * exactly one object is given
+ *
+ * @param objs - (multiple) objects that should be reflected in the table
+ */
 export function updateTable(...objs: IObject[]): void {
   const isMultiple = objs.length > 1
 
@@ -59,6 +67,9 @@ export function updateTable(...objs: IObject[]): void {
   })
 }
 
+/**
+ * Disable all inputs from $tableElements
+ */
 function disableInputs(): void {
   $tableElements.x.value = ""
   $tableElements.x.setAttribute("disabled", "true")
@@ -70,6 +81,9 @@ function disableInputs(): void {
   $tableElements.a.setAttribute("disabled", "true")
 }
 
+/**
+ * Enable all inputs from $tableElements
+ */
 function enableInputs(): void {
   $tableElements.x.removeAttribute("disabled")
   $tableElements.y.removeAttribute("disabled")

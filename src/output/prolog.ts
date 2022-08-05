@@ -2,6 +2,14 @@ import { $output, objects, scene } from "../app"
 import { FALLBACK_COLOR } from "../objects/colors"
 import { getArea } from "../objects/helper"
 
+/**
+ * Constructs a new prolog file from the scene and current objects.
+ *
+ * Writes the content to the output field
+ *
+ * @param keepDerivedInformation - boolean indicating whether derived predicates that may not
+ * be true anymore should still be included
+ */
 export function exportFile(keepDerivedInformation = false): void {
   const predicates = [
     ...scene.commonPredicates,
