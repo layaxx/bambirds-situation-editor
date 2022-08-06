@@ -1,4 +1,5 @@
 import {
+  Case,
   IObject,
   Point,
   Scene,
@@ -18,7 +19,11 @@ import parse from "./parser/situationFileParser"
 import { updateTable } from "./output/table"
 import { setUpEventHandlers } from "./canvasEventHandler"
 import parseDatabase from "./parser/databaseParser"
-import { analyzeCase } from "./output/caseBasedReasoning"
+import {
+  analyzeCase,
+  hideAllCaseOverlays,
+  showAllCaseOverlays,
+} from "./output/caseBasedReasoning"
 
 let $input: HTMLInputElement
 let $output: HTMLInputElement
@@ -122,20 +127,49 @@ function init() {
     console.warn("Failed to get HTML Elements for Database")
   }
 
-  const loadDatabase = () => {
-    const cases = parseDatabase($databaseInput.value)
+  const evaluateDatabase = (cases: Case[]) => {
     $CBRResults.replaceChildren()
     $svgElements.$groupOverlay.replaceChildren()
 
-    const reloadButton = document.createElement("button")
-    reloadButton.addEventListener("click", loadDatabase)
-    reloadButton.textContent = "Reload"
-    $CBRResults.append(reloadButton)
-
-    $CBRResults.append(
-      ...cases.map((caseParameter) => analyzeCase(caseParameter, objects))
+    const results = cases.map((caseParameter) =>
+      analyzeCase(caseParameter, objects)
     )
+    $CBRResults.append(...results.map((result) => result.element))
+
+    const button = document.querySelector<HTMLButtonElement>("#cases-show-all")
+
+    if (button)
+      // eslint-disable-next-line unicorn/prefer-add-event-listener
+      button.onclick = () => {
+        console.log(
+          cases.map((caseParameter, index) => ({
+            caseParameter,
+            transformations: results[index].result,
+          }))
+        )
+        showAllCaseOverlays(
+          cases.map((caseParameter, index) => ({
+            caseParameter,
+            transformations: results[index].result,
+          }))
+        )
+      }
   }
+
+  const loadDatabase = () => {
+    const cases = parseDatabase($databaseInput.value)
+    evaluateDatabase(cases)
+    const button = document.querySelector<HTMLButtonElement>("#cases-analyze")
+    if (button)
+      // eslint-disable-next-line unicorn/prefer-add-event-listener
+      button.onclick = () => {
+        evaluateDatabase(cases)
+      }
+  }
+
+  document
+    .querySelector("#cases-hide-all")
+    ?.addEventListener("click", hideAllCaseOverlays)
 
   $databaseInput.addEventListener("blur", () => {
     loadDatabase()

@@ -8,12 +8,12 @@ import {
   scaleVector,
 } from "../objects/helper"
 import { Case, IObject, Transformation } from "../types"
-import { drawCrossAt, drawShape } from "./svg"
+import { drawCrossAt, drawShape, hideElement } from "./svg"
 
 export function analyzeCase(
   caseParameter: Case,
   objects: IObject[]
-): HTMLElement {
+): { element: HTMLElement; result: Transformation[] } {
   const container = document.createElement("div")
   container.setAttribute("style", `overflow: hidden;`)
 
@@ -83,7 +83,7 @@ export function analyzeCase(
     } `
   )
 
-  return container
+  return { element: container, result: transformations }
 }
 
 /**
@@ -121,16 +121,20 @@ function cyrb53Hash(input: string, seed = 0): number {
  *
  * @param caseParameter - the case
  * @param transformation - the transformation that shall be applied to the case
+ * @param onlyShow - optional boolean indicating whether existing, non-hidden overlays shall be hidden
  */
 function toggleOverlay(
   caseParameter: Case,
-  transformation: Transformation
+  transformation: Transformation,
+  onlyShow?: boolean
 ): void {
   const id = `case-${caseParameter.id}_${cyrb53Hash(
     JSON.stringify({ transformation })
   ).toString(16)}`
 
   const existingElement = $svgElements.$groupOverlay.querySelector(`#${id}`)
+
+  console.log(id, transformation, onlyShow)
 
   if (existingElement === null) {
     const newElement = document.createElementNS(
@@ -139,6 +143,8 @@ function toggleOverlay(
     )
 
     newElement.setAttribute("id", id)
+
+    newElement.setAttribute("class", "case-overlay")
 
     caseParameter.objects.forEach((object) => {
       drawShape(
@@ -153,9 +159,33 @@ function toggleOverlay(
     $svgElements.$groupOverlay.append(newElement)
   } else if (existingElement.hasAttribute("hidden")) {
     existingElement.removeAttribute("hidden")
-  } else {
+  } else if (!onlyShow) {
     existingElement.setAttribute("hidden", "true")
   }
+}
+
+/**
+ * Hides all existing case overlays
+ */
+export function hideAllCaseOverlays() {
+  document.querySelectorAll<SVGElement>(".case-overlay").forEach((element) => {
+    hideElement(element)
+  })
+}
+
+/**
+ * Shows case overlays for every given combination of case and transformation
+ *
+ * @param input - array of objects containing caseParameter and transformation
+ */
+export function showAllCaseOverlays(
+  input: Array<{ caseParameter: Case; transformations: Transformation[] }>
+) {
+  input.forEach(({ caseParameter, transformations }) => {
+    transformations.forEach((transformation) => {
+      toggleOverlay(caseParameter, transformation, true)
+    })
+  })
 }
 
 /**
@@ -348,7 +378,8 @@ function coordinatesWithinThreshold(
   object1: IObject,
   object2: IObject
 ): boolean {
-  const threshold = { x: 30, y: 30, area: 30 }
+  const threshold = { x: 30, y: 30, area: 0 }
+  threshold.area = threshold.x * threshold.y
 
   const isInX = Math.abs(object1.x - object2.x) < threshold.x
   const isInY = Math.abs(object1.y - object2.y) < threshold.y

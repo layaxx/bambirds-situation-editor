@@ -1,6 +1,7 @@
+/* eslint-disable unicorn/prefer-add-event-listener */
 import { $tableElements } from "../app"
 import { IObject } from "../types"
-import { scaleObjectInternal } from "../objects/helper"
+import { scaleObjectInternal, translatePolyObject } from "../objects/helper"
 import { redrawObjects, updateCenter } from "."
 
 /**
@@ -32,29 +33,42 @@ export function updateTable(...objs: IObject[]): void {
 
   $tableElements.id.textContent = object.id
   $tableElements.x.value = String(object.x)
-  $tableElements.x.addEventListener("change", (event) => {
-    object.x = Number.parseFloat((event.target as HTMLInputElement)?.value)
+  $tableElements.x.onchange = (event) => {
+    const newX = Number.parseFloat((event.target as HTMLInputElement)?.value)
+    const xOffset = object.x - newX
+    object.x = newX
+    if (object.shape === "poly") translatePolyObject(object, xOffset, 0)
     redrawObjects([object])
     updateCenter([object])
-  })
+  }
+
   $tableElements.y.value = String(object.y)
-  $tableElements.y.addEventListener("change", (event) => {
-    object.y = Number.parseFloat((event.target as HTMLInputElement)?.value)
+  $tableElements.y.onchange = (event) => {
+    const newY = Number.parseFloat((event.target as HTMLInputElement)?.value)
+    const yOffset = object.y - newY
+    object.y = newY
+    if (object.shape === "poly") translatePolyObject(object, 0, yOffset)
     redrawObjects([object])
     updateCenter([object])
-  })
+  }
+
   $tableElements.s.value = String(object.scale)
-  $tableElements.s.addEventListener("change", (event) => {
+  $tableElements.s.onchange = (event) => {
     object.scale = Number.parseFloat((event.target as HTMLInputElement)?.value)
     scaleObjectInternal(object)
     redrawObjects([object])
     updateCenter([object])
-  })
+  }
+
   $tableElements.a.value = String(
     object.shape === "rect" ? object.params[2] : ""
   )
-  $tableElements.a.addEventListener("change", (event) => {
-    if (!object.params || object.params[2] === undefined) {
+  $tableElements.a.onchange = (event) => {
+    if (
+      !object.params ||
+      object.params[2] === undefined ||
+      object.shape === "poly"
+    ) {
       console.error("Cannot rotate Object", object)
       return
     }
@@ -64,7 +78,7 @@ export function updateTable(...objs: IObject[]): void {
     )
 
     redrawObjects([object])
-  })
+  }
 }
 
 /**
