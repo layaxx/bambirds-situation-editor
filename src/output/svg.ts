@@ -468,14 +468,7 @@ export function hideElement($element: SVGElement | undefined): void {
 export function showCenter(objects: ABObject[]): void {
   if (objects.length === 0) return
 
-  if (objects.length === 1) {
-    const [{ x, y }] = objects
-    drawCrossAt({ x, y }, $svgElements.$groupOverlay)
-    return
-  }
-
-  const { x, y } = getCenterFromObjects(objects)
-  drawCrossAt({ x, y }, $svgElements.$groupOverlay)
+  drawCrossAt(getCenterFromObjects(objects), $svgElements.$groupOverlay)
 }
 
 /**

@@ -7,10 +7,6 @@ export type Point = {
 
 export type SelectionMeta = {
   scale: number
-  angle: number
-  origins: Point[]
-  vectors: Point[]
-  center: Point
 }
 
 export type TableElements = {

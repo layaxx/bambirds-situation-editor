@@ -66,7 +66,6 @@ export function setUpKeyboardEventHandlers(): void {
           }
         }
 
-        selectionMeta.center = getCenterFromObjects(selectedObjects)
         updateTable(...selectedObjects)
         redrawObjects(selectedObjects)
         updateCenter(selectedObjects)
@@ -125,7 +124,6 @@ function handleRotate(key: string, ctrlKey: boolean): void {
     object.rotateBy(angle)
   }
 
-  selectionMeta.center = getCenterFromObjects(selectedObjects)
   redrawObjects(selectedObjects)
   updateTable(...selectedObjects)
   // Not needed: updateCenter(selectedObjects): center does not change when rotating
@@ -158,7 +156,7 @@ function handleScale(key: string, ctrlKey: boolean): void {
   const oldScale = selectionMeta.scale
   selectionMeta.scale += offset
   for (const object of selectedObjects) {
-    const center = selectionMeta.center
+    const center = getCenterFromObjects(selectedObjects)
     if (selectedObjects.length > 1) {
       object.moveTo(
         addVectors(

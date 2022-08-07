@@ -1,12 +1,4 @@
-import {
-  Case,
-  Point,
-  Scene,
-  SelectionMeta,
-  SVGElements,
-  TableElements,
-} from "./types"
-import { getCenterFromObjects, getVectorBetween } from "./objects/helper"
+import { Case, Scene, SelectionMeta, SVGElements, TableElements } from "./types"
 import { redrawAll, redrawObjects, updateCenter } from "./output"
 import { exportFile } from "./output/prolog"
 import { setUpGroups } from "./output/svg"
@@ -32,11 +24,7 @@ let objects: ABObject[]
 let selectedObjects: ABObject[] = []
 let scene: Scene
 let selectionMeta: SelectionMeta = {
-  angle: 0,
   scale: 1,
-  center: { x: 0, y: 0 },
-  origins: [],
-  vectors: [],
 }
 let uuidCounter = 1
 
@@ -188,13 +176,7 @@ export function updateSelectedObjects(objects: ABObject[]): void {
   updateCenter(selectedObjects)
   updateTable(...selectedObjects)
 
-  const center = getCenterFromObjects(objects)
-
-  const origins: Point[] = objects.map((object) => object.getCenter())
   selectionMeta = {
-    center,
-    vectors: origins.map((point) => getVectorBetween(point, center)),
-    origins,
     scale:
       objects.length === 0
         ? 1
@@ -202,7 +184,6 @@ export function updateSelectedObjects(objects: ABObject[]): void {
             (accumulator, current) => accumulator + current.scale,
             0
           ) / objects.length,
-    angle: 0,
   }
 }
 

@@ -135,7 +135,6 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
         object.moveTo({ x: newX, y: newY })
       }
 
-      selectionMeta.center = getCenterFromObjects(selectedObjects)
       updateTable(...selectedObjects)
       redrawObjects(selectedObjects)
       updateCenter(selectedObjects)
