@@ -45,9 +45,3 @@ export type Case = {
   objects: ABObject[]
   shootAt: Point
 }
-
-export type Transformation = {
-  deltaX: number
-  deltaY: number
-  scale: number
-}

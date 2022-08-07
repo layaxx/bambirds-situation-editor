@@ -7,14 +7,14 @@ import { IFormPredicate, IMaterialPredicate, Point } from "../types"
 import { getVectorBetween } from "./helper"
 
 export class ABObject {
-  material: string
   id: string
   x: number
   y: number
   isPig = false
   isBird = false
-  color?: string
   shape: string
+  color?: string
+  material?: string
   form?: string
   area: number
   scale: number
@@ -75,8 +75,7 @@ export class ABObject {
       this.params = params
       this.area = area
 
-      this.material =
-        getMaterialFor(id, parsedMaterialPredicates) ?? "unknown material"
+      this.material = getMaterialFor(id, parsedMaterialPredicates)
       this.form = getFormFor(id, parsedFormPredicates)
 
       this.scale = 1

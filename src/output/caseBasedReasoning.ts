@@ -1,7 +1,8 @@
 import { $svgElements } from "../app"
 import { ABObject } from "../objects/angryBirdsObject"
 import { addVectors, getVectorBetween, scaleVector } from "../objects/helper"
-import { Case, Transformation } from "../types"
+import { Transformation } from "../objects/transformation"
+import { Case } from "../types"
 import { drawCrossAt, drawShape, hideElement } from "./svg"
 
 export function analyzeCase(
@@ -60,13 +61,16 @@ export function analyzeCase(
   const list = document.createElement("ul")
   transformations.forEach((transformation) => {
     const listElement = document.createElement("li")
-    listElement.textContent = JSON.stringify(transformation, undefined, 2)
-    const checkBox = document.createElement("input")
-    checkBox.setAttribute("type", "checkbox")
-    checkBox.addEventListener("change", () => {
+    const details = document.createElement("details")
+    const summary = document.createElement("summary")
+    summary.textContent = `{${transformation.vector.x}, ${transformation.vector.y}} - ${transformation.scale}`
+    const pre = document.createElement("pre")
+    pre.textContent = JSON.stringify(transformation, undefined, 2)
+    details.append(summary, pre)
+    listElement.append(details)
+    summary.addEventListener("click", () => {
       toggleOverlay(caseParameter, transformation)
     })
-    listElement.append(checkBox)
     list.append(listElement)
   })
   container.append(list)
@@ -141,7 +145,7 @@ function toggleOverlay(
     caseParameter.objects.forEach((object) => {
       drawShape(
         {
-          ...transformObject(object, transformation, caseParameter.objects[0]),
+          ...transformObject(object, transformation),
           material: "cbr",
         } as ABObject,
         newElement
@@ -185,26 +189,24 @@ export function showAllCaseOverlays(
  *
  * @param object - the object a copy of which shall be transformed
  * @param transformation - the transformation that is applied
- * @param relativeToObject - the object relative to which the given object is scaled
  *
  * @returns the transformed copy of object
  */
 function transformObject(
   object: ABObject,
-  transformation: Transformation,
-  relativeToObject: ABObject
+  transformation: Transformation
 ): ABObject {
   // Expected location is vector in case scaled by transformation.scale
 
   const scaledVector = scaleVector(
-    getVectorBetween(object.getCenter(), relativeToObject.getCenter()),
+    getVectorBetween(object.getCenter(), transformation.center),
     transformation.scale
   )
 
-  const translatedPosition = addVectors(relativeToObject.getCenter(), {
-    x: transformation.deltaX,
-    y: transformation.deltaY,
-  })
+  const translatedPosition = addVectors(
+    transformation.center,
+    transformation.vector
+  )
   const { x, y } = addVectors(translatedPosition, scaledVector)
 
   const transformedObject = new ABObject(
@@ -267,7 +269,7 @@ function getTransformations(
       matchedObject
     )
 
-    if (hasMatches(rest, transformation, object)) {
+    if (hasMatches(rest, transformation)) {
       transformations.push(transformation)
     }
   }
@@ -300,23 +302,19 @@ function getPossibleMatches(
  *
  * @param input - array of two-member-array of the form [[object, [list, of, possible, matches, ...]], ...]
  * @param transformation - the transformation to be applied to objects
- * @param relativeToObject - the object relative to which the transformations are applied. Important for scaling
  *
  * @returns true iff all objects have a match for the given transformation
  */
 function hasMatches(
   input: Array<[ABObject, ABObject[]]>,
-  transformation: Transformation,
-  relativeToObject: ABObject
+  transformation: Transformation
 ): boolean {
+  console.log(transformation)
   return input.every(([caseObject, potentialMatches]) => {
-    const transformedCaseObject = transformObject(
-      caseObject,
-      transformation,
-      relativeToObject
-    )
+    const transformedCaseObject = transformObject(caseObject, transformation)
 
     const hasMatch = potentialMatches.some((regularObject) => {
+      console.log(transformedCaseObject, regularObject)
       return (
         transformedCaseObject.material === regularObject.material &&
         transformedCaseObject.shape === regularObject.shape &&
@@ -341,11 +339,15 @@ function getTransformationBetweenTwoObjects(
   caseObject: ABObject,
   regularObject: ABObject
 ): Transformation {
-  return {
-    deltaX: regularObject.x - caseObject.x,
-    deltaY: regularObject.y - caseObject.y,
-    scale: Math.sqrt(regularObject.getArea() / caseObject.getArea()),
-  }
+  const deltaX = regularObject.x - caseObject.x
+  const deltaY = regularObject.y - caseObject.y
+  const scale = Math.sqrt(regularObject.getArea() / caseObject.getArea())
+
+  return new Transformation(
+    { x: deltaX, y: deltaY },
+    regularObject.getCenter(),
+    scale
+  )
 }
 
 /**

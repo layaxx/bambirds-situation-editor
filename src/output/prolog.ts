@@ -35,9 +35,10 @@ export function exportFile(keepDerivedInformation = false): void {
       predicates.push(`hasForm(${object.id}, ${object.form ?? "cube"}).`)
     }
 
-    if (!object.isBird) {
+    if (!object.isBird && object.material !== undefined) {
       predicates.push(
         `hasMaterial(${object.id}, ${object.material ?? "purple"}, 1, 1, 1, 1).`
+        // TODO: What are the other values in the hasMaterial predicate?
       )
     }
 

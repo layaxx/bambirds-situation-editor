@@ -16,5 +16,6 @@ Controls are described on the page
 
 - Allow adding new Objects (not just duplicating existing objects)
 - Maybe scaling should be applied and reset when deselecting objects?
+- scaling of multiple objects does not work well when used with multiplier (Ctrl key)
 - Case Based Reasoning Visualizations:
   - Edit cases
