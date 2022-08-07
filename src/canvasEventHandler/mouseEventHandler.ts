@@ -5,7 +5,6 @@ import {
   updateSelectedObjects,
 } from "../app"
 import {
-  translatePolyObject,
   getObjectsWithinBoundary,
   getCenterFromObjects,
 } from "../objects/helper"
@@ -133,13 +132,7 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
           newY = snapToGrid(newY)
         }
 
-        const xOffset = newX - object.x
-        const yOffset = newY - object.y
-        object.x = newX
-        object.y = newY
-        if (object.shape === "poly") {
-          translatePolyObject(object, xOffset, yOffset)
-        }
+        object.moveTo({ x: newX, y: newY })
       }
 
       selectionMeta.center = getCenterFromObjects(selectedObjects)

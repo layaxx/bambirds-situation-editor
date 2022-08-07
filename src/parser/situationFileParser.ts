@@ -1,8 +1,9 @@
-import { IFormPredicate, IMaterialPredicate, IObject, Scene } from "../types"
+import { ABObject } from "../objects/angryBirdsObject"
+import { IFormPredicate, IMaterialPredicate, Scene } from "../types"
 import { getGenericValues } from "./prologHelper"
 
 export default function parse(text: string): {
-  objects: IObject[]
+  objects: ABObject[]
   scene: Scene
 } {
   const predicatesByType: Record<string, string[]> = {}
@@ -27,19 +28,16 @@ export default function parse(text: string): {
     (predicate) => parseFormPredicate(predicate)
   )
 
-  const objs = (predicatesByType.shape ?? [])
-    .map((predicate) =>
-      parseShapeToObject(
-        predicate,
-        parsedMaterialPredicates,
-        parsedFormPredicates
-      )
+  const objects = (predicatesByType.shape ?? [])
+    .map(
+      (predicate) =>
+        new ABObject(predicate, parsedMaterialPredicates, parsedFormPredicates)
     )
-    .filter((object) => object !== undefined) as IObject[]
+    .filter((object) => object !== undefined)
 
   for (const birdPredicate of predicatesByType.bird ?? []) {
     const birdID = getId(birdPredicate)
-    const object = objs.find(({ id }) => id === birdID)
+    const object = objects.find(({ id }) => id === birdID)
     if (object) {
       object.isBird = true
     } else {
@@ -49,7 +47,7 @@ export default function parse(text: string): {
 
   for (const pigPredicate of predicatesByType.pig ?? []) {
     const pigID = getId(pigPredicate)
-    const object = objs.find(({ id }) => id === pigID)
+    const object = objects.find(({ id }) => id === pigID)
     if (object) {
       object.isPig = true
     } else {
@@ -59,7 +57,7 @@ export default function parse(text: string): {
 
   for (const hasColorPredicate of predicatesByType.hasColor ?? []) {
     const [_, objectID, color] = getGenericValues(hasColorPredicate)
-    const object = objs.find(({ id }) => id === objectID)
+    const object = objects.find(({ id }) => id === objectID)
     if (object) {
       object.color = color as string
     } else {
@@ -72,7 +70,7 @@ export default function parse(text: string): {
   }
 
   return {
-    objects: objs,
+    objects,
     scene: getScene(predicatesByType),
   }
 }
@@ -98,9 +96,9 @@ function getId(predicate: string | undefined): string {
  * @param predicate - string representation of the shape predicate
  * @returns a Partial AngryBirds Object or undefined if parsing fails
  */
-function parseShapePredicate(
+export function parseShapePredicate(
   predicate: string | undefined
-): Pick<IObject, "id" | "shape" | "x" | "y" | "area" | "params"> | undefined {
+): Pick<ABObject, "id" | "shape" | "x" | "y" | "area" | "params"> | undefined {
   if (!predicate || getPredicateName(predicate) !== "shape") {
     console.error("Failed to parse Shape Predicate", predicate)
     return
@@ -115,7 +113,7 @@ function parseShapePredicate(
   const [_, id, shape, x, y, area, parameters] = result
 
   return { id, shape, x, y, area, params: parameters } as Pick<
-    IObject,
+    ABObject,
     "id" | "shape" | "x" | "y" | "area" | "params"
   >
 }
@@ -183,7 +181,7 @@ function getPredicateName(predicate: string | undefined): string {
  *
  * @returns the material of the object, possibly undefined
  */
-function getMaterialFor(
+export function getMaterialFor(
   idParameter: string,
   materialPredicates: IMaterialPredicate[]
 ): string | undefined {
@@ -205,7 +203,7 @@ function getMaterialFor(
  *
  * @returns the form of the object, possibly undefined
  */
-function getFormFor(
+export function getFormFor(
   idParameter: string,
   formPredicates: IFormPredicate[]
 ): string | undefined {
@@ -214,60 +212,6 @@ function getFormFor(
   }
 
   return form
-}
-
-/**
- * Takes a shape predicate and lists of parsed material and form predicates and constructs
- * and AngryBirds object from the shape predicate
- *
- * @param shapePredicate - string representation of the shape predicate
- * @param parsedMaterialPredicates - array of parsed material predicates
- * @param parsedFormPredicates - array of parsed form predicates
- *
- * @returns the new AngryBirds object
- */
-function parseShapeToObject(
-  shapePredicate: string,
-  parsedMaterialPredicates: IMaterialPredicate[],
-  parsedFormPredicates: IFormPredicate[]
-): IObject | undefined {
-  let parsedObject
-  try {
-    parsedObject = parseShapePredicate(shapePredicate)
-  } catch {}
-
-  if (!parsedObject) {
-    return undefined
-  }
-
-  const { id, x, y, shape, area, params } = parsedObject
-
-  const material = getMaterialFor(id, parsedMaterialPredicates)
-  const form = getFormFor(id, parsedFormPredicates)
-  return {
-    id,
-    x,
-    y,
-    shape,
-    material,
-    params,
-    area,
-    form,
-    scale: 1,
-    unscaledParams: JSON.parse(JSON.stringify(params)) as Array<
-      number | number[]
-    >,
-    vectors:
-      shape === "poly"
-        ? params.map((entry, index) => {
-            if (index === 0 || typeof entry === "number") return entry
-            const [x1, y1] = entry
-            const newX = x1 - x
-            const newY = y1 - y
-            return [newX, newY]
-          })
-        : undefined,
-  } as IObject
 }
 
 /**

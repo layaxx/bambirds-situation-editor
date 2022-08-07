@@ -1,6 +1,5 @@
 import { $output, objects, scene } from "../app"
 import { FALLBACK_COLOR } from "../objects/colors"
-import { getArea } from "../objects/helper"
 
 /**
  * Constructs a new prolog file from the scene and current objects.
@@ -43,9 +42,9 @@ export function exportFile(keepDerivedInformation = false): void {
     }
 
     predicates.push(
-      `shape(${object.id}, ${object.shape}, ${object.x}, ${object.y}, ${getArea(
-        object
-      )}, ${JSON.stringify(object.params)}).`
+      `shape(${object.id}, ${object.shape}, ${object.x}, ${
+        object.y
+      }, ${object.getArea()}, ${JSON.stringify(object.params)}).`
     )
   }
 

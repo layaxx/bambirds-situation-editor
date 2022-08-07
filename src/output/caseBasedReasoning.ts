@@ -1,18 +1,12 @@
 import { $svgElements } from "../app"
-import {
-  addVectors,
-  getArea,
-  getCenter,
-  getVectorBetween,
-  scaleObjectInternal,
-  scaleVector,
-} from "../objects/helper"
-import { Case, IObject, Transformation } from "../types"
+import { ABObject } from "../objects/angryBirdsObject"
+import { addVectors, getVectorBetween, scaleVector } from "../objects/helper"
+import { Case, Transformation } from "../types"
 import { drawCrossAt, drawShape, hideElement } from "./svg"
 
 export function analyzeCase(
   caseParameter: Case,
-  objects: IObject[]
+  objects: ABObject[]
 ): { element: HTMLElement; result: Transformation[] } {
   const container = document.createElement("div")
   container.setAttribute("style", `overflow: hidden;`)
@@ -134,8 +128,6 @@ function toggleOverlay(
 
   const existingElement = $svgElements.$groupOverlay.querySelector(`#${id}`)
 
-  console.log(id, transformation, onlyShow)
-
   if (existingElement === null) {
     const newElement = document.createElementNS(
       "http://www.w3.org/2000/svg",
@@ -151,7 +143,7 @@ function toggleOverlay(
         {
           ...transformObject(object, transformation, caseParameter.objects[0]),
           material: "cbr",
-        },
+        } as ABObject,
         newElement
       )
     })
@@ -198,43 +190,34 @@ export function showAllCaseOverlays(
  * @returns the transformed copy of object
  */
 function transformObject(
-  object: IObject,
+  object: ABObject,
   transformation: Transformation,
-  relativeToObject: IObject
-): IObject {
+  relativeToObject: ABObject
+): ABObject {
   // Expected location is vector in case scaled by transformation.scale
 
   const scaledVector = scaleVector(
-    getVectorBetween(getCenter(object), getCenter(relativeToObject)),
+    getVectorBetween(object.getCenter(), relativeToObject.getCenter()),
     transformation.scale
   )
 
-  const translatedPosition = addVectors(getCenter(relativeToObject), {
+  const translatedPosition = addVectors(relativeToObject.getCenter(), {
     x: transformation.deltaX,
     y: transformation.deltaY,
   })
   const { x, y } = addVectors(translatedPosition, scaledVector)
 
-  const transformedObject = {
-    x,
-    y,
-    area: object.area * transformation.scale ** 2,
-    scale: transformation.scale,
+  const transformedObject = new ABObject(
+    {
+      ...object,
+      x,
+      y,
+      area: object.area * transformation.scale ** 2,
+    } as ABObject,
+    object.id
+  )
 
-    // Can be used unchanged
-    unscaledParams: object.unscaledParams,
-    params: object.params,
-    vectors: object.vectors,
-    id: object.id,
-    form: object.form,
-    shape: object.shape,
-    material: object.material,
-    isBird: object.isBird,
-    isPig: object.isPig,
-    color: object.color,
-  }
-
-  scaleObjectInternal(transformedObject)
+  transformedObject.setScale(transformation.scale)
   return transformedObject
 }
 
@@ -251,7 +234,7 @@ function transformObject(
  */
 function isCaseApplicable(
   caseParameter: Case,
-  objects: IObject[]
+  objects: ABObject[]
 ): Transformation[] {
   // Do all objects match?
   const transformations = getTransformations(caseParameter.objects, objects)
@@ -271,8 +254,8 @@ function isCaseApplicable(
  * @returns array of transformations that make case match the current scene
  */
 function getTransformations(
-  caseObjects: IObject[],
-  objects: IObject[]
+  caseObjects: ABObject[],
+  objects: ABObject[]
 ): Transformation[] {
   const transformations: Transformation[] = []
 
@@ -302,9 +285,9 @@ function getTransformations(
  * @returns an array of two-member-array, of the form [[caseObject1, [possibleMatch1, possibleMatch2, ...]], ....]
  */
 function getPossibleMatches(
-  caseObjects: IObject[],
-  allObjects: IObject[]
-): Array<[IObject, IObject[]]> {
+  caseObjects: ABObject[],
+  allObjects: ABObject[]
+): Array<[ABObject, ABObject[]]> {
   return caseObjects.map((object) => [
     object,
     getObjectsWithSameMaterialAndForm(object, allObjects),
@@ -322,9 +305,9 @@ function getPossibleMatches(
  * @returns true iff all objects have a match for the given transformation
  */
 function hasMatches(
-  input: Array<[IObject, IObject[]]>,
+  input: Array<[ABObject, ABObject[]]>,
   transformation: Transformation,
-  relativeToObject: IObject
+  relativeToObject: ABObject
 ): boolean {
   return input.every(([caseObject, potentialMatches]) => {
     const transformedCaseObject = transformObject(
@@ -355,13 +338,13 @@ function hasMatches(
  * @returns the transformation necessary to transform caseObject into regularObject
  */
 function getTransformationBetweenTwoObjects(
-  caseObject: IObject,
-  regularObject: IObject
+  caseObject: ABObject,
+  regularObject: ABObject
 ): Transformation {
   return {
     deltaX: regularObject.x - caseObject.x,
     deltaY: regularObject.y - caseObject.y,
-    scale: Math.sqrt(getArea(regularObject) / getArea(caseObject)),
+    scale: Math.sqrt(regularObject.getArea() / caseObject.getArea()),
   }
 }
 
@@ -375,8 +358,8 @@ function getTransformationBetweenTwoObjects(
  * @returns true iff both objects are similar enough in position and size
  */
 function coordinatesWithinThreshold(
-  object1: IObject,
-  object2: IObject
+  object1: ABObject,
+  object2: ABObject
 ): boolean {
   const threshold = { x: 30, y: 30, area: 0 }
   threshold.area = threshold.x * threshold.y
@@ -384,8 +367,7 @@ function coordinatesWithinThreshold(
   const isInX = Math.abs(object1.x - object2.x) < threshold.x
   const isInY = Math.abs(object1.y - object2.y) < threshold.y
 
-  // TODO: area is currently easily out of threshold after scaling
-  const isInA = Math.abs(getArea(object1) - getArea(object2)) < threshold.area
+  const isInA = Math.abs(object1.getArea() - object2.getArea()) < threshold.area
 
   return isInX && isInY && isInA
 }
@@ -399,9 +381,9 @@ function coordinatesWithinThreshold(
  * @returns array with objects that have the same material and form as the reference object
  */
 function getObjectsWithSameMaterialAndForm(
-  object: IObject,
-  allObjects: IObject[]
-): IObject[] {
+  object: ABObject,
+  allObjects: ABObject[]
+): ABObject[] {
   return allObjects.filter(
     ({ material, form }) => material === object.material && form === object.form
   )

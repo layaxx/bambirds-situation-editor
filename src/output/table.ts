@@ -1,7 +1,6 @@
 /* eslint-disable unicorn/prefer-add-event-listener */
+import { ABObject } from "../objects/angryBirdsObject"
 import { $tableElements } from "../app"
-import { IObject } from "../types"
-import { scaleObjectInternal, translatePolyObject } from "../objects/helper"
 import { redrawObjects, updateCenter } from "."
 
 /**
@@ -12,7 +11,7 @@ import { redrawObjects, updateCenter } from "."
  *
  * @param objs - (multiple) objects that should be reflected in the table
  */
-export function updateTable(...objs: IObject[]): void {
+export function updateTable(...objs: ABObject[]): void {
   const isMultiple = objs.length > 1
 
   if (isMultiple) {
@@ -35,9 +34,7 @@ export function updateTable(...objs: IObject[]): void {
   $tableElements.x.value = String(object.x)
   $tableElements.x.onchange = (event) => {
     const newX = Number.parseFloat((event.target as HTMLInputElement)?.value)
-    const xOffset = object.x - newX
-    object.x = newX
-    if (object.shape === "poly") translatePolyObject(object, xOffset, 0)
+    object.moveTo({ x: newX, y: object.y })
     redrawObjects([object])
     updateCenter([object])
   }
@@ -45,37 +42,29 @@ export function updateTable(...objs: IObject[]): void {
   $tableElements.y.value = String(object.y)
   $tableElements.y.onchange = (event) => {
     const newY = Number.parseFloat((event.target as HTMLInputElement)?.value)
-    const yOffset = object.y - newY
-    object.y = newY
-    if (object.shape === "poly") translatePolyObject(object, 0, yOffset)
+    object.moveTo({ x: object.x, y: newY })
     redrawObjects([object])
     updateCenter([object])
   }
 
   $tableElements.s.value = String(object.scale)
   $tableElements.s.onchange = (event) => {
-    object.scale = Number.parseFloat((event.target as HTMLInputElement)?.value)
-    scaleObjectInternal(object)
+    object.setScale(
+      Number.parseFloat((event.target as HTMLInputElement)?.value)
+    )
     redrawObjects([object])
     updateCenter([object])
   }
 
-  $tableElements.a.value = String(
-    object.shape === "rect" ? object.params[2] : ""
-  )
+  let oldRotation: number =
+    object.shape === "rect" ? (object.params[2] as number) : 0
+  $tableElements.a.value = String(oldRotation)
   $tableElements.a.onchange = (event) => {
-    if (
-      !object.params ||
-      object.params[2] === undefined ||
-      object.shape === "poly"
-    ) {
-      console.error("Cannot rotate Object", object)
-      return
-    }
-
-    object.params[2] = Number.parseFloat(
+    const newRotation = Number.parseFloat(
       (event.target as HTMLInputElement)?.value
     )
+    object.rotateBy(newRotation - oldRotation)
+    oldRotation = newRotation
 
     redrawObjects([object])
   }

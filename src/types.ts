@@ -1,19 +1,4 @@
-export interface IObject {
-  material: string
-  id: string
-  x: number
-  y: number
-  isPig?: boolean
-  isBird?: boolean
-  color?: string
-  shape: string
-  form?: string
-  area: number
-  scale: number
-  params: Array<number | number[]>
-  unscaledParams: Array<number | number[]>
-  vectors?: [number, ...Array<[number, number]>]
-}
+import { ABObject } from "./objects/angryBirdsObject"
 
 export type Point = {
   x: number
@@ -61,7 +46,7 @@ export interface IMaterialPredicate {
 
 export type Case = {
   id: number
-  objects: IObject[]
+  objects: ABObject[]
   shootAt: Point
 }
 

@@ -1,20 +1,15 @@
 import {
   Case,
-  IObject,
   Point,
   Scene,
   SelectionMeta,
   SVGElements,
   TableElements,
 } from "./types"
-import {
-  getCenter,
-  getCenterFromObjects,
-  getVectorBetween,
-} from "./objects/helper"
+import { getCenterFromObjects, getVectorBetween } from "./objects/helper"
 import { redrawAll, redrawObjects, updateCenter } from "./output"
 import { exportFile } from "./output/prolog"
-import { drawGrid, setUpGroups } from "./output/svg"
+import { setUpGroups } from "./output/svg"
 import parse from "./parser/situationFileParser"
 import { updateTable } from "./output/table"
 import { setUpEventHandlers } from "./canvasEventHandler"
@@ -24,6 +19,7 @@ import {
   hideAllCaseOverlays,
   showAllCaseOverlays,
 } from "./output/caseBasedReasoning"
+import { ABObject } from "./objects/angryBirdsObject"
 
 let $input: HTMLInputElement
 let $output: HTMLInputElement
@@ -32,8 +28,8 @@ let $keepPredicates: HTMLInputElement
 let $tableElements: TableElements
 let $databaseInput: HTMLInputElement
 let $CBRResults: HTMLElement
-let objects: IObject[]
-let selectedObjects: IObject[] = []
+let objects: ABObject[]
+let selectedObjects: ABObject[] = []
 let scene: Scene
 let selectionMeta: SelectionMeta = {
   angle: 0,
@@ -185,7 +181,7 @@ init()
  *
  * @param objects - new selected objects
  */
-export function updateSelectedObjects(objects: IObject[]): void {
+export function updateSelectedObjects(objects: ABObject[]): void {
   const oldSelectedObject = [...selectedObjects]
   selectedObjects = [...objects]
   redrawObjects(selectedObjects, oldSelectedObject)
@@ -194,7 +190,7 @@ export function updateSelectedObjects(objects: IObject[]): void {
 
   const center = getCenterFromObjects(objects)
 
-  const origins: Point[] = objects.map((object) => getCenter(object))
+  const origins: Point[] = objects.map((object) => object.getCenter())
   selectionMeta = {
     center,
     vectors: origins.map((point) => getVectorBetween(point, center)),

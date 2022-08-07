@@ -1,5 +1,5 @@
 import { $svgElements, selectedObjects } from "../app"
-import { IObject, Point, SVGElements } from "../types"
+import { Point, SVGElements } from "../types"
 import { getCenterFromObjects } from "../objects/helper"
 import {
   CENTER_CROSS_COLOR,
@@ -11,6 +11,7 @@ import {
   SELECTED_OBJECT_COLOR,
   SELECTION_RECTANGLE_COLOR,
 } from "../objects/colors"
+import { ABObject } from "../objects/angryBirdsObject"
 
 /** Amount of pixels between each line in the background grid */
 const gridSize = 10
@@ -98,10 +99,10 @@ export function drawGrid(): void {
  *
  * @param yCoordinate - y coordinate of the horizontal line. Remember that y = 0 is at the top
  * @param $target - SVGElement to which the line will be appended
- * @param options - optional configuration values
- * @param options.color - optional color for the lines stroke
- * @param options.width - optional width for the line
- * @param options.strokeWidth - optional width for the lines stroke
+ * @param options - optional configuration values:
+ *  - options.color - optional color for the lines stroke
+ *  - options.width - optional width for the line
+ *  - options.strokeWidth - optional width for the lines stroke
  */
 export function drawHorizontalLine(
   yCoordinate: number,
@@ -131,9 +132,9 @@ export function drawHorizontalLine(
  * @param xCoordinate - x coordinate of the vertical line
  * @param $target - SVGElement to which the line will be appended
  * @param options - optional configuration values
- * @param options.color - optional color for the lines stroke
- * @param options.height - optional height for the line
- * @param options.strokeWidth - optional width for the lines stroke
+ *  - options.color - optional color for the lines stroke
+ *  - options.height - optional height for the line
+ *  - options.strokeWidth - optional width for the lines stroke
  */
 export function drawVerticalLine(
   xCoordinate: number,
@@ -193,7 +194,7 @@ function getGenericLine(
  */
 export function drawPoly(
   $target: SVGElement,
-  object: IObject,
+  object: ABObject,
   color: string,
   points: Point[]
 ): SVGElement {
@@ -231,7 +232,7 @@ export function drawPoly(
  */
 function drawCircle(
   $target: SVGElement,
-  object: IObject,
+  object: ABObject,
   color: string,
   center: Point,
   radius: number
@@ -242,7 +243,7 @@ function drawCircle(
   )
   $circle.setAttribute("cx", String(center.x))
   $circle.setAttribute("cy", String(center.y))
-  $circle.setAttribute("r", String(radius))
+  $circle.setAttribute("r", String(Math.abs(radius)))
   $circle.setAttribute("id", "svg-" + object.id)
   $circle.setAttribute(
     "style",
@@ -291,7 +292,7 @@ function rotShift(
  * @param clickEventListener - optional eventHandler for click events on the new svg element
  */
 export function drawShape(
-  object: IObject,
+  object: ABObject,
   $target: SVGElement,
   clickEventListener?: (this: SVGElement, ev: MouseEvent) => any
 ): void {
@@ -464,7 +465,7 @@ export function hideElement($element: SVGElement | undefined): void {
  *
  * @param objects - the objects at whose center the cross will be displayed
  */
-export function showCenter(objects: IObject[]): void {
+export function showCenter(objects: ABObject[]): void {
   if (objects.length === 0) return
 
   if (objects.length === 1) {

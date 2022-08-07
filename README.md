@@ -15,6 +15,6 @@ Controls are described on the page
 ## TODO
 
 - Allow adding new Objects (not just duplicating existing objects)
-- Scaling and rotating multiple objects in combination does not work as intended
+- Maybe scaling should be applied and reset when deselecting objects?
 - Case Based Reasoning Visualizations:
   - Edit cases

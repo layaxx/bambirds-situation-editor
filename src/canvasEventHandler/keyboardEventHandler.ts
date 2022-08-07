@@ -5,16 +5,16 @@ import {
   selectionMeta,
   getUID,
 } from "../app"
+import { ABObject } from "../objects/angryBirdsObject"
 import {
+  addVectors,
   getCenterFromObjects,
-  handleScaleObject,
-  handleMoveObject,
-  scaleObjectInternal,
   getVectorBetween,
+  rotateVector,
+  scaleVector,
 } from "../objects/helper"
 import { removeObjects, redrawObjects, updateCenter } from "../output"
 import { updateTable } from "../output/table"
-import { IObject } from "../types"
 
 /**
  * Sets up global key press listeners and appropriate event handlers to enable
@@ -48,11 +48,13 @@ export function setUpKeyboardEventHandlers(): void {
       case "ArrowLeft":
       case "ArrowRight":
         if (event.altKey) {
+          // Rotate
           handleRotate(event.key, event.ctrlKey)
           break
         }
+      // Fallthrough is intended, needed for moving objects
 
-      case "ArrowUp": // eslint-disable-line no-fallthrough
+      case "ArrowUp":
       case "ArrowDown":
         if (event.altKey) {
           // Scale
@@ -90,7 +92,7 @@ function handleDelete(): void {
     if (selectedObjects.includes(object)) indicesToBeDeleted.push(index)
   }
 
-  const hasBeenDeleted: IObject[] = []
+  const hasBeenDeleted: ABObject[] = []
 
   for (const index of indicesToBeDeleted.reverse())
     hasBeenDeleted.push(...objects.splice(index, 1))
@@ -116,45 +118,11 @@ function handleRotate(key: string, ctrlKey: boolean): void {
   const center = getCenterFromObjects(selectedObjects)
   // Rotate center of objects
   for (const object of selectedObjects) {
-    const vector = getVectorBetween(object, center)
+    const vectorToCenter = getVectorBetween(object, center)
+    const newPosition = addVectors(center, rotateVector(vectorToCenter, angle))
+    object.moveTo(newPosition)
 
-    object.x =
-      center.x + Math.cos(angle) * vector.x - Math.sin(angle) * vector.y
-    object.y =
-      center.y + Math.sin(angle) * vector.x + Math.cos(angle) * vector.y
-
-    if (object.shape === "poly") {
-      const [first, ...rest] = object.vectors ?? [-1]
-      object.vectors = [
-        first,
-        ...rest.map((input): [number, number] => {
-          if (typeof input === "number") {
-            return [1, 1]
-          }
-
-          const [x1, y1] = input
-          const newX = Math.cos(angle) * x1 - Math.sin(angle) * y1
-          const newY = Math.sin(angle) * x1 + Math.cos(angle) * y1
-
-          return [newX, newY]
-        }),
-      ]
-      scaleObjectInternal(object)
-    } else if (object.shape === "ball") {
-      // Dont need to rotate balls
-    } else if (!object.params || object.params[2] === undefined) {
-      console.error("Cannot rotate invalid object", object)
-    } else {
-      switch (key) {
-        case "ArrowLeft":
-          ;(object.params[2] as number) -= offset
-          break
-        case "ArrowRight":
-          ;(object.params[2] as number) += offset
-          break
-        default:
-      }
-    }
+    object.rotateBy(angle)
   }
 
   selectionMeta.center = getCenterFromObjects(selectedObjects)
@@ -172,17 +140,38 @@ function handleRotate(key: string, ctrlKey: boolean): void {
  * @param ctrlKey - increases speed of scaling tenfold iff true
  */
 function handleScale(key: string, ctrlKey: boolean): void {
-  const offset = 0.1 * (ctrlKey ? 10 : 1)
+  let offset = ctrlKey ? 1 : 0.1
 
-  selectionMeta.scale += key === "ArrowUp" ? offset : -offset
-  for (const [index, object] of selectedObjects.entries()) {
+  switch (key) {
+    case "ArrowUp":
+      // ArrowUp => Scaling Up => Offset is already correct
+      break
+    case "ArrowDown":
+      // ArrowDown => Scaling Down => Offset needs to be negative
+      offset *= -1
+      break
+    default:
+      console.warn("Unknown scaling direction:", key, "ignoring.")
+      return
+  }
+
+  const oldScale = selectionMeta.scale
+  selectionMeta.scale += offset
+  for (const object of selectedObjects) {
     const center = selectionMeta.center
     if (selectedObjects.length > 1) {
-      object.x = center.x + selectionMeta.scale * selectionMeta.vectors[index].x
-      object.y = center.y + selectionMeta.scale * selectionMeta.vectors[index].y
+      object.moveTo(
+        addVectors(
+          center,
+          scaleVector(
+            scaleVector(getVectorBetween(object, center), 1 / oldScale),
+            selectionMeta.scale
+          )
+        )
+      )
     }
 
-    handleScaleObject(object, key, ctrlKey)
+    object.setScale(object.scale + offset)
   }
 }
 
@@ -191,15 +180,54 @@ function handleScale(key: string, ctrlKey: boolean): void {
  *
  */
 function handleDuplicate(): void {
-  const newObjects: IObject[] = []
+  const newObjects: ABObject[] = []
 
   selectedObjects.forEach((object) => {
-    const newObject = {
-      ...(JSON.parse(JSON.stringify(object)) as IObject),
-      id: `${object.id}d${getUID()}`,
-    }
+    const newObject = object.clone(`${object.id}d${getUID()}`)
     newObjects.push(newObject)
   })
   objects.push(...newObjects)
   redrawObjects(selectedObjects, newObjects)
+}
+
+/**
+ * Handles the movement of a given object considering the given key presses.
+ *
+ * Valid keys are the arrow keys, which correspond to the appropriate movement of the object,
+ * i.e. "ArrowUp" moves the object up, etc.
+ *
+ * Objects are moved 1 or 10 pixels in the appropriate direction, depending on the truthiness
+ * of isHighSpeed
+ *
+ * @param object - object that shall be moved
+ * @param key - key corresponding to the direction in which the object is moved
+ * @param isHighSpeed - increases movement speed tenfold iff true
+ */
+function handleMoveObject(
+  object: ABObject,
+  key: string,
+  isHighSpeed?: boolean
+): void {
+  const offset = isHighSpeed ? 10 : 1
+  let xOffset = 0
+  let yOffset = 0
+  switch (key) {
+    case "ArrowUp":
+      yOffset = -offset // Y = 0 is at the top
+      break
+    case "ArrowDown":
+      yOffset = offset
+      break
+    case "ArrowLeft":
+      xOffset = -offset
+      break
+    case "ArrowRight":
+      xOffset = offset
+      break
+    default:
+      console.log("Unknown moving direction:", key, "ignoring.")
+      return
+  }
+
+  object.moveBy({ x: xOffset, y: yOffset })
 }

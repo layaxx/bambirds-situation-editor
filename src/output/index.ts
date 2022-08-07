@@ -4,11 +4,11 @@ import {
   selectedObjects,
   updateSelectedObjects,
 } from "../app"
-import { IObject } from "../types"
+import { ABObject } from "../objects/angryBirdsObject"
 import { drawGrid, drawHorizontalLine, drawShape, showCenter } from "./svg"
 import { updateTable } from "./table"
 
-export function redrawAll(objects: IObject[]): void {
+export function redrawAll(objects: ABObject[]): void {
   $svgElements.$groupObjects.replaceChildren()
   $svgElements.$groupBackground.replaceChildren()
 
@@ -25,13 +25,13 @@ export function redrawAll(objects: IObject[]): void {
   updateTable(...selectedObjects)
 }
 
-export function removeObjects(objects: IObject[]): void {
+export function removeObjects(objects: ABObject[]): void {
   objects.forEach((object) => {
     removeObject(object)
   })
 }
 
-function removeObject(object: IObject): void {
+function removeObject(object: ABObject): void {
   try {
     const toBeRemoved = $svgElements.$groupObjects.querySelector(
       "#svg-" + object.id
@@ -43,8 +43,8 @@ function removeObject(object: IObject): void {
 }
 
 export function redrawObjects(
-  selectedObjects: IObject[],
-  unselectedObjects: IObject[] = []
+  selectedObjects: ABObject[],
+  unselectedObjects: ABObject[] = []
 ): void {
   for (const object of [...selectedObjects, ...unselectedObjects]) {
     removeObject(object)
@@ -56,7 +56,7 @@ export function redrawObjects(
   }
 }
 
-export function updateCenter(objects: IObject[]): void {
+export function updateCenter(objects: ABObject[]): void {
   try {
     const toBeRemoved = $svgElements.$groupOverlay.querySelector("#svg-center")
     if (toBeRemoved !== null) {
@@ -68,7 +68,7 @@ export function updateCenter(objects: IObject[]): void {
 }
 
 function clickEventListenerFactory(
-  object: IObject
+  object: ABObject
 ): (this: SVGElement, ev: MouseEvent) => any {
   return (event) => {
     const indexIfSelected = selectedObjects.indexOf(object)

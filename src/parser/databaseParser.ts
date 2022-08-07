@@ -1,4 +1,5 @@
-import { Case, IObject } from "../types"
+import { ABObject } from "../objects/angryBirdsObject"
+import { Case } from "../types"
 import { getGenericValues } from "./prologHelper"
 
 /**
@@ -65,7 +66,7 @@ function generateCase(
     return undefined
   }
 
-  const objects: IObject[] = []
+  const objects: ABObject[] = []
   const parsedPredicates = new Map<
     string,
     Array<{
@@ -114,33 +115,43 @@ function generateCase(
 
     const [shape, x, y, area, parameter] = shapePredicate.values
 
-    objects.push({
-      id: String(id),
-      area: Number(area),
-      x: Number(x),
-      y: Number(y),
-      shape: String(shape),
-      material: String(materialPredicate.values[0]),
-      unscaledParams: [...(typeof parameter === "object" ? parameter : [])],
-      params: [...(typeof parameter === "object" ? parameter : [])],
-      isPig: Boolean(pigPredicate),
-      scale: 1,
-      form:
-        formPredicate?.values[0] === undefined
-          ? undefined
-          : String(formPredicate?.values[0]),
-      vectors: (String(shape) === "poly"
-        ? (typeof parameter === "object" ? parameter : []).map(
-            (entry, index) => {
-              if (index === 0 || typeof entry === "number") return entry
-              const [x1, y1] = entry
-              const newX = x1 - Number(x)
-              const newY = y1 - Number(y)
-              return [newX, newY]
-            }
-          )
-        : undefined) as [number, ...Array<[number, number]>] | undefined,
-    })
+    objects.push(
+      new ABObject(
+        {
+          id: String(id),
+          area: Number(area),
+          x: Number(x),
+          y: Number(y),
+          shape: String(shape),
+          material: String(materialPredicate.values[0]),
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          _unscaledParams: [
+            ...(typeof parameter === "object" ? parameter : []),
+          ],
+          params: [...(typeof parameter === "object" ? parameter : [])],
+          isPig: Boolean(pigPredicate),
+          isBird: false,
+          scale: 1,
+          form:
+            formPredicate?.values[0] === undefined
+              ? undefined
+              : String(formPredicate?.values[0]),
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          _vectors: (String(shape) === "poly"
+            ? (typeof parameter === "object" ? parameter : []).map(
+                (entry, index) => {
+                  if (index === 0 || typeof entry === "number") return entry
+                  const [x1, y1] = entry
+                  const newX = x1 - Number(x)
+                  const newY = y1 - Number(y)
+                  return [newX, newY]
+                }
+              )
+            : undefined) as [number, ...Array<[number, number]>] | undefined,
+        } as unknown as ABObject,
+        String(id)
+      )
+    )
   }
 
   return {
