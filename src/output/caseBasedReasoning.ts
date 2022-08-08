@@ -338,7 +338,7 @@ function getTransformationBetweenTwoObjects(
 
   return new Transformation(
     { x: deltaX, y: deltaY },
-    regularObject.getCenter(),
+    caseObject.getCenter(),
     scale
   )
 }
