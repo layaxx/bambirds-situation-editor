@@ -4,8 +4,6 @@ import { getCenterFromObjects } from "../objects/helper"
 import {
   CENTER_CROSS_COLOR,
   CIRCLE_STROKE_COLOR,
-  FALLBACK_COLOR,
-  getColorFromMaterial,
   GRID_COLOR,
   HORIZON_LINE_COLOR,
   SELECTED_OBJECT_COLOR,
@@ -15,8 +13,7 @@ import { ABObject } from "../objects/angryBirdsObject"
 
 /** Amount of pixels between each line in the background grid */
 const gridSize = 10
-/** Fallback radius to be used when radius for circle is undefined/unknown */
-const defaultRadius = 100
+
 /**
  * Helper function to get width of main svg canvas
  *
@@ -187,16 +184,17 @@ function getGenericLine(
  * The poly object is defined by a list of {@link Point}s
  *
  * @param $target - the element to which the new element is appended
- * @param object - the AngryBirds object this element represents
- * @param color - the fill color of the new element
  * @param points - the points that define the poly element
+ * @param color - the fill color of the new element
+ * @param id - optional id for the element, takes the form `svg-id`
+ *
  * @returns the newly created object
  */
 export function drawPoly(
   $target: SVGElement,
-  object: ABObject,
+  points: Point[],
   color: string,
-  points: Point[]
+  id: string | number
 ): SVGElement {
   const $polygon = document.createElementNS(
     "http://www.w3.org/2000/svg",
@@ -208,11 +206,9 @@ export function drawPoly(
   )
   $polygon.setAttribute(
     "style",
-    `fill:${
-      selectedObjects.includes(object) ? SELECTED_OBJECT_COLOR : color
-    };stroke:${CIRCLE_STROKE_COLOR};stroke-width:0.5`
+    `fill:${color};stroke:${CIRCLE_STROKE_COLOR};stroke-width:0.5`
   )
-  $polygon.setAttribute("id", "svg-" + object.id)
+  $polygon.setAttribute("id", `svg-${id}`)
 
   $target.append($polygon)
 
@@ -224,18 +220,19 @@ export function drawPoly(
  * The circle is defined by ist center Point and its radius
  *
  * @param $target - the element to which the new element is appended
- * @param object - the AngryBirds object this element represents
- * @param color - the fill color for the circle
  * @param center - the center {@link Point} of the circle
  * @param radius - the radius of the circle
+ * @param color - the fill color for the circle
+ * @param id - the optional id for the element, will take the form `svg-id`
+ *
  * @returns the newly created circle
  */
-function drawCircle(
+export function drawCircle(
   $target: SVGElement,
-  object: ABObject,
-  color: string,
   center: Point,
-  radius: number
+  radius: number,
+  color: string,
+  id?: string | number
 ): SVGElement {
   const $circle = document.createElementNS(
     "http://www.w3.org/2000/svg",
@@ -244,122 +241,15 @@ function drawCircle(
   $circle.setAttribute("cx", String(center.x))
   $circle.setAttribute("cy", String(center.y))
   $circle.setAttribute("r", String(Math.abs(radius)))
-  $circle.setAttribute("id", "svg-" + object.id)
+  $circle.setAttribute("id", `svg-${String(id)}`)
   $circle.setAttribute(
     "style",
-    `fill:${
-      selectedObjects.includes(object) ? SELECTED_OBJECT_COLOR : color
-    };stroke:${CIRCLE_STROKE_COLOR};stroke-width:0.5`
+    `fill:${color};stroke:${CIRCLE_STROKE_COLOR};stroke-width:0.5`
   )
 
   $target.append($circle)
 
   return $circle
-}
-
-/**
- * Rotates a list of points given as [x, y] by angle around center
- *
- * @param list - array of two-member-arrays: [[x1, x2], ...]
- * @param center - Point around which the points in the array are rotated
- * @param angle - angle by which the points are rotated
- *
- * @returns points in the same format as list, but rotated
- */
-function rotShift(
-  list: Array<[number, number]>,
-  center: Point,
-  angle: number
-): Array<[number, number]> {
-  return list.map(([x, y]) => {
-    const xr = x * Math.cos(angle) - y * Math.sin(angle)
-    const yr = x * Math.sin(angle) + y * Math.cos(angle)
-    const xrs = xr + center.x
-    const yrs = yr + center.y
-    return [xrs, yrs]
-  })
-}
-
-/**
- * Draws a shape for the given object to the given $target
- *
- * Objects of type "rect" are drawn as (appropriately rotated) rectangles
- * Objects of type "ball" or "unknown" are drawn as circle
- * Objects of type "poly" are drawn as poly shape
- *
- * @param object - AngryBirds Object that shall be displayed
- * @param $target - SVG Element to which the new svg element is added
- * @param clickEventListener - optional eventHandler for click events on the new svg element
- */
-export function drawShape(
-  object: ABObject,
-  $target: SVGElement,
-  clickEventListener?: (this: SVGElement, ev: MouseEvent) => any
-): void {
-  let newElement: SVGElement | undefined
-  switch (object.shape) {
-    case "rect": {
-      const [w, h, angle] = object.params
-
-      const halfHeight = Number(h) * 0.5
-      const halfWidth = Number(w) * 0.5
-      const points = rotShift(
-        [
-          [-halfHeight, -halfWidth],
-          [-halfHeight, halfWidth],
-          [halfHeight, halfWidth],
-          [halfHeight, -halfWidth],
-        ],
-        { x: object.x, y: object.y },
-        angle as number
-      ).map(([x, y]: [number, number]) => ({ x, y }))
-      newElement = drawPoly(
-        $target,
-        object,
-        getColorFromMaterial(object.material) ?? FALLBACK_COLOR,
-        points
-      )
-      break
-    }
-
-    case "ball":
-      newElement = drawCircle(
-        $target,
-        object,
-        getColorFromMaterial(object.material) ?? object.color ?? FALLBACK_COLOR,
-        getCenterFromObjects([object]),
-        (object.params[0] as number | undefined) ?? defaultRadius
-      )
-      break
-
-    case "poly": {
-      const [_, ...points] = object.params
-      newElement = drawPoly(
-        $target,
-        object,
-        getColorFromMaterial(object.material) ?? FALLBACK_COLOR,
-        (points as Array<[number, number]>).map(([x, y]) => ({ x, y }))
-      )
-      break
-    }
-
-    case "unknown":
-      console.log("draw unknown shape")
-      newElement = drawCircle(
-        $target,
-        object,
-        getColorFromMaterial(object.material) ?? FALLBACK_COLOR,
-        getCenterFromObjects([object]),
-        defaultRadius
-      )
-      break
-    default:
-      console.log("Not sure how to draw", object)
-  }
-
-  if (newElement && clickEventListener) {
-    newElement.addEventListener("click", clickEventListener)
-  }
 }
 
 /**

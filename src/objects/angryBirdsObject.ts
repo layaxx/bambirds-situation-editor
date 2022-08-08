@@ -1,10 +1,16 @@
+import { drawCircle, drawPoly } from "../output/svg"
 import {
   getFormFor,
   getMaterialFor,
   parseShapePredicate,
 } from "../parser/situationFileParser"
 import { IFormPredicate, IMaterialPredicate, Point } from "../types"
-import { getVectorBetween } from "./helper"
+import {
+  FALLBACK_COLOR,
+  getColorFromMaterial,
+  SELECTED_OBJECT_COLOR,
+} from "./colors"
+import { deepCopy, getVectorBetween, rotShift } from "./helper"
 
 export class ABObject {
   id: string
@@ -134,8 +140,10 @@ export class ABObject {
     return this.area
   }
 
-  clone(id: string): ABObject {
-    return new ABObject(this, id)
+  clone(id: string): this {
+    const copy = deepCopy(this)
+    copy.id = id
+    return copy
   }
 
   /**
@@ -208,6 +216,101 @@ export class ABObject {
       console.error("Cannot rotate invalid object", this)
     } else {
       ;(this.params[2] as number) += angle
+    }
+  }
+
+  /**
+   * Draws a shape for the given object to the given $target
+   *
+   * Objects of type "rect" are drawn as (appropriately rotated) rectangles
+   * Objects of type "ball" or "unknown" are drawn as circle
+   * Objects of type "poly" are drawn as poly shape
+   *
+   * @param $target - SVG Element to which the new svg element is added
+   * @param isSelected - optional boolean indicating whether the highlight color should be used
+   * @param clickEventListener - optional eventHandler for click events on the new svg element
+   */
+  render(
+    $target: SVGElement,
+    isSelected?: boolean,
+    clickEventListener?: (this: SVGElement, ev: MouseEvent) => any
+  ): void {
+    /** Fallback radius to be used when radius for circle is undefined/unknown */
+    const defaultRadius = 100
+
+    let newElement: SVGElement | undefined
+    switch (this.shape) {
+      case "rect": {
+        const [w, h, angle] = this.params
+
+        const halfHeight = Number(h) * 0.5
+        const halfWidth = Number(w) * 0.5
+        const points = rotShift(
+          [
+            [-halfHeight, -halfWidth],
+            [-halfHeight, halfWidth],
+            [halfHeight, halfWidth],
+            [halfHeight, -halfWidth],
+          ],
+          { x: this.x, y: this.y },
+          angle as number
+        ).map(([x, y]: [number, number]) => ({ x, y }))
+        newElement = drawPoly(
+          $target,
+          points,
+          isSelected
+            ? SELECTED_OBJECT_COLOR
+            : getColorFromMaterial(this.material) ?? FALLBACK_COLOR,
+          this.id
+        )
+        break
+      }
+
+      case "ball":
+        newElement = drawCircle(
+          $target,
+          this.getCenter(),
+          (this.params[0] as number | undefined) ?? defaultRadius,
+          isSelected
+            ? SELECTED_OBJECT_COLOR
+            : getColorFromMaterial(this.material) ??
+                this.color ??
+                FALLBACK_COLOR,
+          this.id
+        )
+        break
+
+      case "poly": {
+        const [_, ...points] = this.params
+        newElement = drawPoly(
+          $target,
+          (points as Array<[number, number]>).map(([x, y]) => ({ x, y })),
+          isSelected
+            ? SELECTED_OBJECT_COLOR
+            : getColorFromMaterial(this.material) ?? FALLBACK_COLOR,
+          this.id
+        )
+        break
+      }
+
+      case "unknown":
+        console.log("draw unknown shape")
+        newElement = drawCircle(
+          $target,
+          this.getCenter(),
+          defaultRadius,
+          isSelected
+            ? SELECTED_OBJECT_COLOR
+            : getColorFromMaterial(this.material) ?? FALLBACK_COLOR,
+          this.id
+        )
+        break
+      default:
+        console.log("Not sure how to draw", this)
+    }
+
+    if (newElement && clickEventListener) {
+      newElement.addEventListener("click", clickEventListener)
     }
   }
 

@@ -5,7 +5,7 @@ import {
   updateSelectedObjects,
 } from "../app"
 import { ABObject } from "../objects/angryBirdsObject"
-import { drawGrid, drawHorizontalLine, drawShape, showCenter } from "./svg"
+import { drawGrid, drawHorizontalLine, showCenter } from "./svg"
 import { updateTable } from "./table"
 
 export function redrawAll(objects: ABObject[]): void {
@@ -16,9 +16,9 @@ export function redrawAll(objects: ABObject[]): void {
 
   drawHorizontalLine(scene.groundY, $svgElements.$groupBackground)
   objects.forEach((object) => {
-    drawShape(
-      object,
+    object.render(
       $svgElements.$groupObjects,
+      selectedObjects.includes(object),
       clickEventListenerFactory(object)
     )
   })
@@ -48,9 +48,9 @@ export function redrawObjects(
 ): void {
   for (const object of [...selectedObjects, ...unselectedObjects]) {
     removeObject(object)
-    drawShape(
-      object,
+    object.render(
       $svgElements.$groupObjects,
+      selectedObjects.includes(object),
       clickEventListenerFactory(object)
     )
   }

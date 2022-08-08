@@ -156,3 +156,26 @@ export function deepCopy<T>(source: T): T {
       }, Object.create(Object.getPrototypeOf(source)))
     : source
 }
+
+/**
+ * Rotates a list of points given as [x, y] by angle around center
+ *
+ * @param list - array of two-member-arrays: [[x1, x2], ...]
+ * @param center - Point around which the points in the array are rotated
+ * @param angle - angle by which the points are rotated
+ *
+ * @returns points in the same format as list, but rotated
+ */
+export function rotShift(
+  list: Array<[number, number]>,
+  center: Point,
+  angle: number
+): Array<[number, number]> {
+  return list.map(([x, y]) => {
+    const xr = x * Math.cos(angle) - y * Math.sin(angle)
+    const yr = x * Math.sin(angle) + y * Math.cos(angle)
+    const xrs = xr + center.x
+    const yrs = yr + center.y
+    return [xrs, yrs]
+  })
+}

@@ -3,7 +3,7 @@ import { ABObject } from "../objects/angryBirdsObject"
 import { addVectors, getVectorBetween, scaleVector } from "../objects/helper"
 import { Transformation } from "../objects/transformation"
 import { Case } from "../types"
-import { drawCrossAt, drawShape, hideElement } from "./svg"
+import { drawCrossAt, hideElement } from "./svg"
 
 export function analyzeCase(
   caseParameter: Case,
@@ -44,7 +44,7 @@ export function analyzeCase(
   svg.append(group)
 
   caseParameter.objects.forEach((object) => {
-    drawShape(object, group)
+    object.render(group)
   })
 
   drawCrossAt(caseParameter.shootAt, group)
@@ -139,17 +139,12 @@ function toggleOverlay(
     )
 
     newElement.setAttribute("id", id)
-
     newElement.setAttribute("class", "case-overlay")
 
     caseParameter.objects.forEach((object) => {
-      drawShape(
-        {
-          ...transformObject(object, transformation),
-          material: "cbr",
-        } as ABObject,
-        newElement
-      )
+      const transformedObject = transformObject(object, transformation)
+      transformedObject.material = "cbr"
+      transformedObject.render(newElement)
     })
 
     $svgElements.$groupOverlay.append(newElement)
@@ -309,12 +304,10 @@ function hasMatches(
   input: Array<[ABObject, ABObject[]]>,
   transformation: Transformation
 ): boolean {
-  console.log(transformation)
   return input.every(([caseObject, potentialMatches]) => {
     const transformedCaseObject = transformObject(caseObject, transformation)
 
     const hasMatch = potentialMatches.some((regularObject) => {
-      console.log(transformedCaseObject, regularObject)
       return (
         transformedCaseObject.material === regularObject.material &&
         transformedCaseObject.shape === regularObject.shape &&
