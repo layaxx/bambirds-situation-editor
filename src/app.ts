@@ -12,6 +12,7 @@ import {
   showAllCaseOverlays,
 } from "./output/caseBasedReasoning"
 import { ABObject } from "./objects/angryBirdsObject"
+import { deepCopy } from "./objects/helper"
 
 let $input: HTMLInputElement
 let $output: HTMLInputElement
@@ -21,6 +22,7 @@ let $tableElements: TableElements
 let $databaseInput: HTMLInputElement
 let $CBRResults: HTMLElement
 let objects: ABObject[]
+let backup: ABObject[]
 let selectedObjects: ABObject[] = []
 let scene: Scene
 let selectionMeta: SelectionMeta = {
@@ -125,12 +127,6 @@ function init() {
     if (button)
       // eslint-disable-next-line unicorn/prefer-add-event-listener
       button.onclick = () => {
-        console.log(
-          cases.map((caseParameter, index) => ({
-            caseParameter,
-            transformations: results[index].result,
-          }))
-        )
         showAllCaseOverlays(
           cases.map((caseParameter, index) => ({
             caseParameter,
@@ -170,6 +166,7 @@ init()
  * @param objects - new selected objects
  */
 export function updateSelectedObjects(objects: ABObject[]): void {
+  if (objects.length > 0) makeBackup()
   const oldSelectedObject = [...selectedObjects]
   selectedObjects = [...objects]
   redrawObjects(selectedObjects, oldSelectedObject)
@@ -185,6 +182,17 @@ export function updateSelectedObjects(objects: ABObject[]): void {
             0
           ) / objects.length,
   }
+}
+
+function makeBackup() {
+  backup = deepCopy(objects)
+}
+
+export function recoverBackup() {
+  console.log("Recovering backup")
+  objects = backup
+  updateSelectedObjects([])
+  redrawAll(backup)
 }
 
 /**

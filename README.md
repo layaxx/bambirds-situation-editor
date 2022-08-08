@@ -17,13 +17,11 @@
 
 Controls are described on the page.
 
-Note that Browser shortcuts such as `Ctrl + R` for reload or `F12` for dev tools may not work unless on of the input fields is selected, due to global event listeners.
+Note that Browser shortcuts such as `Ctrl + R` for reload or `F12` for dev tools may not work when at least one object is selected.
 
 ## Future Development
 
 ### Known Bugs
-
-- scaling of multiple objects does not work well when used with multiplier (Ctrl key)
 
 ### Possible new Features
 

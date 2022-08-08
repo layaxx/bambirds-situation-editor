@@ -4,6 +4,7 @@ import {
   updateSelectedObjects,
   selectionMeta,
   getUID,
+  recoverBackup,
 } from "../app"
 import { ABObject } from "../objects/angryBirdsObject"
 import {
@@ -36,10 +37,16 @@ export function setUpKeyboardEventHandlers(): void {
       return
     }
 
-    event.preventDefault()
+    if (event.key === "z" && event.ctrlKey) {
+      recoverBackup()
+      return
+    }
+
     if (selectedObjects.length === 0) {
       return
     }
+
+    event.preventDefault()
 
     switch (event.key) {
       case "Delete":

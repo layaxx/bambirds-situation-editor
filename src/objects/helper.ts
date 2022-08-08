@@ -124,3 +124,35 @@ export function rotateVector(vector: Point, angle: number): Point {
     y: Math.sin(angle) * vector.x + Math.cos(angle) * vector.y,
   }
 }
+
+/**
+ * Creates a deep copy of the given argument
+ *
+ * Taken from Sunny Sun: https://gist.github.com/sunnyy02/2477458d4d1c08bde8cc06cd8f56702e
+ *
+ * @param source - object/array to be copied
+ *
+ * @returns deep copy of source
+ */
+export function deepCopy<T>(source: T): T {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return Array.isArray(source)
+    ? // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      source.map((item) => deepCopy(item))
+    : source instanceof Date
+    ? new Date(source.getTime())
+    : source && typeof source === "object"
+    ? // eslint-disable-next-line unicorn/no-array-reduce
+      Object.getOwnPropertyNames(source).reduce((o, prop) => {
+        Object.defineProperty(
+          o,
+          prop,
+          Object.getOwnPropertyDescriptor(source, prop)!
+        )
+        // eslint-disable-next-line  @typescript-eslint/consistent-indexed-object-style, @typescript-eslint/no-unsafe-assignment
+        o[prop] = deepCopy((source as { [key: string]: any })[prop])
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return o
+      }, Object.create(Object.getPrototypeOf(source)))
+    : source
+}
