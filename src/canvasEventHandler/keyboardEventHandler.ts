@@ -61,9 +61,7 @@ export function setUpKeyboardEventHandlers(): void {
           handleScale(event.key, event.ctrlKey)
         } else {
           // Move
-          for (const object of selectedObjects) {
-            handleMoveObject(object, event.key, event.ctrlKey)
-          }
+          handleMoveObject(event.key, event.ctrlKey)
         }
 
         updateTable(...selectedObjects)
@@ -126,7 +124,6 @@ function handleRotate(key: string, ctrlKey: boolean): void {
 
   redrawObjects(selectedObjects)
   updateTable(...selectedObjects)
-  // Not needed: updateCenter(selectedObjects): center does not change when rotating
 }
 
 /**
@@ -138,38 +135,49 @@ function handleRotate(key: string, ctrlKey: boolean): void {
  * @param ctrlKey - increases speed of scaling tenfold iff true
  */
 function handleScale(key: string, ctrlKey: boolean): void {
-  let offset = ctrlKey ? 1 : 0.1
+  const max = ctrlKey ? 10 : 1
+  for (let i = 0; i < max; i++) {
+    // This loop is a fix because multiplying offset by ten did not work very well
 
-  switch (key) {
-    case "ArrowUp":
-      // ArrowUp => Scaling Up => Offset is already correct
-      break
-    case "ArrowDown":
-      // ArrowDown => Scaling Down => Offset needs to be negative
-      offset *= -1
-      break
-    default:
-      console.warn("Unknown scaling direction:", key, "ignoring.")
-      return
-  }
+    let offset = 0.1
 
-  const oldScale = selectionMeta.scale
-  selectionMeta.scale += offset
-  for (const object of selectedObjects) {
-    const center = getCenterFromObjects(selectedObjects)
-    if (selectedObjects.length > 1) {
-      object.moveTo(
-        addVectors(
-          center,
-          scaleVector(
-            scaleVector(getVectorBetween(object, center), 1 / oldScale),
-            selectionMeta.scale
-          )
-        )
-      )
+    switch (key) {
+      case "ArrowUp":
+        // ArrowUp => Scaling Up => Offset is already correct
+        break
+      case "ArrowDown":
+        // ArrowDown => Scaling Down => Offset needs to be negative
+        offset *= -1
+        break
+      default:
+        console.warn("Unknown scaling direction:", key, "ignoring.")
+        return
     }
 
-    object.setScale(object.scale + offset)
+    const oldScale = selectionMeta.scale
+    if (selectionMeta.scale + offset < 0.1) {
+      console.error("You are not allowed to scale to below 0.1")
+      return
+    }
+
+    selectionMeta.scale += offset
+
+    for (const object of selectedObjects) {
+      const center = getCenterFromObjects(selectedObjects)
+      if (selectedObjects.length > 1) {
+        object.moveTo(
+          addVectors(
+            center,
+            scaleVector(
+              scaleVector(getVectorBetween(object, center), 1 / oldScale),
+              selectionMeta.scale
+            )
+          )
+        )
+      }
+
+      object.setScale(object.scale + offset)
+    }
   }
 }
 
@@ -189,7 +197,7 @@ function handleDuplicate(): void {
 }
 
 /**
- * Handles the movement of a given object considering the given key presses.
+ * Handles the movement of a selected objects considering the given key presses.
  *
  * Valid keys are the arrow keys, which correspond to the appropriate movement of the object,
  * i.e. "ArrowUp" moves the object up, etc.
@@ -197,15 +205,10 @@ function handleDuplicate(): void {
  * Objects are moved 1 or 10 pixels in the appropriate direction, depending on the truthiness
  * of isHighSpeed
  *
- * @param object - object that shall be moved
- * @param key - key corresponding to the direction in which the object is moved
+ * @param key - key corresponding to the direction in which the selected objects are moved
  * @param isHighSpeed - increases movement speed tenfold iff true
  */
-function handleMoveObject(
-  object: ABObject,
-  key: string,
-  isHighSpeed?: boolean
-): void {
+function handleMoveObject(key: string, isHighSpeed?: boolean): void {
   const offset = isHighSpeed ? 10 : 1
   let xOffset = 0
   let yOffset = 0
@@ -227,5 +230,7 @@ function handleMoveObject(
       return
   }
 
-  object.moveBy({ x: xOffset, y: yOffset })
+  for (const object of selectedObjects) {
+    object.moveBy({ x: xOffset, y: yOffset })
+  }
 }
