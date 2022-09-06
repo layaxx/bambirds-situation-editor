@@ -356,8 +356,7 @@ function coordinatesWithinThreshold(
   object1: ABObject,
   object2: ABObject
 ): boolean {
-  const threshold = { x: 30, y: 30, area: 0 }
-  threshold.area = threshold.x * threshold.y
+  const threshold = { x: 4, y: 4, area: 111 }
 
   const isInX = Math.abs(object1.x - object2.x) < threshold.x
   const isInY = Math.abs(object1.y - object2.y) < threshold.y
