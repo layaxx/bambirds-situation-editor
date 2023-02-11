@@ -7,88 +7,114 @@ export function getRelationsBetweenTwoObjects(
 ) {
   console.log(
     "getRelationsBetweenTwoObjects",
-    checkBasicIntervalAlgebra(object1, object2)
+    checkExtendedIntervalAlgebra(object1, object2)
   )
 }
 
 /** Reduced Interval Algebra Relations */
 enum RIA {
   BEFORE,
-  AFTER,
   OVERLAPS,
-  OVERLAPS_INV,
   DURING,
-  DURING_INV,
   EQUAL,
 }
 
 /** Basic Interval Algebra Relations */
 enum IA {
   BEFORE,
-  AFTER,
   MEETS,
-  MEETS_INV,
   OVERLAPS,
-  OVERLAPS_INV,
   STARTS,
-  STARTS_INV,
   DURING,
-  DURING_INV,
   FINISHES,
-  FINISHES_INV,
   EQUAL,
 }
 
 /** Extended Interval Algebra Relations */
 enum EIA {
   BEFORE,
-  AFTER,
   MEETS,
-  MEETS_INV,
   MOST_OVERLAPS_MOST,
-  MOST_OVERLAPS_MOST_INV,
   LESS_OVERLAPS_LESS,
-  LESS_OVERLAPS_LESS_INV,
   MOST_OVERLAPS_LESS,
-  MOST_OVERLAPS_LESS_INV,
   LESS_OVERLAPS_MOST,
-  LESS_OVERLAPS_MOST_INV,
   STARTS_COVERS_MOST,
-  STARTS_COVERS_MOST_INV,
   STARTS_COVERS_LESS,
-  STARTS_COVERS_LESS_INV,
   DURING_LEFT,
-  DURING_LEFT_INV,
   DURING_RIGHT,
-  DURING_RIGHT_INV,
-  DURING_MIDDLE,
-  DURING_MIDDLE_INV,
+  DURING_CENTER,
   FINISHES_MOST,
-  FINISHES_MOST_INV,
   FINISHES_LESS,
-  FINISHES_LESS_INV,
   EQUAL,
 }
 
-function checkBasicIntervalAlgebra(x: ABObject, y: ABObject) {
+function checkGenericAlgebra(
+  a: ABObject,
+  b: ABObject,
+  func: (
+    arg0: number,
+    arg1: number,
+    arg2: number,
+    arg3: number
+  ) => (EIA | IA | RIA) | undefined,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  enum_: typeof EIA | typeof IA | typeof RIA
+) {
+  const abX = func(
+    a.getLeftBound(),
+    a.getRightBound(),
+    b.getLeftBound(),
+    b.getRightBound()
+  )
+  const abY = func(
+    a.getUpperBound(),
+    a.getLowerBound(),
+    b.getUpperBound(),
+    b.getLowerBound()
+  )
+  const baX = func(
+    b.getLeftBound(),
+    b.getRightBound(),
+    a.getLeftBound(),
+    a.getRightBound()
+  )
+  const baY = func(
+    b.getUpperBound(),
+    b.getLowerBound(),
+    a.getUpperBound(),
+    a.getLowerBound()
+  )
+
+  if (abX !== undefined)
+    console.log(`Found Predicate: ${enum_[abX]}(${a.id}, ${b.id}, X)`)
+
+  if (abY !== undefined)
+    console.log(`Found Predicate: ${enum_[abY]}(${a.id}, ${b.id}, Y)`)
+
+  if (baX !== undefined)
+    console.log(`Found Predicate: ${enum_[baX]}(${b.id}, ${a.id}, X)`)
+
+  if (baY !== undefined)
+    console.log(`Found Predicate: ${enum_[baY]}(${b.id}, ${a.id}, Y)`)
+
+  if (
+    (abX === undefined && baX === undefined) ||
+    (abY === undefined && baY === undefined)
+  )
+    console.error("Failed to find two relations between", { a, b })
+
   return {
-    x: IA[
-      getBasicIARelation(
-        x.getLeftBound(),
-        x.getRightBound(),
-        y.getLeftBound(),
-        y.getRightBound()
-      )
-    ],
-    y: IA[
-      getBasicIARelation(
-        x.getUpperBound(),
-        x.getLowerBound(),
-        y.getUpperBound(),
-        y.getLowerBound()
-      )
-    ],
+    x: enum_[abX ?? baX ?? 0],
+    y: enum_[abY ?? baY ?? 0],
   }
+}
+
+function checkBasicIntervalAlgebra(a: ABObject, b: ABObject) {
+  return checkGenericAlgebra(a, b, getBasicIARelation, IA)
+}
+
+function checkExtendedIntervalAlgebra(a: ABObject, b: ABObject) {
+  return checkGenericAlgebra(a, b, getExtendedIARelation, EIA)
 }
 
 function getBasicIARelation(
@@ -96,56 +122,26 @@ function getBasicIARelation(
   xEnd: number,
   yStart: number,
   yEnd: number
-): IA {
+): IA | undefined {
   if (xStart === yStart) {
-    if (xEnd === yEnd) {
-      return IA.EQUAL
-    }
+    if (xEnd === yEnd) return IA.EQUAL
 
-    if (xEnd < yEnd) {
-      return IA.STARTS
-    }
-
-    return IA.STARTS_INV
+    if (xEnd < yEnd) return IA.STARTS
   }
 
   if (xStart < yStart) {
-    if (xEnd < yStart) {
-      return IA.BEFORE
-    }
+    if (xEnd < yStart) return IA.BEFORE
 
-    if (xEnd === yStart) {
-      return IA.MEETS
-    }
+    if (xEnd === yStart) return IA.MEETS
 
-    if (xEnd === yEnd) {
-      return IA.FINISHES_INV
-    }
-
-    if (xEnd > yStart && xEnd < yEnd) {
-      return IA.OVERLAPS
-    }
-
-    return IA.DURING_INV
+    if (xEnd > yStart && xEnd < yEnd) return IA.OVERLAPS
   }
 
-  if (xStart > yEnd) {
-    return IA.AFTER
-  }
+  if (xStart > yStart) {
+    if (xEnd < yEnd) return IA.DURING
 
-  if (xStart === yEnd) {
-    return IA.MEETS_INV
+    if (xEnd === yEnd) return IA.FINISHES
   }
-
-  if (xEnd < yEnd) {
-    return IA.DURING
-  }
-
-  if (xEnd === yEnd) {
-    return IA.FINISHES
-  }
-
-  return IA.OVERLAPS_INV
 }
 
 function getExtendedIARelation(
@@ -153,7 +149,7 @@ function getExtendedIARelation(
   xEnd: number,
   yStart: number,
   yEnd: number
-): EIA {
+): EIA | undefined {
   const xMiddle = (xEnd + xStart) / 2
   const yMiddle = (yEnd + yStart) / 2
 
@@ -162,30 +158,36 @@ function getExtendedIARelation(
 
     if (xEnd > yStart && xEnd < yMiddle) return EIA.STARTS_COVERS_LESS
 
-    if (yEnd > xStart && yEnd < xMiddle) return EIA.STARTS_COVERS_LESS_INV
-
     if (xEnd >= yMiddle) return EIA.STARTS_COVERS_MOST
-
-    if (yEnd >= xMiddle) return EIA.STARTS_COVERS_MOST_INV
-
-    throw new Error(
-      "Something went wrong, xStart === yStart but no other condition matched"
-    )
   }
 
   if (xStart < yStart) {
     if (xEnd < yStart) return EIA.BEFORE
 
-    if (xEnd === yStart) return EIA.MEETS
+    if (xEnd >= yMiddle && xMiddle >= yStart && xEnd < yEnd)
+      return EIA.MOST_OVERLAPS_MOST
 
-    if (xEnd === yEnd) {
-      if (yStart > xMiddle) return EIA.FINISHES_LESS_INV
-      if (yStart < xEnd) return EIA.FINISHES_MOST_INV
-      throw new Error(
-        "Something went wrong, xStart < yStart adn xEnd === yEnd, but no other condition matched"
-      )
-    }
+    if (xMiddle >= yStart && xEnd < yMiddle) return EIA.MOST_OVERLAPS_LESS
+
+    if (xEnd === yStart) return EIA.MEETS
   }
 
-  throw new Error("Not yet implemented")
+  if (xMiddle < yStart && xEnd >= yMiddle && xEnd < yEnd)
+    return EIA.LESS_OVERLAPS_MOST
+
+  if (xMiddle < yStart && xEnd > yStart && xEnd < yMiddle)
+    return EIA.LESS_OVERLAPS_LESS
+
+  if (xStart > yMiddle && xStart < yEnd && xEnd === yEnd)
+    return EIA.FINISHES_LESS
+
+  if (xStart > yStart && xStart <= yMiddle && xEnd === yEnd)
+    return EIA.FINISHES_MOST
+
+  if (xStart > yStart && xEnd <= yMiddle) return EIA.DURING_LEFT
+
+  if (xStart > yStart && xStart < yMiddle && xEnd > yMiddle && xEnd < yEnd)
+    return EIA.DURING_CENTER
+
+  if (xStart >= yMiddle && xEnd < yEnd) return EIA.DURING_RIGHT
 }
