@@ -13,6 +13,7 @@ import {
 } from "./output/caseBasedReasoning"
 import { ABObject } from "./objects/angryBirdsObject"
 import { deepCopy } from "./objects/helper"
+import { getRelationsBetweenTwoObjects } from "./knowledge"
 
 let $input: HTMLInputElement
 let $output: HTMLInputElement
@@ -146,6 +147,12 @@ function init() {
         evaluateDatabase(cases)
       }
   }
+
+  document
+    .querySelector("#generate-predicates")
+    ?.addEventListener("click", () => {
+      getRelationsBetweenTwoObjects(objects[0], objects[1])
+    })
 
   document
     .querySelector("#cases-hide-all")

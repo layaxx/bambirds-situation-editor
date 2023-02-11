@@ -4,6 +4,7 @@ import {
   selectionMeta,
   updateSelectedObjects,
 } from "../app"
+import { getRelationsBetweenTwoObjects } from "../knowledge"
 import {
   getObjectsWithinBoundary,
   getCenterFromObjects,
@@ -167,6 +168,8 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
       hideElement($selectionRectangle)
       console.log(`Selected ${newSelectedObjects.length} objects`)
     }
+
+    getRelationsBetweenTwoObjects(objects[0], objects[1])
 
     isDrag = false
     isSelect = false

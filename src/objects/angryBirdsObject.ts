@@ -155,6 +155,94 @@ export class ABObject {
     return { x: this.x, y: this.y }
   }
 
+  getWidth(): number {
+    if (this.shape === "rect") {
+      const [w, h, angle] = this.params
+
+      const halfHeight = Number(h) * 0.5
+      const halfWidth = Number(w) * 0.5
+      const points = rotShift(
+        [
+          [-halfHeight, -halfWidth],
+          [-halfHeight, halfWidth],
+          [halfHeight, halfWidth],
+          [halfHeight, -halfWidth],
+        ],
+        { x: this.x, y: this.y },
+        angle as number
+      ).map(([x, y]: [number, number]) => ({ x, y }))
+
+      // eslint-disable-next-line unicorn/no-array-reduce
+      const { minX, maxX } = points.reduce(
+        (previous, curr) => ({
+          minX: Math.min(previous.minX, curr.x),
+          maxX: Math.max(previous.maxX, curr.x),
+        }),
+        { minX: Number.MAX_VALUE, maxX: Number.MIN_VALUE }
+      )
+      return maxX - minX
+    }
+
+    if (this.shape === "ball") {
+      return (this.params[0] as number | undefined) ?? 100
+    }
+
+    console.error("Cannot handle Poly Objects atm")
+    return 0
+  }
+
+  getHeight(): number {
+    if (this.shape === "rect") {
+      const [w, h, angle] = this.params
+
+      const halfHeight = Number(h) * 0.5
+      const halfWidth = Number(w) * 0.5
+      const points = rotShift(
+        [
+          [-halfHeight, -halfWidth],
+          [-halfHeight, halfWidth],
+          [halfHeight, halfWidth],
+          [halfHeight, -halfWidth],
+        ],
+        { x: this.x, y: this.y },
+        angle as number
+      ).map(([x, y]: [number, number]) => ({ x, y }))
+
+      // eslint-disable-next-line unicorn/no-array-reduce
+      const { minY, maxY } = points.reduce(
+        (previous, curr) => ({
+          minY: Math.min(previous.minY, curr.y),
+          maxY: Math.max(previous.maxY, curr.y),
+        }),
+        { minY: Number.MAX_VALUE, maxY: Number.MIN_VALUE }
+      )
+      return maxY - minY
+    }
+
+    if (this.shape === "ball") {
+      return (this.params[0] as number | undefined) ?? 100
+    }
+
+    console.error("Cannot handle Poly Objects atm")
+    return 0
+  }
+
+  getLeftBound(): number {
+    return this.x - this.getWidth() / 2
+  }
+
+  getRightBound(): number {
+    return this.x + this.getWidth() / 2
+  }
+
+  getUpperBound(): number {
+    return this.y - this.getHeight() / 2
+  }
+
+  getLowerBound(): number {
+    return this.y + this.getHeight() / 2
+  }
+
   /**
    * Helper function that ensures a given objects params match its internal state,
    * i.e. the params are equal to the unscaledParams scaled by the objects scaleFactor
