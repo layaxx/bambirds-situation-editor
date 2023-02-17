@@ -1,4 +1,5 @@
 import { drawCircle, drawPoly } from "../output/svg"
+import { parseType } from "../parser/levelParser"
 import {
   getFormFor,
   getMaterialFor,
@@ -35,9 +36,16 @@ export class ABObject {
     parsedFormPredicates: IFormPredicate[]
   )
   public constructor(
+    center: Point,
+    angle: number,
+    type: string,
+    objectID: string
+  )
+  public constructor(
     ...args:
       | [ABObject, string]
       | [string, IMaterialPredicate[], IFormPredicate[]]
+      | [Point, number, string, string]
   ) {
     if (args.length === 2) {
       const [object, id] = args
@@ -83,6 +91,43 @@ export class ABObject {
 
       this.material = getMaterialFor(id, parsedMaterialPredicates)
       this.form = getFormFor(id, parsedFormPredicates)
+
+      this.scale = 1
+      this._unscaledParams = JSON.parse(JSON.stringify(params)) as Array<
+        number | number[]
+      >
+      this._vectors =
+        shape === "poly"
+          ? (params.map((entry, index) => {
+              if (index === 0 || typeof entry === "number") return entry
+              const [x1, y1] = entry
+              const newX: number = x1 - x
+              const newY: number = y1 - y
+              return [newX, newY]
+            }) as [number, ...Array<[number, number]>])
+          : undefined
+    } else if (args.length === 4) {
+      const [{ x, y }, angle, type, objectID] = args
+
+      this.id = objectID
+      this.x = x
+      this.y = y
+
+      const { shape, params, area, material, form, color, isBird, isPig } =
+        parseType(type)
+      this.shape = shape
+      this.params = params
+      this.area = area
+      this.material = material
+      this.form = form
+      this.color = color
+
+      if (shape === "rect" && this.params.length === 3) {
+        this.params[2] = angle
+      }
+
+      if (isBird) this.isBird = true
+      if (isPig) this.isPig = true
 
       this.scale = 1
       this._unscaledParams = JSON.parse(JSON.stringify(params)) as Array<
@@ -348,7 +393,9 @@ export class ABObject {
           points,
           isSelected
             ? SELECTED_OBJECT_COLOR
-            : getColorFromMaterial(this.material) ?? FALLBACK_COLOR,
+            : getColorFromMaterial(this.material) ??
+                this.color ??
+                FALLBACK_COLOR,
           this.id
         )
         break

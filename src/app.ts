@@ -14,8 +14,11 @@ import {
 import { ABObject } from "./objects/angryBirdsObject"
 import { deepCopy } from "./objects/helper"
 import { getRelationsBetweenTwoObjects } from "./knowledge"
+import levels from "./levels"
+import parseLevel from "./parser/levelParser"
 
 let $input: HTMLInputElement
+let $levelSelect: HTMLSelectElement
 let $output: HTMLInputElement
 let $svgElements: SVGElements
 let $keepPredicates: HTMLInputElement
@@ -38,9 +41,15 @@ let uuidCounter = 1
  */
 function init() {
   $input = document.querySelector("#situationfile")!
+  $levelSelect = document.querySelector("#loadFromLevel")!
   const $container = document.querySelector<HTMLElement>("#container")!
   $output = document.querySelector("#output")!
-  if ($input === null || $container === null || $output === null) {
+  if (
+    $input === null ||
+    $container === null ||
+    $output === null ||
+    $levelSelect === null
+  ) {
     console.error(
       "Failed to get required HTML Elements, missing at least one of $situationfile, $container, $output"
     )
@@ -106,6 +115,35 @@ function init() {
     loadSituationFile()
   })
   loadSituationFile()
+
+  // Load from Level
+  const option = document.createElement("option")
+  option.text = `Load from Level`
+  option.value = "-1"
+  $levelSelect.appendChild(option)
+
+  for (let index = 1; index <= levels.length; index++) {
+    const option = document.createElement("option")
+    option.text = `Level1-${index}`
+    option.value = "" + (index - 1)
+
+    $levelSelect.appendChild(option)
+  }
+  $levelSelect.addEventListener("click", (event) => {
+    if (event && event.target) {
+      const value = Number((event.target as HTMLSelectElement).value)
+
+      if (value > -1 && levels.at(value)) {
+        const result = parseLevel(levels.at(value)!)
+        objects = result.objects
+        scene = result.scene
+
+        redrawAll(objects)
+      }
+
+      if (value === -1) loadSituationFile()
+    }
+  })
 
   // Load Database
   $databaseInput = document.querySelector("#database")!
