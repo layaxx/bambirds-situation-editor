@@ -47,104 +47,118 @@ export class ABObject {
       | [string, IMaterialPredicate[], IFormPredicate[]]
       | [Point, number, string, string]
   ) {
-    if (args.length === 2) {
-      const [object, id] = args
-      this.id = id
-      this.x = object.x
-      this.y = object.y
-      this.shape = object.shape
-      this.params = JSON.parse(JSON.stringify(object.params)) as Array<
-        number | number[]
-      >
-      this.area = object.area
-      this.material = object.material
-      this.form = object.form
-      this.scale = object.scale
-      this._unscaledParams = JSON.parse(
-        JSON.stringify(object._unscaledParams)
-      ) as Array<number | number[]>
-      this._vectors =
-        object._vectors === undefined
-          ? undefined
-          : (JSON.parse(JSON.stringify(object._vectors)) as
-              | [number, ...Array<[number, number]>]
-              | undefined)
-    } else if (args.length === 3) {
-      const [shapePredicate, parsedMaterialPredicates, parsedFormPredicates] =
-        args
-      let parsedObject
-      try {
-        parsedObject = parseShapePredicate(shapePredicate)
-      } catch {}
+    switch (args.length) {
+      case 2: {
+        const [object, id] = args
+        this.id = id
+        this.x = object.x
+        this.y = object.y
+        this.shape = object.shape
+        this.params = JSON.parse(JSON.stringify(object.params)) as Array<
+          number | number[]
+        >
+        this.area = object.area
+        this.material = object.material
+        this.form = object.form
+        this.scale = object.scale
+        this._unscaledParams = JSON.parse(
+          JSON.stringify(object._unscaledParams)
+        ) as Array<number | number[]>
+        this._vectors =
+          object._vectors === undefined
+            ? undefined
+            : (JSON.parse(JSON.stringify(object._vectors)) as
+                | [number, ...Array<[number, number]>]
+                | undefined)
 
-      if (!parsedObject) {
-        throw new Error("Failed to parse shape predicate " + shapePredicate)
+        break
       }
 
-      const { id, x, y, shape, area, params } = parsedObject
-      this.id = id
-      this.x = x
-      this.y = y
-      this.shape = shape
-      this.params = params
-      this.area = area
+      case 3: {
+        const [shapePredicate, parsedMaterialPredicates, parsedFormPredicates] =
+          args
+        let parsedObject
+        try {
+          parsedObject = parseShapePredicate(shapePredicate)
+        } catch {}
 
-      this.material = getMaterialFor(id, parsedMaterialPredicates)
-      this.form = getFormFor(id, parsedFormPredicates)
+        if (!parsedObject) {
+          throw new Error("Failed to parse shape predicate " + shapePredicate)
+        }
 
-      this.scale = 1
-      this._unscaledParams = JSON.parse(JSON.stringify(params)) as Array<
-        number | number[]
-      >
-      this._vectors =
-        shape === "poly"
-          ? (params.map((entry, index) => {
-              if (index === 0 || typeof entry === "number") return entry
-              const [x1, y1] = entry
-              const newX: number = x1 - x
-              const newY: number = y1 - y
-              return [newX, newY]
-            }) as [number, ...Array<[number, number]>])
-          : undefined
-    } else if (args.length === 4) {
-      const [{ x, y }, angle, type, objectID] = args
+        const { id, x, y, shape, area, params } = parsedObject
+        this.id = id
+        this.x = x
+        this.y = y
+        this.shape = shape
+        this.params = params
+        this.area = area
 
-      this.id = objectID
-      this.x = x
-      this.y = y
+        this.material = getMaterialFor(id, parsedMaterialPredicates)
+        this.form = getFormFor(id, parsedFormPredicates)
 
-      const { shape, params, area, material, form, color, isBird, isPig } =
-        parseType(type)
-      this.shape = shape
-      this.params = params
-      this.area = area
-      this.material = material
-      this.form = form
-      this.color = color
+        this.scale = 1
+        this._unscaledParams = JSON.parse(JSON.stringify(params)) as Array<
+          number | number[]
+        >
+        this._vectors =
+          shape === "poly"
+            ? (params.map((entry, index) => {
+                if (index === 0 || typeof entry === "number") return entry
+                const [x1, y1] = entry
+                const newX: number = x1 - x
+                const newY: number = y1 - y
+                return [newX, newY]
+              }) as [number, ...Array<[number, number]>])
+            : undefined
 
-      if (shape === "rect" && this.params.length === 3) {
-        this.params[2] = angle
+        break
       }
 
-      if (isBird) this.isBird = true
-      if (isPig) this.isPig = true
+      case 4: {
+        const [{ x, y }, angle, type, objectID] = args
 
-      this.scale = 1
-      this._unscaledParams = JSON.parse(JSON.stringify(params)) as Array<
-        number | number[]
-      >
-      this._vectors =
-        shape === "poly"
-          ? (params.map((entry, index) => {
-              if (index === 0 || typeof entry === "number") return entry
-              const [x1, y1] = entry
-              const newX: number = x1 - x
-              const newY: number = y1 - y
-              return [newX, newY]
-            }) as [number, ...Array<[number, number]>])
-          : undefined
-    } else {
-      throw new Error("Invalid constructor call", args)
+        this.id = objectID
+        this.x = x
+        this.y = y
+
+        const { shape, params, area, material, form, color, isBird, isPig } =
+          parseType(type)
+        this.shape = shape
+        this.params = params
+        this.area = area
+        this.material = material
+        this.form = form
+        this.color = color
+
+        if (shape === "rect" && this.params.length === 3) {
+          this.params[2] = angle
+        }
+
+        if (isBird) this.isBird = true
+        if (isPig) this.isPig = true
+
+        this.scale = 1
+        this._unscaledParams = JSON.parse(JSON.stringify(params)) as Array<
+          number | number[]
+        >
+        this._vectors =
+          shape === "poly"
+            ? (params.map((entry, index) => {
+                if (index === 0 || typeof entry === "number") return entry
+                const [x1, y1] = entry
+                const newX: number = x1 - x
+                const newY: number = y1 - y
+                return [newX, newY]
+              }) as [number, ...Array<[number, number]>])
+            : undefined
+
+        break
+      }
+
+      default: {
+        throw new Error("Invalid constructor call", args)
+      }
     }
   }
 

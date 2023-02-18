@@ -3,9 +3,9 @@ import esbuildServe from "esbuild-serve"
 esbuildServe(
   {
     logLevel: "info",
-    entryPoints: ["src/app.ts"],
+    entryPoints: ["src/app.ts", "src/levels.ts"],
     bundle: true,
-    outfile: "build/main.js",
+    outdir: "build",
     sourcemap: true,
   },
   { root: "./" }

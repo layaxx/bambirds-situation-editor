@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Angry Birds Situation Editor v0.2</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="node_modules/@picocss/pico/css/pico.min.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+
+  <body background="background.png">
+    <header>
+      <h1>Visual Situation File Editor</h1>
+      <h2>Level Overview</h2>
+    </header>
+    <main class="container">
+      <div class="grid">
+        <div>
+          <select id="loadFromLevel"></select>
+          <small>Names match game, NOT actual file names :/</small>
+        </div>
+        <div>
+          <input
+            type="checkbox"
+            id="keepDerivedPredicates"
+            name="keepDerivedPredicates"
+            checked
+          />
+          <label for="keepDerivedPredicates"> Keep derived Predicates</label>
+          <input type="button" id="exportButton" value="save changes" />
+        </div>
+      </div>
+
+      <div><button id="generate-predicates">Generate Predicates</button></div>
+
+      <p class="grid">
+        <input
+          type="range"
+          min="1"
+          max="500"
+          value="100"
+          class="slider"
+          id="zoomRange"
+        />
+        <span><span id="zoomValue">100%</span> SVG-Zoom-Level</span>
+      </p>
+      <div style="overflow: hidden; width: 100%; height: auto; padding: 0">
+        <svg
+          height="500"
+          width="1000"
+          id="container"
+          style="background-color: white; transform-origin: 0% 0%"
+        ></svg>
+      </div>
+
+      <div class="grid">
+        <div>
+          <p>Selected Object: <span id="selected-object-id"></span></p>
+          <div class="grid">
+            <label
+              >X Coordinate: <input type="number" id="selected-object-x" />
+            </label>
+            <label
+              >Y Coordinate: <input type="number" id="selected-object-y" />
+            </label>
+          </div>
+          <div class="grid">
+            <label
+              >Scale:
+              <input type="number" id="selected-object-s" min="0" step="0.1" />
+            </label>
+            <label
+              >Angle: <input type="number" id="selected-object-a" step="0.1" />
+            </label>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer style="text-align: center; color: white">
+      Situation file editor create by Yannick Lang @ University of Bamberg
+    </footer>
+
+    <script type="application/javascript" src="build/levels.js"></script>
+  </body>
+</html>

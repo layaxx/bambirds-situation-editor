@@ -14,7 +14,7 @@ import {
 import { ABObject } from "./objects/angryBirdsObject"
 import { deepCopy } from "./objects/helper"
 import { getRelationsBetweenTwoObjects } from "./knowledge"
-import levels from "./levels"
+import levels from "./levels/index"
 import parseLevel from "./parser/levelParser"
 
 let $input: HTMLInputElement
@@ -120,17 +120,18 @@ function init() {
   const option = document.createElement("option")
   option.text = `Load from Level`
   option.value = "-1"
-  $levelSelect.appendChild(option)
+  $levelSelect.append(option)
 
   for (let index = 1; index <= levels.length; index++) {
     const option = document.createElement("option")
     option.text = `Level1-${index}`
-    option.value = "" + (index - 1)
+    option.value = String(index - 1)
 
-    $levelSelect.appendChild(option)
+    $levelSelect.append(option)
   }
+
   $levelSelect.addEventListener("click", (event) => {
-    if (event && event.target) {
+    if (event?.target) {
       const value = Number((event.target as HTMLSelectElement).value)
 
       if (value > -1 && levels.at(value)) {

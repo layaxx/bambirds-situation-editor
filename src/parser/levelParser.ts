@@ -61,19 +61,19 @@ export function parseType(type: string): {
   isPig?: boolean
 } {
   let shape = "rect"
-  let form = undefined
-  let area = 0
-  let material = undefined
-  let params: Array<number | number[]> = []
+  let form
+  const area = 0
+  let material
+  let parameters: Array<number | number[]> = []
   let isBird = false
   let isPig = false
-  let color = undefined
+  let color
 
   if (type.startsWith("BIRD")) {
     isBird = true
     shape = "ball"
     color = type.replace("BIRD_", "").toLowerCase()
-    params = [5]
+    parameters = [5]
   }
 
   if (type.startsWith("PIG")) {
@@ -81,35 +81,44 @@ export function parseType(type: string): {
     shape = "ball"
     material = "pork"
     if (type.includes("SMALL")) {
-      params = [6]
+      parameters = [6]
     } else if (type.includes("MEDIUM")) {
-      params = [9]
+      parameters = [9]
     } else {
-      params = [12]
+      parameters = [12]
     }
   }
 
   if (type.includes("_BLOCK_")) {
     material = type.split("_")[0].toLowerCase()
-    const dim = type.match(/.*_BLOCK_(\d+)X(\d+)/)
-    params = [(Number(dim?.[2]) ?? 4) * 5, (Number(dim?.[1]) ?? 4) * 5, 0]
+    const dim = /.*_BLOCK_(\d+)X(\d+)/.exec(type)
+    parameters = [(Number(dim?.[2]) || 4) * 5, (Number(dim?.[1]) || 4) * 5, 0]
   }
 
   if (type.includes("_CIRCLE_")) {
     shape = "ball"
     material = type.split("_")[0].toLowerCase()
-    const dim = type.match(/.*_CIRCLE_(\d+)X\d+/)
-    params = [(Number(dim?.[1]) ?? 4) * 2.5, 0]
+    const dim = /.*_CIRCLE_(\d+)X\d+/.exec(type)
+    parameters = [(Number(dim?.[1]) || 4) * 2.5, 0]
   }
 
   if (type.includes("TERRAIN_TEXTURED_HILLS")) {
     color = "black"
     material = undefined
-    const dim = type.match(/TERRAIN_TEXTURED_HILLS_(\d+)X(\d+)/)
-    params = [(Number(dim?.[2]) ?? 4) * 5, (Number(dim?.[1]) ?? 4) * 5, 0]
+    const dim = /TERRAIN_TEXTURED_HILLS_(\d+)X(\d+)/.exec(type)
+    parameters = [(Number(dim?.[2]) || 4) * 5, (Number(dim?.[1]) || 4) * 5, 0]
   }
 
-  return { shape, params, area, material, form, isBird, isPig, color }
+  return {
+    shape,
+    params: parameters,
+    area,
+    material,
+    form,
+    isBird,
+    isPig,
+    color,
+  }
 }
 
 function scale(
