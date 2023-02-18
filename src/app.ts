@@ -40,6 +40,10 @@ let uuidCounter = 1
  * loads and evaluates all cases
  */
 function init() {
+  new EventSource("/esbuild").addEventListener("change", () => {
+    location.reload()
+  })
+
   $input = document.querySelector("#situationfile")!
   $levelSelect = document.querySelector("#loadFromLevel")!
   const $container = document.querySelector<HTMLElement>("#container")!

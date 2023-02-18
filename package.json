@@ -7,10 +7,8 @@
   "license": "MIT",
   "scripts": {
     "type-check": "tsc --noEmit",
-    "type-check:watch": "yarn type-check -- --watch",
-    "build": "yarn type-check && node esbuild.config.mjs",
     "start": "node esbuild.config.mjs -w",
-    "dev": "concurrently \"yarn start\" \"yarn type-check:watch\"",
+    "dev": "yarn start",
     "lint": "xo"
   },
   "dependencies": {
@@ -18,8 +16,7 @@
   },
   "devDependencies": {
     "concurrently": "^7.3.0",
-    "esbuild": "^0.14.49",
-    "esbuild-serve": "^1.0.1",
+    "esbuild": "^0.17.8",
     "eslint-plugin-tsdoc": "^0.2.16",
     "typescript": "^4.7.4",
     "xo": "^0.51.0"
