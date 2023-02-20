@@ -1,4 +1,4 @@
-import { $svgElements, selectedObjects } from "../app"
+import { $svgElements } from "../app"
 import { Point, SVGElements } from "../types"
 import { getCenterFromObjects } from "../objects/helper"
 import {
@@ -6,7 +6,6 @@ import {
   CIRCLE_STROKE_COLOR,
   GRID_COLOR,
   HORIZON_LINE_COLOR,
-  SELECTED_OBJECT_COLOR,
   SELECTION_RECTANGLE_COLOR,
 } from "../objects/colors"
 import { ABObject } from "../objects/angryBirdsObject"
@@ -65,14 +64,17 @@ export function setUpGroups($svg: HTMLElement): SVGElements {
  * The Grid consists of horizontal and vertical lines, such that the entire canvas is covered
  * and all lines are of {@link gridSize} pixels apart
  */
-export function drawGrid(): void {
+export function drawGrid(
+  $target?: SVGElement,
+  options?: { width?: number; height?: number }
+): void {
   const commonOptions = {
     color: GRID_COLOR,
     strokeWidth: 0.1,
   }
 
-  const svgWidth = width()
-  const svgHeight = height()
+  const svgWidth = options?.width ?? width()
+  const svgHeight = options?.height ?? height()
 
   for (
     let offset = gridSize;
@@ -80,11 +82,17 @@ export function drawGrid(): void {
     offset += gridSize
   ) {
     if (offset < svgWidth) {
-      drawVerticalLine(offset, $svgElements.$groupBackground, commonOptions)
+      drawVerticalLine(offset, $target ?? $svgElements.$groupBackground, {
+        ...commonOptions,
+        height: svgHeight,
+      })
     }
 
     if (offset < svgHeight) {
-      drawHorizontalLine(offset, $svgElements.$groupBackground, commonOptions)
+      drawHorizontalLine(offset, $target ?? $svgElements.$groupBackground, {
+        ...commonOptions,
+        width: svgWidth,
+      })
     }
   }
 }

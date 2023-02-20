@@ -6,6 +6,7 @@ body {
 textarea {
   background-color: whitesmoke;
   color: darkslategray;
+  line-height: normal;
   font-family: "Courier New", Courier, monospace;
 }
 
@@ -28,8 +29,4 @@ main > div {
 
 #database {
   white-space: nowrap;
-}
-
-textarea {
-  line-height: normal;
 }

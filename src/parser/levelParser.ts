@@ -30,14 +30,13 @@ export default function parseLevel(level: Level): {
   for (const id of Object.keys(level.world)) {
     const { x, y, angle, id: type } = level.world[id]
 
-    objects.push(
-      new ABObject(
-        translateCoordinates({ x, y }),
-        angle * (Math.PI / 180),
-        type,
-        id
-      )
+    const newObject = new ABObject(
+      translateCoordinates({ x, y }),
+      angle * (Math.PI / 180),
+      type,
+      id
     )
+    objects.push(newObject)
   }
 
   return {
@@ -95,6 +94,12 @@ export function parseType(type: string): {
     parameters = [(Number(dim?.[2]) || 4) * 5, (Number(dim?.[1]) || 4) * 5, 0]
   }
 
+  if (type.includes("_TRIANGLE_")) {
+    material = type.split("_")[0].toLowerCase()
+    const dim = /.*_TRIANGLE_(\d+)X(\d+).*/.exec(type)
+    parameters = [(Number(dim?.[2]) || 4) * 5, (Number(dim?.[1]) || 4) * 5, 0]
+  }
+
   if (type.includes("_CIRCLE_")) {
     shape = "ball"
     material = type.split("_")[0].toLowerCase()
@@ -107,6 +112,12 @@ export function parseType(type: string): {
     material = undefined
     const dim = /TERRAIN_TEXTURED_HILLS_(\d+)X(\d+)/.exec(type)
     parameters = [(Number(dim?.[2]) || 4) * 5, (Number(dim?.[1]) || 4) * 5, 0]
+  }
+
+  if (type.includes("MISC_")) {
+    color = "black"
+    shape = "ball"
+    parameters = [5]
   }
 
   return {
