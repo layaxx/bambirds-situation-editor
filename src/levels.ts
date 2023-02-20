@@ -1,7 +1,7 @@
 import levels from "./levels/index"
 import { ABObject } from "./objects/angryBirdsObject"
 import { drawGrid, drawHorizontalLine } from "./output/svg"
-import parseLevel from "./parser/levelParser"
+import parseLevel, { levelDimensions } from "./parser/levelParser"
 
 function init() {
   new EventSource("/esbuild").addEventListener("change", () => {
@@ -16,17 +16,32 @@ function init() {
     return
   }
 
-  const analysis: Array<{ amount: number }> = []
+  const analysis: Array<{
+    amount: number
+    objects: Array<{
+      material?: string
+      shape?: string
+      form?: string
+      levelID: number
+    }>
+  }> = []
 
   levels.forEach((level, index) => {
     const { objects, scene } = parseLevel(level)
+    const { minX, maxX, minY, maxY } = levelDimensions(objects)
 
     const height = 500
     const width = 1000
+    const buffer = 10
     const newSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg")
     newSVG.setAttribute("height", "15rem")
     newSVG.setAttribute("width", "100%")
-    newSVG.setAttribute("viewBox", `0 0 ${width} ${height}`)
+    newSVG.setAttribute(
+      "viewBox",
+      `${minX - buffer} ${minY - buffer} ${maxX - minX + 2 * buffer} ${
+        maxY - minY + 2 * buffer
+      }`
+    )
     newSVG.setAttribute("style", "transform-origin: 0% 0%")
     const newSVGWrapper = document.createElement("div")
     newSVGWrapper.setAttribute(

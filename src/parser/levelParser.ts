@@ -29,14 +29,17 @@ export default function parseLevel(level: Level): {
 
   for (const id of Object.keys(level.world)) {
     const { x, y, angle, id: type } = level.world[id]
-
-    const newObject = new ABObject(
-      translateCoordinates({ x, y }),
-      angle * (Math.PI / 180),
-      type,
-      id
-    )
-    objects.push(newObject)
+    try {
+      const newObject = new ABObject(
+        translateCoordinates({ x, y }),
+        angle * (Math.PI / 180),
+        type,
+        id
+      )
+      objects.push(newObject)
+    } catch {
+      console.error("Failed to create object", level.world[id])
+    }
   }
 
   return {
@@ -147,4 +150,21 @@ function translateCoordinates({ x, y }: Point): Point {
     x: scale(x, 0, 110, 130, 700),
     y: 400 + scale(y, 0, 20, 0, 100),
   }
+}
+
+export function levelDimensions(objects: ABObject[]) {
+  return objects.reduce(
+    (acc, curr) => ({
+      minX: Math.min(acc.minX, curr.x),
+      maxX: Math.max(acc.maxX, curr.x),
+      minY: Math.min(acc.minY, curr.y),
+      maxY: Math.max(acc.maxY, curr.y),
+    }),
+    {
+      minX: Number.MAX_VALUE,
+      maxX: -Number.MAX_VALUE,
+      minY: Number.MAX_VALUE,
+      maxY: -Number.MAX_VALUE,
+    }
+  )
 }

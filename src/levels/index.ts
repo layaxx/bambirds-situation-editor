@@ -15,18 +15,14 @@ import level14 from "./Level1-14.json"
 import level15 from "./Level1-15.json"
 import level16 from "./Level1-16.json"
 import level17 from "./Level1-17.json"
+import level18 from "./Level1-18.json"
+import level19 from "./Level1-19.json"
+import level20 from "./Level1-20.json"
+import level21 from "./Level1-21.json"
 
 // Thats the way it is in the game :/
 const levels = [
   level1,
-  level10,
-  level11,
-  level12,
-  level13,
-  level14,
-  level15,
-  level16,
-  level17,
   level2,
   level3,
   level4,
@@ -35,5 +31,17 @@ const levels = [
   level7,
   level8,
   level9,
+  level10,
+  level11,
+  level12,
+  level13,
+  level14,
+  level15,
+  level16,
+  level17,
+  level18,
+  level19,
+  level20,
+  level21,
 ]
 export default levels
