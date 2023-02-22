@@ -17,6 +17,22 @@ header h2 {
   margin-bottom: 0;
 }
 
+header nav {
+  place-content: center;
+}
+
+header nav li,
+header nav li a {
+  color: white;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+header nav li {
+  color: lightgray;
+  text-decoration: none;
+}
+
 main.container {
   background-color: whitesmoke;
   color: darkslategray;

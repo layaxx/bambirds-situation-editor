@@ -3,6 +3,13 @@ import { ABObject } from "./objects/angryBirdsObject"
 import { drawGrid, drawHorizontalLine } from "./output/svg"
 import parseLevel, { levelDimensions } from "./parser/levelParser"
 
+type AnalysisObject = {
+  material?: string
+  shape?: string
+  form?: string
+  levelID: number
+}
+
 function init() {
   new EventSource("/esbuild").addEventListener("change", () => {
     location.reload()
@@ -18,12 +25,9 @@ function init() {
 
   const analysis: Array<{
     amount: number
-    objects: Array<{
-      material?: string
-      shape?: string
-      form?: string
-      levelID: number
-    }>
+    objects: AnalysisObject[]
+    birds: ABObject[]
+    pigs: ABObject[]
   }> = []
 
   levels.forEach((level, index) => {
@@ -68,10 +72,23 @@ function init() {
     $container.append(newSVGWrapper)
   })
 
-  console.log(analysis.flatMap((result) => result.objects))
+  console.log(
+    "entities",
+    analysis.map((result) => result.objects.length)
+  )
+  console.log(
+    "birds",
+    analysis.map((result) => result.birds.length)
+  )
+  console.log(
+    "pigs",
+    analysis.map((result) => result.pigs.length)
+  )
 }
 
 function analyzeLevel(objects: ABObject[], levelID: number) {
+  const birds = objects.filter((object) => object.isBird)
+  const pigs = objects.filter((object) => object.isPig)
   objects = objects.filter(
     (object) => object.color !== "black" && !object.isBird
   )
@@ -84,6 +101,8 @@ function analyzeLevel(objects: ABObject[], levelID: number) {
       form,
       levelID,
     })),
+    birds,
+    pigs,
   }
 }
 
