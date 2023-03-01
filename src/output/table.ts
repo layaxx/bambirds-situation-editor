@@ -19,7 +19,8 @@ export function updateTable(...objs: ABObject[]): void {
     throw new Error("Cannot update Table as it has not yet been set up")
 
   if (isMultiple) {
-    $tableElements.id.textContent = "Multiple Objects selected"
+    $tableElements.id.textContent =
+      "[" + String(objs.map((object) => object.id)) + "]"
     disableInputs()
     return
   }
@@ -27,7 +28,7 @@ export function updateTable(...objs: ABObject[]): void {
   const [object] = objs
 
   if (!object) {
-    $tableElements.id.textContent = "None selected"
+    $tableElements.id.textContent = "Nothing"
     disableInputs()
     return
   }

@@ -1,16 +1,9 @@
-import { Case } from "./types"
-import { redrawAll, redrawObjects, removeObjects, updateCenter } from "./output"
-import { exportFile } from "./output/prolog"
+import { redrawAll, redrawObjects, updateCenter } from "./output"
 import { setUpGroups } from "./output/svg"
 import parse from "./parser/situationFileParser"
 import { updateTable } from "./output/table"
 import { setUpEventHandlers } from "./canvasEventHandler"
-import parseDatabase from "./parser/databaseParser"
-import {
-  analyzeCase,
-  hideAllCaseOverlays,
-  showAllCaseOverlays,
-} from "./output/caseBasedReasoning"
+
 import { ABObject } from "./objects/angryBirdsObject"
 import levels from "./levels/index"
 import parseLevel from "./parser/levelParser"
@@ -25,15 +18,18 @@ import { sceneStore } from "./stores/scene"
 import { svgStore } from "./stores/svgElements"
 import { tableStore } from "./stores/table"
 import { defaultSituation } from "./data/situation"
+import { generatorStore, relationGenerators } from "./stores/generatorStore"
+import {
+  clearEOPRA,
+  drawEOPRA,
+  getRelationsBetweenTwoObjects,
+} from "./knowledge"
 
 console.log("Loaded knowledgeEntry.ts")
 
 let $input: HTMLInputElement
 let $levelSelect: HTMLSelectElement
-let $output: HTMLInputElement
-let $keepPredicates: HTMLInputElement
-let $databaseInput: HTMLInputElement
-let $CBRResults: HTMLElement
+let $generatorSelect: HTMLSelectElement
 
 /**
  * Sets up everything needed for the Situation Editor,
@@ -47,10 +43,16 @@ function init() {
 
   $input = document.querySelector("#situationfile")!
   $levelSelect = document.querySelector("#loadFromLevel")!
+  $generatorSelect = document.querySelector("#generator-select")!
   const $container = document.querySelector<HTMLElement>("#container")!
-  if ($input === null || $container === null || $levelSelect === null) {
+  if (
+    $input === null ||
+    $container === null ||
+    $levelSelect === null ||
+    $generatorSelect === null
+  ) {
     console.error(
-      "Failed to get required HTML Elements, missing at least one of $situationfile, $container, $levelSelect"
+      "Failed to get required HTML Elements, missing at least one of $situationfile, $container, $levelSelect, $generatorSelect"
     )
     return
   }
@@ -99,12 +101,27 @@ function init() {
 
   setUpEventHandlers($container)
 
-  // Load Situation File
-  const loadSituationFile = () => {
-    const loadResult = parse($input.value)
-    objectStore.set(loadResult.objects)
-    sceneStore.set(loadResult.scene)
-  }
+  document.querySelector("#clear-overlay")?.addEventListener("click", () => {
+    ;[...(svgStore.get()?.$groupOverlay.children ?? [])].forEach((element) => {
+      element.remove()
+    })
+  })
+
+  document
+    .querySelector("#generate-predicates")
+    ?.addEventListener("click", () => {
+      const selectedObjects = selectedObjectStore.get()
+      if (generatorStore.get().name === "EOPRA")
+        clearEOPRA(svgStore.get()!.$groupOverlay)
+      selectedObjects.forEach((element) => {
+        selectedObjects.forEach((element2) => {
+          if (element !== element2)
+            getRelationsBetweenTwoObjects(element, element2)
+        })
+        if (generatorStore.get().name === "EOPRA")
+          drawEOPRA(element, svgStore.get()!.$groupOverlay)
+      })
+    })
 
   $input.addEventListener("blur", () => {
     loadSituationFile()
@@ -112,32 +129,10 @@ function init() {
   loadSituationFile()
 
   // Load from Level
-  const option = document.createElement("option")
-  option.text = `Load from Level`
-  option.value = "-1"
-  $levelSelect.append(option)
+  setupLevelSelection()
 
-  for (let index = 1; index <= levels.length; index++) {
-    const option = document.createElement("option")
-    option.text = `Level1-${index}`
-    option.value = String(index - 1)
-
-    $levelSelect.append(option)
-  }
-
-  $levelSelect.addEventListener("click", (event) => {
-    if (event?.target) {
-      const value = Number((event.target as HTMLSelectElement).value)
-
-      if (value > -1 && levels.at(value)) {
-        const result = parseLevel(levels.at(value)!)
-        objectStore.set(result.objects)
-        sceneStore.set(result.scene)
-      }
-
-      if (value === -1) loadSituationFile()
-    }
-  })
+  // Generator Selection
+  setupGeneratorSelection()
 
   objectStore.subscribe((objects: ABObject[]) => {
     console.log("Change", objects.length, objectStore.get().length)
@@ -161,6 +156,60 @@ function init() {
     })
 
     previousSelectedObjectStore.set(objects)
+  })
+}
+
+// Load Situation File
+function loadSituationFile() {
+  const loadResult = parse($input.value)
+  objectStore.set(loadResult.objects)
+  sceneStore.set(loadResult.scene)
+}
+
+function setupLevelSelection() {
+  const option = document.createElement("option")
+  option.text = `Load from Level`
+  option.value = "-1"
+  $levelSelect.append(option)
+
+  for (let index = 1; index <= levels.length; index++) {
+    const option = document.createElement("option")
+    option.text = `Level1-${index}`
+    option.value = String(index - 1)
+
+    $levelSelect.append(option)
+  }
+
+  $levelSelect.addEventListener("change", (event) => {
+    if (event?.target) {
+      const value = Number((event.target as HTMLSelectElement).value)
+
+      if (value > -1 && levels.at(value)) {
+        const result = parseLevel(levels.at(value)!)
+        objectStore.set(result.objects)
+        sceneStore.set(result.scene)
+      }
+
+      if (value === -1) loadSituationFile()
+    }
+  })
+}
+
+function setupGeneratorSelection() {
+  for (const [index, generator] of relationGenerators.entries()) {
+    const option = document.createElement("option")
+    option.text = generator.name
+    option.value = String(index)
+
+    $generatorSelect.append(option)
+  }
+
+  $generatorSelect.addEventListener("change", (event) => {
+    if (event?.target) {
+      const value = Number((event.target as HTMLSelectElement).value)
+
+      generatorStore.set(relationGenerators[value])
+    }
   })
 }
 

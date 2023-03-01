@@ -390,7 +390,7 @@ export function showCenter(objects: ABObject[]): void {
  */
 export function drawCrossAt({ x, y }: Point, $target: SVGElement): void {
   const crossSize = 20
-  const style = "stroke:" + CENTER_CROSS_COLOR + ";stroke-width:2;opacity:.4"
+  const style = "stroke:" + CENTER_CROSS_COLOR + ";stroke-width:1;opacity:.8"
 
   const $horizontalLine = getGenericLine(
     { x: x - crossSize, y },

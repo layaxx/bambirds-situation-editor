@@ -15,6 +15,7 @@ import {
   selectedObjectStore,
 } from "../stores/objects"
 import { selectionMetaStore } from "../stores/selection"
+import { svgStore } from "../stores/svgElements"
 
 /**
  * Sets up global key press listeners and appropriate event handlers to enable
@@ -29,6 +30,7 @@ import { selectionMetaStore } from "../stores/selection"
 export function setUpKeyboardEventHandlers(): void {
   document.addEventListener("keydown", handleKeyPress)
 
+  // eslint-disable-next-line complexity
   function handleKeyPress(event: KeyboardEvent): void {
     if (
       new Set(["TEXTAREA", "INPUT"]).has((event.target as HTMLElement)?.tagName)
@@ -42,6 +44,60 @@ export function setUpKeyboardEventHandlers(): void {
     }
 
     if (selectedObjectStore.get().length === 0) {
+      if (
+        ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)
+      ) {
+        event.preventDefault()
+
+        const offset = 5
+        let offsetX = 0
+        let offsetY = 0
+
+        // eslint-disable-next-line default-case
+        switch (event.key) {
+          case "ArrowLeft":
+            offsetX = -offset
+            break
+          case "ArrowRight":
+            offsetX = offset
+            break
+          case "ArrowUp":
+            offsetY = -offset
+            break
+          case "ArrowDown":
+            offsetY = offset
+            break
+        }
+
+        const svg = svgStore.get()?.$svg
+        const style = svg?.getAttribute("style")
+        const regex = /transform-origin:\s*(-?\d+)% (-?\d+)%/
+
+        if (style?.includes("transform-origin:")) {
+          const result = regex.exec(style)
+          if (result && result.length >= 3) {
+            svg?.setAttribute(
+              "style",
+              (style ?? "").replace(
+                regex,
+                `transform-origin: ${
+                  Number.parseInt(result[1], 10) + offsetX
+                }% ${Number.parseInt(result[2], 10) + offsetY}%`
+              )
+            )
+            return
+          }
+        }
+
+        console.log("style")
+        svg?.setAttribute(
+          "style",
+          (style ?? "") +
+            (style?.endsWith(";") ? "" : ";") +
+            `transform-origin: ${50 + offsetX}% ${50 + offsetY}%;`
+        )
+      }
+
       return
     }
 
@@ -73,6 +129,7 @@ export function setUpKeyboardEventHandlers(): void {
         updateTable(...selectedObjectStore.get())
         redrawObjects(selectedObjectStore.get())
         updateCenter(selectedObjectStore.get())
+
         break
       case "d":
         if (event.ctrlKey) {

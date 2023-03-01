@@ -69,13 +69,13 @@
           height="500"
           width="1000"
           id="container"
-          style="background-color: white; transform-origin: 0% 0%"
+          style="background-color: white"
         ></svg>
       </div>
 
       <div class="grid">
         <div>
-          <p>Selected Object: <span id="selected-object-id"></span></p>
+          <p>Selected: <span id="selected-object-id"></span></p>
           <div class="grid">
             <label
               >X Coordinate: <input type="number" id="selected-object-x" />
@@ -114,6 +114,8 @@
         <thead>
           <tr>
             <th>Controls</th>
+            <th>With Objects Selected</th>
+            <th>No Objects Selected</th>
           </tr>
         </thead>
         <tbody>
@@ -123,7 +125,7 @@
           </tr>
           <tr>
             <td>(selected) left drag</td>
-            <td>move selected object [hold Ctrl for snap-to-grid]</td>
+            <td>move object(s) [hold Ctrl for snap-to-grid]</td>
           </tr>
           <tr>
             <td>ctrl + d</td>
@@ -139,6 +141,7 @@
           <tr>
             <td>←/→/↑/↓</td>
             <td>move selected object [hold Ctrl for higher speed]</td>
+            <td>Move Canvas (when zoomed)</td>
           </tr>
           <tr>
             <td>[ALT] + ←/→</td>

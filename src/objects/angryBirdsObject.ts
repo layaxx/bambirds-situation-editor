@@ -214,6 +214,22 @@ export class ABObject {
     return { x: this.x, y: this.y }
   }
 
+  getMaxX(): number {
+    return this.getCenter().x + this.getWidth() / 2
+  }
+
+  getMinX(): number {
+    return this.getCenter().x - this.getWidth() / 2
+  }
+
+  getMaxY() {
+    return this.getCenter().y + this.getHeight() / 2
+  }
+
+  getMinY() {
+    return this.getCenter().y - this.getHeight() / 2
+  }
+
   getWidth(): number {
     if (this.shape === "rect") {
       const [w, h, angle] = this.params
