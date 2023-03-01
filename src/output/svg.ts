@@ -1,4 +1,3 @@
-import { $svgElements } from "../app"
 import { Point, SVGElements } from "../types"
 import { getCenterFromObjects } from "../objects/helper"
 import {
@@ -9,6 +8,7 @@ import {
   SELECTION_RECTANGLE_COLOR,
 } from "../objects/colors"
 import { ABObject } from "../objects/angryBirdsObject"
+import { svgStore } from "../stores/svgElements"
 
 /** Amount of pixels between each line in the background grid */
 const gridSize = 10
@@ -18,13 +18,13 @@ const gridSize = 10
  *
  * @returns width of the main svg canvas in pixels
  */
-const width = (): number => $svgElements.$svg.clientWidth
+const width = (): number => svgStore.get()?.$svg.clientWidth ?? -1
 /**
  * Helper function to get height of main svg canvas
  *
  * @returns height of the main svg canvas in pixels
  */
-const height = (): number => $svgElements.$svg.clientHeight
+const height = (): number => svgStore.get()?.$svg.clientHeight ?? -1
 
 /**
  * Function which generates 3 groups (´g´ on svg namespace) and appends those groups to a svg canvas
@@ -68,6 +68,9 @@ export function drawGrid(
   $target?: SVGElement,
   options?: { width?: number; height?: number }
 ): void {
+  const $svgElements = svgStore.get()
+  if (!$target && !$svgElements) throw new Error("SVG Elements not setup yet")
+
   const commonOptions = {
     color: GRID_COLOR,
     strokeWidth: 0.1,
@@ -82,14 +85,14 @@ export function drawGrid(
     offset += gridSize
   ) {
     if (offset < svgWidth) {
-      drawVerticalLine(offset, $target ?? $svgElements.$groupBackground, {
+      drawVerticalLine(offset, $target ?? $svgElements!.$groupBackground, {
         ...commonOptions,
         height: svgHeight,
       })
     }
 
     if (offset < svgHeight) {
-      drawHorizontalLine(offset, $target ?? $svgElements.$groupBackground, {
+      drawHorizontalLine(offset, $target ?? $svgElements!.$groupBackground, {
         ...commonOptions,
         width: svgWidth,
       })
@@ -235,6 +238,7 @@ export function drawPoly(
  *
  * @returns the newly created circle
  */
+// eslint-disable-next-line max-params
 export function drawCircle(
   $target: SVGElement,
   center: Point,
@@ -285,6 +289,9 @@ export function snapToGrid(coordinate: number): number {
  * @returns
  */
 export function initializeSelectionRectangle(startPoint: Point): SVGElement {
+  const $svgElements = svgStore.get()
+  if (!$svgElements) throw new Error("SVG Elements not setup yet")
+
   const $selectionRectangle = getSelectionRectangle()
   $selectionRectangle.removeAttribute("hidden")
   $selectionRectangle.setAttribute("width", "1")
@@ -327,6 +334,9 @@ export function updateSelectionRectangle(
  * @returns the rectangle
  */
 function getSelectionRectangle(): SVGElement {
+  const $svgElements = svgStore.get()
+  if (!$svgElements) throw new Error("SVG Elements not setup yet")
+
   const id = "selectionRectangle"
   const $existingRectangle =
     $svgElements.$groupOverlay.querySelector<SVGElement>("#" + id)
@@ -364,6 +374,8 @@ export function hideElement($element: SVGElement | undefined): void {
  * @param objects - the objects at whose center the cross will be displayed
  */
 export function showCenter(objects: ABObject[]): void {
+  const $svgElements = svgStore.get()
+  if (!$svgElements) throw new Error("SVG Elements not setup yet")
   if (objects.length === 0) return
 
   drawCrossAt(getCenterFromObjects(objects), $svgElements.$groupOverlay)

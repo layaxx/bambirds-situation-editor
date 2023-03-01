@@ -4,10 +4,43 @@ import { ABObject } from "../objects/angryBirdsObject"
 export function getRelationsBetweenTwoObjects(
   object1: ABObject,
   object2: ABObject
-) {
+): void {
   console.log(
-    "getRelationsBetweenTwoObjects",
-    checkExtendedIntervalAlgebra(object1, object2)
+    "direction",
+    [
+      "right",
+      "right_top",
+      "top",
+      "top",
+      "left_top",
+      "left",
+      "left",
+      "left_bottom",
+      "bottom",
+      "bottom",
+      "right_bottom",
+      "right",
+    ][
+      Math.floor(
+        (Math.atan2(object2.y - object1.y, object2.x - object1.x) + Math.PI) /
+          (Math.PI / 6)
+      )
+    ]
+  )
+
+  console.log(
+    "distance",
+    ["at", "very_close", "close", "medium", "far", "very_far", "farthest"][
+      Math.min(
+        Math.floor(
+          Math.sqrt(
+            (object1.x - object2.x) ** 2 + (object1.y - object2.y) ** 2
+          ) /
+            (350 / 12)
+        ),
+        6
+      )
+    ]
   )
 }
 
@@ -190,4 +223,59 @@ function getExtendedIARelation(
     return EIA.DURING_CENTER
 
   if (xStart >= yMiddle && xEnd < yEnd) return EIA.DURING_RIGHT
+}
+
+export function drawEOPRA(object: ABObject | undefined, svg: SVGElement) {
+  // Object: pig4
+
+  if (!object) return
+
+  for (let i = 0; i < 6; i++) {
+    const $circle = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "circle"
+    )
+    $circle.setAttribute("cx", String(object.x))
+    $circle.setAttribute("cy", String(object.y))
+    $circle.setAttribute("r", String(Math.abs((i + 1) * 29.2)))
+    $circle.setAttribute("style", `fill:None;stroke:black;stroke-width:1`)
+
+    svg.append($circle)
+  }
+
+  const directions = [
+    "right",
+    "right_top",
+    "top",
+    "top",
+    "left_top",
+    "left",
+    "left",
+    "left_bottom",
+    "bottom",
+    "bottom",
+    "right_bottom",
+    "right",
+  ]
+
+  //  Math.floor((Math.atan2(b.getY() - a.getY(), b.getX() - a.getX()) + Math.PI) / (Math.PI / 6));
+
+  for (let i = -6; i < 6; i++) {
+    if (![1, 2, 4, 5].includes(Math.abs(i))) continue
+    const $line = document.createElementNS("http://www.w3.org/2000/svg", "line")
+
+    const angle = (Math.PI / 6) * i
+
+    const x2 = object.x + 200 * Math.cos(angle)
+    const y2 = object.y + 200 * Math.sin(angle)
+
+    $line.setAttribute("x1", String(object.x))
+    $line.setAttribute("y1", String(object.y))
+    $line.setAttribute("x2", String(x2))
+    $line.setAttribute("y2", String(y2))
+
+    $line.setAttribute("style", `fill:None;stroke:black;stroke-width:1`)
+
+    svg.append($line)
+  }
 }

@@ -1,28 +1,33 @@
-import {
-  $svgElements,
-  scene,
-  selectedObjects,
-  updateSelectedObjects,
-} from "../app"
 import { ABObject } from "../objects/angryBirdsObject"
+import { selectedObjectStore } from "../stores/objects"
+import { sceneStore } from "../stores/scene"
+import { svgStore } from "../stores/svgElements"
 import { drawGrid, drawHorizontalLine, showCenter } from "./svg"
 import { updateTable } from "./table"
 
 export function redrawAll(objects: ABObject[]): void {
+  const $svgElements = svgStore.get()
+
+  if (!$svgElements)
+    throw new Error("Cannot redraw Objects because SVG is not set up")
+
   $svgElements.$groupObjects.replaceChildren()
   $svgElements.$groupBackground.replaceChildren()
 
   drawGrid()
 
-  drawHorizontalLine(scene.groundY, $svgElements.$groupBackground)
+  drawHorizontalLine(
+    sceneStore.get()?.groundY ?? 0,
+    $svgElements.$groupBackground
+  )
   objects.forEach((object) => {
     object.render(
       $svgElements.$groupObjects,
-      selectedObjects.includes(object),
+      selectedObjectStore.get().includes(object),
       clickEventListenerFactory(object)
     )
   })
-  updateTable(...selectedObjects)
+  updateTable(...selectedObjectStore.get())
 }
 
 export function removeObjects(objects: ABObject[]): void {
@@ -33,10 +38,10 @@ export function removeObjects(objects: ABObject[]): void {
 
 function removeObject(object: ABObject): void {
   try {
-    const toBeRemoved = $svgElements.$groupObjects.querySelector(
-      "#svg-" + object.id
-    )
-    if (toBeRemoved !== null) {
+    const toBeRemoved = svgStore
+      .get()
+      ?.$groupObjects.querySelector("#svg-" + object.id)
+    if (toBeRemoved) {
       toBeRemoved.remove()
     }
   } catch {}
@@ -46,6 +51,9 @@ export function redrawObjects(
   selectedObjects: ABObject[],
   unselectedObjects: ABObject[] = []
 ): void {
+  const $svgElements = svgStore.get()
+  if (!$svgElements)
+    throw new Error("Cannot redraw Objects because SVG is not set up")
   for (const object of [...selectedObjects, ...unselectedObjects]) {
     removeObject(object)
     object.render(
@@ -57,6 +65,9 @@ export function redrawObjects(
 }
 
 export function updateCenter(objects: ABObject[]): void {
+  const $svgElements = svgStore.get()
+  if (!$svgElements)
+    throw new Error("Cannot update Center because SVG is not set up")
   try {
     const toBeRemoved = $svgElements.$groupOverlay.querySelector("#svg-center")
     if (toBeRemoved !== null) {
@@ -71,23 +82,25 @@ function clickEventListenerFactory(
   object: ABObject
 ): (this: SVGElement, ev: MouseEvent) => any {
   return (event) => {
-    const indexIfSelected = selectedObjects.indexOf(object)
+    const indexIfSelected = selectedObjectStore.get().indexOf(object)
 
     if (event.ctrlKey) {
       if (indexIfSelected === -1) {
         // Add to selection
-        updateSelectedObjects([...selectedObjects, object])
+        selectedObjectStore.set([...selectedObjectStore.get(), object])
         console.log("add Object to selection")
       } else {
         // Deselect
-        updateSelectedObjects(
-          selectedObjects.filter((selectedObject) => selectedObject !== object)
+        selectedObjectStore.set(
+          selectedObjectStore
+            .get()
+            .filter((selectedObject) => selectedObject !== object)
         )
         console.log("deselect Object")
       }
     } else {
       if (indexIfSelected !== -1) return
-      updateSelectedObjects([object])
+      selectedObjectStore.set([object])
     }
   }
 }

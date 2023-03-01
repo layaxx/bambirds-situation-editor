@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/prefer-add-event-listener */
 import { ABObject } from "../objects/angryBirdsObject"
-import { $tableElements } from "../app"
+import { tableStore } from "../stores/table"
 import { redrawObjects, updateCenter } from "."
 
 /**
@@ -13,6 +13,10 @@ import { redrawObjects, updateCenter } from "."
  */
 export function updateTable(...objs: ABObject[]): void {
   const isMultiple = objs.length > 1
+
+  const $tableElements = tableStore.get()
+  if (!$tableElements)
+    throw new Error("Cannot update Table as it has not yet been set up")
 
   if (isMultiple) {
     $tableElements.id.textContent = "Multiple Objects selected"
@@ -74,6 +78,10 @@ export function updateTable(...objs: ABObject[]): void {
  * Disable all inputs from $tableElements
  */
 function disableInputs(): void {
+  const $tableElements = tableStore.get()
+  if (!$tableElements)
+    throw new Error("Cannot update Table as it has not yet been set up")
+
   $tableElements.x.value = ""
   $tableElements.x.setAttribute("disabled", "true")
   $tableElements.y.value = ""
@@ -88,6 +96,10 @@ function disableInputs(): void {
  * Enable all inputs from $tableElements
  */
 function enableInputs(): void {
+  const $tableElements = tableStore.get()
+  if (!$tableElements)
+    throw new Error("Cannot update Table as it has not yet been set up")
+
   $tableElements.x.removeAttribute("disabled")
   $tableElements.y.removeAttribute("disabled")
   $tableElements.s.removeAttribute("disabled")

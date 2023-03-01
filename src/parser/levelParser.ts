@@ -135,6 +135,7 @@ export function parseType(type: string): {
   }
 }
 
+// eslint-disable-next-line max-params
 function scale(
   number: number,
   inMin: number,
@@ -153,6 +154,7 @@ function translateCoordinates({ x, y }: Point): Point {
 }
 
 export function levelDimensions(objects: ABObject[]) {
+  // eslint-disable-next-line unicorn/no-array-reduce
   return objects.reduce(
     (acc, curr) => ({
       minX: Math.min(acc.minX, curr.x),

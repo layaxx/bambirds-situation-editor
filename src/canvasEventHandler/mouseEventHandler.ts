@@ -1,14 +1,5 @@
-import {
-  objects,
-  selectedObjects,
-  selectionMeta,
-  updateSelectedObjects,
-} from "../app"
 import { getRelationsBetweenTwoObjects } from "../knowledge"
-import {
-  getObjectsWithinBoundary,
-  getCenterFromObjects,
-} from "../objects/helper"
+import { getObjectsWithinBoundary } from "../objects/helper"
 import { redrawObjects, updateCenter } from "../output"
 import {
   hideElement,
@@ -17,6 +8,7 @@ import {
   updateSelectionRectangle,
 } from "../output/svg"
 import { updateTable } from "../output/table"
+import { objectStore, selectedObjectStore } from "../stores/objects"
 import { Point } from "../types"
 
 /**
@@ -82,7 +74,7 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
     if (
       !event.target ||
       (event.target as HTMLElement).tagName === "svg" ||
-      !selectedObjects
+      !selectedObjectStore.get()
     ) {
       if (event.target && (event.target as HTMLElement).tagName === "svg") {
         isSelect = true
@@ -95,7 +87,7 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
     }
 
     console.log("start drag")
-    preDragCoordinates = selectedObjects.map(({ x, y }) => ({ x, y }))
+    preDragCoordinates = selectedObjectStore.get().map(({ x, y }) => ({ x, y }))
     isDrag = true
     mouseStartPosition = getMousePosition(svg, event)
   }
@@ -116,11 +108,11 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
       )
     }
 
-    if (selectedObjects && isDrag) {
+    if (selectedObjectStore.get() && isDrag) {
       event.preventDefault()
       const currentMousePosition = getMousePosition(svg, event)
 
-      for (const [index, object] of selectedObjects.entries()) {
+      for (const [index, object] of selectedObjectStore.get().entries()) {
         let newX =
           preDragCoordinates[index].x +
           (currentMousePosition.x - mouseStartPosition.x)
@@ -136,9 +128,9 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
         object.moveTo({ x: newX, y: newY })
       }
 
-      updateTable(...selectedObjects)
-      redrawObjects(selectedObjects)
-      updateCenter(selectedObjects)
+      updateTable(...selectedObjectStore.get())
+      redrawObjects(selectedObjectStore.get())
+      updateCenter(selectedObjectStore.get())
     }
   }
 
@@ -160,16 +152,14 @@ export function setUpMouseEventHandlers(svg: HTMLElement): void {
         y: Math.max(currentMousePosition.y, mouseStartPosition.y),
       }
       const newSelectedObjects = getObjectsWithinBoundary(
-        objects,
+        objectStore.get(),
         upperLeftCorner,
         lowerRightCorner
       )
-      updateSelectedObjects(newSelectedObjects)
+      selectedObjectStore.set(newSelectedObjects)
       hideElement($selectionRectangle)
       console.log(`Selected ${newSelectedObjects.length} objects`)
     }
-
-    getRelationsBetweenTwoObjects(objects[0], objects[1])
 
     isDrag = false
     isSelect = false

@@ -1,5 +1,6 @@
-import { $output, objects, scene } from "../app"
 import { FALLBACK_COLOR } from "../objects/colors"
+import { objectStore } from "../stores/objects"
+import { sceneStore } from "../stores/scene"
 
 /**
  * Constructs a new prolog file from the scene and current objects.
@@ -9,13 +10,17 @@ import { FALLBACK_COLOR } from "../objects/colors"
  * @param keepDerivedInformation - boolean indicating whether derived predicates that may not
  * be true anymore should still be included
  */
-export function exportFile(keepDerivedInformation = false): void {
+export function exportFile(
+  $output: HTMLInputElement,
+  keepDerivedInformation = false
+): void {
+  const scene = sceneStore.get()
   const predicates = [
-    ...scene.commonPredicates,
-    ...(keepDerivedInformation ? scene.derivedPredicates : []),
+    ...(scene?.commonPredicates ?? []),
+    ...(keepDerivedInformation ? scene?.derivedPredicates ?? [] : []),
   ]
 
-  for (const object of objects) {
+  for (const object of objectStore.get()) {
     if (object.isPig) {
       predicates.push(`pig(${object.id}, 1, 1, 1, 1).`)
     }

@@ -1,11 +1,3 @@
-import {
-  selectedObjects,
-  objects,
-  updateSelectedObjects,
-  selectionMeta,
-  getUID,
-  recoverBackup,
-} from "../app"
 import { ABObject } from "../objects/angryBirdsObject"
 import {
   addVectors,
@@ -16,6 +8,13 @@ import {
 } from "../objects/helper"
 import { removeObjects, redrawObjects, updateCenter } from "../output"
 import { updateTable } from "../output/table"
+import { getUID } from "../stores/ids"
+import {
+  objectStore,
+  recoverBackup,
+  selectedObjectStore,
+} from "../stores/objects"
+import { selectionMetaStore } from "../stores/selection"
 
 /**
  * Sets up global key press listeners and appropriate event handlers to enable
@@ -42,7 +41,7 @@ export function setUpKeyboardEventHandlers(): void {
       return
     }
 
-    if (selectedObjects.length === 0) {
+    if (selectedObjectStore.get().length === 0) {
       return
     }
 
@@ -71,9 +70,9 @@ export function setUpKeyboardEventHandlers(): void {
           handleMoveObject(event.key, event.ctrlKey)
         }
 
-        updateTable(...selectedObjects)
-        redrawObjects(selectedObjects)
-        updateCenter(selectedObjects)
+        updateTable(...selectedObjectStore.get())
+        redrawObjects(selectedObjectStore.get())
+        updateCenter(selectedObjectStore.get())
         break
       case "d":
         if (event.ctrlKey) {
@@ -92,16 +91,17 @@ export function setUpKeyboardEventHandlers(): void {
 function handleDelete(): void {
   const indicesToBeDeleted: number[] = []
 
-  for (const [index, object] of objects.entries()) {
-    if (selectedObjects.includes(object)) indicesToBeDeleted.push(index)
+  for (const [index, object] of objectStore.get().entries()) {
+    if (selectedObjectStore.get().includes(object))
+      indicesToBeDeleted.push(index)
   }
 
   const hasBeenDeleted: ABObject[] = []
 
   for (const index of indicesToBeDeleted.reverse())
-    hasBeenDeleted.push(...objects.splice(index, 1))
+    hasBeenDeleted.push(...objectStore.get().splice(index, 1))
 
-  updateSelectedObjects([])
+  selectedObjectStore.set([])
   removeObjects(hasBeenDeleted) // Needed because updateSelectedObjects() draws old objects that should have been deleted
 }
 
@@ -119,9 +119,9 @@ function handleRotate(key: string, ctrlKey: boolean): void {
   // Rotate
   const offset = 0.01 * (ctrlKey ? 10 : 1)
   const angle = key === "ArrowRight" ? Number(offset) : -offset
-  const center = getCenterFromObjects(selectedObjects)
+  const center = getCenterFromObjects(selectedObjectStore.get())
   // Rotate center of objects
-  for (const object of selectedObjects) {
+  for (const object of selectedObjectStore.get()) {
     const vectorToCenter = getVectorBetween(object, center)
     const newPosition = addVectors(center, rotateVector(vectorToCenter, angle))
     object.moveTo(newPosition)
@@ -129,8 +129,8 @@ function handleRotate(key: string, ctrlKey: boolean): void {
     object.rotateBy(angle)
   }
 
-  redrawObjects(selectedObjects)
-  updateTable(...selectedObjects)
+  redrawObjects(selectedObjectStore.get())
+  updateTable(...selectedObjectStore.get())
 }
 
 /**
@@ -161,23 +161,27 @@ function handleScale(key: string, ctrlKey: boolean): void {
         return
     }
 
-    const oldScale = selectionMeta.scale
-    if (selectionMeta.scale + offset < 0.1) {
+    const oldScale = selectionMetaStore.get().scale
+    if (oldScale + offset < 0.1) {
       console.error("You are not allowed to scale to below 0.1")
       return
     }
 
-    selectionMeta.scale += offset
+    const newScale = oldScale + offset
+    selectionMetaStore.set({
+      ...selectedObjectStore.get(),
+      scale: newScale,
+    })
 
-    for (const object of selectedObjects) {
-      const center = getCenterFromObjects(selectedObjects)
-      if (selectedObjects.length > 1) {
+    for (const object of selectedObjectStore.get()) {
+      const center = getCenterFromObjects(selectedObjectStore.get())
+      if (selectedObjectStore.get().length > 1) {
         object.moveTo(
           addVectors(
             center,
             scaleVector(
               scaleVector(getVectorBetween(object, center), 1 / oldScale),
-              selectionMeta.scale
+              newScale
             )
           )
         )
@@ -195,12 +199,12 @@ function handleScale(key: string, ctrlKey: boolean): void {
 function handleDuplicate(): void {
   const newObjects: ABObject[] = []
 
-  selectedObjects.forEach((object) => {
+  selectedObjectStore.get().forEach((object) => {
     const newObject = object.clone(`${object.id}d${getUID()}`)
     newObjects.push(newObject)
   })
-  objects.push(...newObjects)
-  redrawObjects(selectedObjects, newObjects)
+  objectStore.set([...objectStore.get(), ...newObjects])
+  redrawObjects(selectedObjectStore.get(), newObjects)
 }
 
 /**
@@ -237,7 +241,7 @@ function handleMoveObject(key: string, isHighSpeed?: boolean): void {
       return
   }
 
-  for (const object of selectedObjects) {
+  for (const object of selectedObjectStore.get()) {
     object.moveBy({ x: xOffset, y: yOffset })
   }
 }

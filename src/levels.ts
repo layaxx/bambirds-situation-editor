@@ -3,6 +3,8 @@ import { ABObject } from "./objects/angryBirdsObject"
 import { drawGrid, drawHorizontalLine } from "./output/svg"
 import parseLevel, { levelDimensions } from "./parser/levelParser"
 
+console.log("Loaded levels.ts")
+
 type AnalysisObject = {
   material?: string
   shape?: string
@@ -38,19 +40,20 @@ function init() {
     const width = 1000
     const buffer = 10
     const newSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-    newSVG.setAttribute("height", "15rem")
+    newSVG.setAttribute("height", "8rem")
     newSVG.setAttribute("width", "100%")
+    newSVG.setAttribute("preserveAspectRatio", "xMidYMax")
+    const xHeight = maxY - minY
     newSVG.setAttribute(
       "viewBox",
-      `${minX - buffer} ${minY - buffer} ${maxX - minX + 2 * buffer} ${
-        maxY - minY + 2 * buffer
-      }`
+      `${minX - buffer} ${400 - xHeight} ${maxX - minX + 2 * buffer} ${xHeight}`
     )
-    newSVG.setAttribute("style", "transform-origin: 0% 0%")
+
+    newSVG.setAttribute("transform", `translate(0 ${0})`)
     const newSVGWrapper = document.createElement("div")
     newSVGWrapper.setAttribute(
       "style",
-      "overflow: hidden; padding: 0; width: 50%; height: auto; border: 2px solid black;"
+      "overflow: hidden; padding: 0; width: 33.3%; height: auto; border: 2px solid black;"
     )
 
     drawGrid(newSVG, { height, width })
@@ -58,12 +61,12 @@ function init() {
       object.render(newSVG)
     })
 
-    const text = document.createElementNS("http://www.w3.org/2000/svg", "text")
-    text.textContent = `Level: 1-${1 + index}`
+    /* Text:     const text = document.createElementNS("http://www.w3.org/2000/svg", "text")
+    text.textContent = String(minY)
+    text.setAttribute("x", "150")
+    text.setAttribute("y", "300")
     text.setAttribute("style", "font: bold 40px sans-serif;")
-    newSVG.append(text)
-
-    drawHorizontalLine(scene.groundY, newSVG, { width })
+    newSVG.append(text) */
 
     newSVGWrapper.append(newSVG)
 
@@ -71,19 +74,6 @@ function init() {
 
     $container.append(newSVGWrapper)
   })
-
-  console.log(
-    "entities",
-    analysis.map((result) => result.objects.length)
-  )
-  console.log(
-    "birds",
-    analysis.map((result) => result.birds.length)
-  )
-  console.log(
-    "pigs",
-    analysis.map((result) => result.pigs.length)
-  )
 }
 
 function analyzeLevel(objects: ABObject[], levelID: number) {

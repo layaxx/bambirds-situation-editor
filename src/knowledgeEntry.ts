@@ -26,7 +26,7 @@ import { svgStore } from "./stores/svgElements"
 import { tableStore } from "./stores/table"
 import { defaultSituation } from "./data/situation"
 
-console.log("Loaded app.ts")
+console.log("Loaded knowledgeEntry.ts")
 
 let $input: HTMLInputElement
 let $levelSelect: HTMLSelectElement
@@ -48,25 +48,14 @@ function init() {
   $input = document.querySelector("#situationfile")!
   $levelSelect = document.querySelector("#loadFromLevel")!
   const $container = document.querySelector<HTMLElement>("#container")!
-  $output = document.querySelector("#output")!
-  if (
-    $input === null ||
-    $container === null ||
-    $output === null ||
-    $levelSelect === null
-  ) {
+  if ($input === null || $container === null || $levelSelect === null) {
     console.error(
-      "Failed to get required HTML Elements, missing at least one of $situationfile, $container, $output, $levelSelect"
+      "Failed to get required HTML Elements, missing at least one of $situationfile, $container, $levelSelect"
     )
     return
   }
 
   $input.value = defaultSituation
-
-  $keepPredicates = document.querySelector("#keepDerivedPredicates")!
-  document.querySelector("#exportButton")?.addEventListener("click", () => {
-    exportFile($output, $keepPredicates.checked)
-  })
 
   tableStore.set({
     id: document.querySelector("#selected-object-id")!,
@@ -149,56 +138,6 @@ function init() {
       if (value === -1) loadSituationFile()
     }
   })
-
-  // Load Database
-  $databaseInput = document.querySelector("#database")!
-  $CBRResults = document.querySelector("#analysis-results")!
-  if ($databaseInput === null) {
-    console.warn("Failed to get HTML Elements for Database")
-  }
-
-  const evaluateDatabase = (cases: Case[]) => {
-    $CBRResults.replaceChildren()
-    svgStore.get()?.$groupOverlay.replaceChildren()
-
-    const results = cases.map((caseParameter) =>
-      analyzeCase(caseParameter, objectStore.get())
-    )
-    $CBRResults.append(...results.map((result) => result.element))
-
-    const button = document.querySelector<HTMLButtonElement>("#cases-show-all")
-
-    if (button)
-      // eslint-disable-next-line unicorn/prefer-add-event-listener
-      button.onclick = () => {
-        showAllCaseOverlays(
-          cases.map((caseParameter, index) => ({
-            caseParameter,
-            transformations: results[index].result,
-          }))
-        )
-      }
-  }
-
-  const loadDatabase = () => {
-    const cases = parseDatabase($databaseInput.value)
-    evaluateDatabase(cases)
-    const button = document.querySelector<HTMLButtonElement>("#cases-analyze")
-    if (button)
-      // eslint-disable-next-line unicorn/prefer-add-event-listener
-      button.onclick = () => {
-        evaluateDatabase(cases)
-      }
-  }
-
-  document
-    .querySelector("#cases-hide-all")
-    ?.addEventListener("click", hideAllCaseOverlays)
-
-  $databaseInput.addEventListener("blur", () => {
-    loadDatabase()
-  })
-  loadDatabase()
 
   objectStore.subscribe((objects: ABObject[]) => {
     console.log("Change", objects.length, objectStore.get().length)

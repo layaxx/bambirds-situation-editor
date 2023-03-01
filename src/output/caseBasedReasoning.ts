@@ -1,7 +1,7 @@
-import { $svgElements } from "../app"
 import { ABObject } from "../objects/angryBirdsObject"
 import { addVectors, getVectorBetween, scaleVector } from "../objects/helper"
 import { Transformation } from "../objects/transformation"
+import { svgStore } from "../stores/svgElements"
 import { Case } from "../types"
 import { drawCrossAt, hideElement } from "./svg"
 
@@ -130,7 +130,8 @@ function toggleOverlay(
     JSON.stringify({ transformation })
   ).toString(16)}`
 
-  const existingElement = $svgElements.$groupOverlay.querySelector(`#${id}`)
+  const $svgElements = svgStore.get()
+  const existingElement = $svgElements?.$groupOverlay.querySelector(`#${id}`)
 
   if (existingElement === null) {
     const newElement = document.createElementNS(
@@ -147,11 +148,11 @@ function toggleOverlay(
       transformedObject.render(newElement)
     })
 
-    $svgElements.$groupOverlay.append(newElement)
-  } else if (existingElement.hasAttribute("hidden")) {
+    $svgElements?.$groupOverlay.append(newElement)
+  } else if (existingElement?.hasAttribute("hidden")) {
     existingElement.removeAttribute("hidden")
   } else if (!onlyShow) {
-    existingElement.setAttribute("hidden", "true")
+    existingElement?.setAttribute("hidden", "true")
   }
 }
 
