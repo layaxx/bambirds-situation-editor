@@ -4,13 +4,14 @@ import { generatorStore } from "../stores/generatorStore"
 export function getRelationsBetweenTwoObjects(
   object1: ABObject,
   object2: ABObject
-): void {
+) {
   const generator = generatorStore.get()
 
   const x = generator.getRelationX(object1, object2)
   const y = generator.getRelationY(object1, object2)
   const misc = generator.getMiscRelation(object1, object2)
   console.log({ x, y, misc })
+  return { x, y, misc }
 }
 
 export function clearEOPRA(svg: SVGElement) {

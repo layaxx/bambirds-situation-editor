@@ -2,7 +2,7 @@
 import { ABObject } from "../objects/angryBirdsObject"
 import { IRelationGenerator, RelationGenerator } from "./relationGenerator"
 
-const directions = [
+export const directions = [
   "right",
   "right_top",
   "top",
@@ -15,9 +15,9 @@ const directions = [
   "bottom",
   "right_bottom",
   "right",
-]
+] as const
 
-const distances = [
+export const distances = [
   "at",
   "very_close",
   "close",
@@ -25,7 +25,7 @@ const distances = [
   "far",
   "very_far",
   "farthest",
-]
+] as const
 
 export class EOPRAGenerator
   extends RelationGenerator
@@ -40,18 +40,18 @@ export class EOPRAGenerator
   getMiscRelation(a: ABObject, b: ABObject): string {
     let direction = "_"
     try {
-      direction = this._getDirection(a, b)
+      direction = this.getDirection(a, b)
     } catch {}
 
     let distance = "_"
     try {
-      distance = this._getDistance(a, b)
+      distance = this.getDistance(a, b)
     } catch {}
 
     return `EOPRA(${a.id}, ${b.id}, ${direction}, ${distance}`
   }
 
-  private _getDistance(a: ABObject, b: ABObject) {
+  getDistance(a: ABObject, b: ABObject) {
     const { x: ax, y: ay } = a.getCenter()
     const { x: bx, y: by } = b.getCenter()
     const distance = Math.sqrt((ax - bx) ** 2 + (ay - by) ** 2)
@@ -64,7 +64,7 @@ export class EOPRAGenerator
     return distances[index]
   }
 
-  private _getDirection(a: ABObject, b: ABObject) {
+  getDirection(a: ABObject, b: ABObject) {
     const { x: ax, y: ay } = a.getCenter()
     const { x: bx, y: by } = b.getCenter()
     const index = Math.floor(

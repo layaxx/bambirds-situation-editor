@@ -6,6 +6,7 @@ const ctx = await esbuild.context({
   bundle: true,
   outdir: "build",
   sourcemap: true,
+  external: ["fs", "path"],
 })
 
 await ctx.watch()

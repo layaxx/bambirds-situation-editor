@@ -3,7 +3,6 @@ import { setUpGroups } from "./output/svg"
 import parse from "./parser/situationFileParser"
 import { updateTable } from "./output/table"
 import { setUpEventHandlers } from "./canvasEventHandler"
-
 import { ABObject } from "./objects/angryBirdsObject"
 import levels from "./levels/index"
 import parseLevel from "./parser/levelParser"
