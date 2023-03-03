@@ -6,6 +6,7 @@
   "author": "Yannick Lang <yannick-stephan.lang@stud.uni-bamberg.de>",
   "license": "MIT",
   "scripts": {
+    "postinstall": "patch-package",
     "type-check": "tsc --noEmit",
     "start": "node esbuild.config.mjs -w",
     "dev": "yarn start",
@@ -14,7 +15,8 @@
   },
   "dependencies": {
     "@picocss/pico": "^1.5.3",
-    "swipl-wasm": "^3.1.0"
+    "swipl-wasm": "^3.1.0",
+    "texsaur": "^0.6.4"
   },
   "devDependencies": {
     "@types/node": "^18.14.5",

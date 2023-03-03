@@ -2,7 +2,12 @@ import * as esbuild from "esbuild"
 
 const ctx = await esbuild.context({
   logLevel: "info",
-  entryPoints: ["src/app.ts", "src/levels.ts", "src/knowledgeEntry.ts"],
+  entryPoints: [
+    "src/app.ts",
+    "src/levels.ts",
+    "src/knowledgeEntry.ts",
+    "src/entryPoints/analysis.ts",
+  ],
   bundle: true,
   outdir: "build",
   sourcemap: true,

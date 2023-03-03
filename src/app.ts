@@ -25,6 +25,15 @@ import { sceneStore } from "./stores/scene"
 import { svgStore } from "./stores/svgElements"
 import { tableStore } from "./stores/table"
 import { defaultSituation } from "./data/situation"
+import header from "./output/createElements/header"
+import { editor, table, controls } from "./output/createElements/editor"
+import { footer } from "./output/createElements/footer"
+import { knowledgeImports } from "./output/createElements/knowledge"
+import { main } from "./output/createElements/main"
+import { indexImports } from "./output/createElements/index/imports"
+import { cbrDB } from "./output/createElements/index/cbrDB"
+import { cbrAnalysis } from "./output/createElements/index/cbrAnalysis"
+import { grid } from "./output/createElements/grid"
 
 console.log("Loaded app.ts")
 
@@ -45,21 +54,24 @@ function init() {
     location.reload()
   })
 
+  document.querySelector("body")?.append(
+    header({ active: "/" }),
+    main({
+      children: [
+        indexImports(),
+        editor(),
+        grid({ children: [table(), cbrAnalysis()] }),
+        controls(),
+        cbrDB(),
+      ],
+    }),
+
+    footer()
+  )
+
   $input = document.querySelector("#situationfile")!
   $levelSelect = document.querySelector("#loadFromLevel")!
   const $container = document.querySelector<HTMLElement>("#container")!
-  $output = document.querySelector("#output")!
-  if (
-    $input === null ||
-    $container === null ||
-    $output === null ||
-    $levelSelect === null
-  ) {
-    console.error(
-      "Failed to get required HTML Elements, missing at least one of $situationfile, $container, $output, $levelSelect"
-    )
-    return
-  }
 
   $input.value = defaultSituation
 

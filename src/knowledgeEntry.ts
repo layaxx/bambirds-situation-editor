@@ -23,6 +23,11 @@ import {
   drawEOPRA,
   getRelationsBetweenTwoObjects,
 } from "./knowledge"
+import header from "./output/createElements/header"
+import { footer } from "./output/createElements/footer"
+import { main } from "./output/createElements/main"
+import { knowledgeImports } from "./output/createElements/knowledge"
+import { controls, editor, table } from "./output/createElements/editor"
 
 console.log("Loaded knowledgeEntry.ts")
 
@@ -30,15 +35,18 @@ let $input: HTMLInputElement
 let $levelSelect: HTMLSelectElement
 let $generatorSelect: HTMLSelectElement
 
-/**
- * Sets up everything needed for the Situation Editor,
- * loads and displays all objects,
- * loads and evaluates all cases
- */
 function init() {
   new EventSource("/esbuild").addEventListener("change", () => {
     location.reload()
   })
+
+  document
+    .querySelector("body")
+    ?.append(
+      header({ active: "/knowledge.html" }),
+      main({ children: [knowledgeImports(), editor(), table(), controls()] }),
+      footer()
+    )
 
   $input = document.querySelector("#situationfile")!
   $levelSelect = document.querySelector("#loadFromLevel")!
@@ -134,8 +142,6 @@ function init() {
   setupGeneratorSelection()
 
   objectStore.subscribe((objects: ABObject[]) => {
-    console.log("Change", objects.length, objectStore.get().length)
-
     redrawAll(objects)
   })
   selectedObjectStore.subscribe((objects: ABObject[]) => {

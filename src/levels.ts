@@ -1,6 +1,10 @@
 import levels from "./levels/index"
 import { ABObject } from "./objects/angryBirdsObject"
-import { drawGrid, drawHorizontalLine } from "./output/svg"
+import { footer } from "./output/createElements/footer"
+import header from "./output/createElements/header"
+import { container } from "./output/createElements/levels/container"
+import { main } from "./output/createElements/main"
+import { drawGrid } from "./output/svg"
 import parseLevel, { levelDimensions } from "./parser/levelParser"
 
 console.log("Loaded levels.ts")
@@ -17,13 +21,15 @@ function init() {
     location.reload()
   })
 
-  const $container = document.querySelector<HTMLElement>("#levels")!
-  if ($container === null) {
-    console.error(
-      "Failed to get required HTML Elements, missing at least one of $situationfile, $container, $output"
+  const $container = container()
+
+  document
+    .querySelector("body")
+    ?.append(
+      header({ active: "/levels.html" }),
+      main({ children: $container }),
+      footer()
     )
-    return
-  }
 
   const analysis: Array<{
     amount: number
@@ -33,7 +39,7 @@ function init() {
   }> = []
 
   levels.forEach((level, index) => {
-    const { objects, scene } = parseLevel(level)
+    const { objects } = parseLevel(level)
     const { minX, maxX, minY, maxY } = levelDimensions(objects)
 
     const height = 500
