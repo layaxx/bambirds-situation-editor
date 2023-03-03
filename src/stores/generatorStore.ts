@@ -1,8 +1,8 @@
-import { EOPRAGenerator } from "../knowledge/EOPRAGenerator"
-import { ExtendedIntervalAlgebraGenerator } from "../knowledge/extendedIntervalAlgebraGenerator"
-import { IntervalAlgebraGenerator } from "../knowledge/intervalAlgebraGenerator"
-import { ReducedIntervalAlgebraGenerator } from "../knowledge/reducedIntervalAlgebraGenerator"
-import { RelationGenerator } from "../knowledge/relationGenerator"
+import { EOPRAGenerator } from "knowledge/EOPRAGenerator"
+import { ExtendedIntervalAlgebraGenerator } from "knowledge/extendedIntervalAlgebraGenerator"
+import { IntervalAlgebraGenerator } from "knowledge/intervalAlgebraGenerator"
+import { ReducedIntervalAlgebraGenerator } from "knowledge/reducedIntervalAlgebraGenerator"
+import { RelationGenerator } from "knowledge/relationGenerator"
 import { Store } from "./store"
 
 export const relationGenerators = [

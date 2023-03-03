@@ -1,21 +1,17 @@
-import { ABObject } from "../objects/angryBirdsObject"
+import type { ABObject } from "objects/angryBirdsObject"
 import {
   addVectors,
   getCenterFromObjects,
   getVectorBetween,
   rotateVector,
   scaleVector,
-} from "../objects/helper"
-import { removeObjects, redrawObjects, updateCenter } from "../output"
-import { updateTable } from "../output/table"
-import { getUID } from "../stores/ids"
-import {
-  objectStore,
-  recoverBackup,
-  selectedObjectStore,
-} from "../stores/objects"
-import { selectionMetaStore } from "../stores/selection"
-import { svgStore } from "../stores/svgElements"
+} from "objects/helper"
+import { removeObjects, redrawObjects, updateCenter } from "output"
+import { updateTable } from "output/table"
+import { getUID } from "stores/ids"
+import { objectStore, recoverBackup, selectedObjectStore } from "stores/objects"
+import { selectionMetaStore } from "stores/selection"
+import { svgStore } from "stores/svgElements"
 
 /**
  * Sets up global key press listeners and appropriate event handlers to enable

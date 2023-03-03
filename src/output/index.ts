@@ -1,9 +1,8 @@
-import { ABObject } from "../objects/angryBirdsObject"
-import { selectedObjectStore } from "../stores/objects"
-import { sceneStore } from "../stores/scene"
-import { svgStore } from "../stores/svgElements"
+import type { ABObject } from "objects/angryBirdsObject"
+import { selectedObjectStore } from "stores/objects"
+import { sceneStore } from "stores/scene"
+import { svgStore } from "stores/svgElements"
 import { drawGrid, drawHorizontalLine, showCenter } from "./svg"
-import { updateTable } from "./table"
 
 export function redrawAll(objects: ABObject[]): void {
   const $svgElements = svgStore.get()
@@ -27,7 +26,6 @@ export function redrawAll(objects: ABObject[]): void {
       clickEventListenerFactory(object)
     )
   })
-  updateTable(...selectedObjectStore.get())
 }
 
 export function removeObjects(objects: ABObject[]): void {

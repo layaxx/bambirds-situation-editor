@@ -1,4 +1,4 @@
-import { SelectionMeta } from "../types"
+import { SelectionMeta } from "types"
 import { Store } from "./store"
 
 const selectionMeta: SelectionMeta = {

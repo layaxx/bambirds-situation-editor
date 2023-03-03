@@ -1,14 +1,14 @@
-import { Point, SVGElements } from "../types"
-import { getCenterFromObjects } from "../objects/helper"
+import type { Point, SVGElements } from "types"
+import { getCenterFromObjects } from "objects/helper"
 import {
   CENTER_CROSS_COLOR,
   CIRCLE_STROKE_COLOR,
   GRID_COLOR,
   HORIZON_LINE_COLOR,
   SELECTION_RECTANGLE_COLOR,
-} from "../objects/colors"
-import { ABObject } from "../objects/angryBirdsObject"
-import { svgStore } from "../stores/svgElements"
+} from "objects/colors"
+import { ABObject } from "objects/angryBirdsObject"
+import { svgStore } from "stores/svgElements"
 
 /** Amount of pixels between each line in the background grid */
 const gridSize = 10

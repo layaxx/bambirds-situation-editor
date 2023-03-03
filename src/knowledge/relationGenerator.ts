@@ -1,4 +1,4 @@
-import { ABObject } from "../objects/angryBirdsObject"
+import type { ABObject } from "objects/angryBirdsObject"
 
 export interface IRelationGenerator {
   name: string

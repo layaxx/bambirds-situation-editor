@@ -1,5 +1,5 @@
-import { ABObject } from "../objects/angryBirdsObject"
-import { deepCopy } from "../objects/helper"
+import { ABObject } from "objects/angryBirdsObject"
+import { deepCopy } from "objects/helper"
 import { Store } from "./store"
 
 export const objectStore: Store<ABObject[]> = new Store([] as ABObject[])

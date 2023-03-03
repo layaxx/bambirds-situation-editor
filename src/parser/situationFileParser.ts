@@ -1,5 +1,5 @@
-import { ABObject } from "../objects/angryBirdsObject"
-import { IFormPredicate, IMaterialPredicate, Scene } from "../types"
+import { ABObject } from "objects/angryBirdsObject"
+import { IFormPredicate, IMaterialPredicate, Scene } from "types"
 import { getGenericValues } from "./prologHelper"
 
 export default function parse(text: string): {

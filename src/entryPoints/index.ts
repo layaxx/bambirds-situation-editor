@@ -1,38 +1,38 @@
-import { defaultSituation } from "../../data/situation"
-import { Case } from "../types"
-import { redrawAll, redrawObjects, updateCenter } from "../output"
-import { exportFile } from "../output/prolog"
-import { setUpGroups } from "../output/svg"
-import parse from "../parser/situationFileParser"
-import { updateTable } from "../output/table"
-import { setUpEventHandlers } from "../canvasEventHandler"
-import parseDatabase from "../parser/databaseParser"
+import { setUpEventHandlers } from "canvasEventHandler"
+import { editor, controls, table } from "components/editor"
+import { footer } from "components/footer"
+import { grid } from "components/grid"
+import header from "components/header"
+import { cbrAnalysis } from "components/index/cbrAnalysis"
+import { cbrDB } from "components/index/cbrDB"
+import { indexImports } from "components/index/imports"
+import { main } from "components/main"
+import levels from "data/levels"
+import { defaultSituation } from "data/situation"
+import { ABObject } from "objects/angryBirdsObject"
+import { redrawAll, redrawObjects, updateCenter } from "output"
 import {
   analyzeCase,
-  hideAllCaseOverlays,
   showAllCaseOverlays,
-} from "../output/caseBasedReasoning"
-import { ABObject } from "../objects/angryBirdsObject"
-import parseLevel from "../parser/levelParser"
+  hideAllCaseOverlays,
+} from "output/caseBasedReasoning"
+import { exportFile } from "output/prolog"
+import { setUpGroups } from "output/svg"
+import { updateTable } from "output/table"
+import parseDatabase from "parser/databaseParser"
+import parseLevel from "parser/levelParser"
+import parse from "parser/situationFileParser"
 import {
-  makeBackup,
   objectStore,
-  previousSelectedObjectStore,
   selectedObjectStore,
-} from "../stores/objects"
-import { selectionMetaStore } from "../stores/selection"
-import { sceneStore } from "../stores/scene"
-import { svgStore } from "../stores/svgElements"
-import { tableStore } from "../stores/table"
-import header from "../output/createElements/header"
-import { editor, table, controls } from "../output/createElements/editor"
-import { footer } from "../output/createElements/footer"
-import { main } from "../output/createElements/main"
-import { indexImports } from "../output/createElements/index/imports"
-import { cbrDB } from "../output/createElements/index/cbrDB"
-import { cbrAnalysis } from "../output/createElements/index/cbrAnalysis"
-import { grid } from "../output/createElements/grid"
-import levels from "../../data/levels"
+  makeBackup,
+  previousSelectedObjectStore,
+} from "stores/objects"
+import { sceneStore } from "stores/scene"
+import { selectionMetaStore } from "stores/selection"
+import { svgStore } from "stores/svgElements"
+import { tableStore } from "stores/table"
+import { Case } from "types"
 
 console.log("Loaded app.ts")
 
@@ -212,8 +212,6 @@ function init() {
   loadDatabase()
 
   objectStore.subscribe((objects: ABObject[]) => {
-    console.log("Change", objects.length, objectStore.get().length)
-
     redrawAll(objects)
   })
   selectedObjectStore.subscribe((objects: ABObject[]) => {

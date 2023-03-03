@@ -1,6 +1,6 @@
-import { footer } from "../output/createElements/footer"
-import header from "../output/createElements/header"
-import { main } from "../output/createElements/main"
+import { footer } from "components/footer"
+import header from "components/header"
+import { main } from "components/main"
 
 console.log("Loaded analysis.ts")
 

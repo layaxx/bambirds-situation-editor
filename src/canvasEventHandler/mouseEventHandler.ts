@@ -1,14 +1,14 @@
-import { getObjectsWithinBoundary } from "../objects/helper"
-import { redrawObjects, updateCenter } from "../output"
+import { getObjectsWithinBoundary } from "objects/helper"
+import { redrawObjects, updateCenter } from "output"
 import {
   hideElement,
   initializeSelectionRectangle,
   snapToGrid,
   updateSelectionRectangle,
-} from "../output/svg"
-import { updateTable } from "../output/table"
-import { objectStore, selectedObjectStore } from "../stores/objects"
-import { Point } from "../types"
+} from "output/svg"
+import { updateTable } from "output/table"
+import { objectStore, selectedObjectStore } from "stores/objects"
+import type { Point } from "types"
 
 /**
  * Returns the mouse/touch position over the given SVG canvas from the given mouse/touch event

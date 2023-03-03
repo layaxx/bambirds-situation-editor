@@ -1,8 +1,8 @@
-import { ABObject } from "../objects/angryBirdsObject"
-import { addVectors, getVectorBetween, scaleVector } from "../objects/helper"
-import { Transformation } from "../objects/transformation"
-import { svgStore } from "../stores/svgElements"
-import { Case } from "../types"
+import { ABObject } from "objects/angryBirdsObject"
+import { addVectors, getVectorBetween, scaleVector } from "objects/helper"
+import { Transformation } from "objects/transformation"
+import { svgStore } from "stores/svgElements"
+import type { Case } from "types"
 import { drawCrossAt, hideElement } from "./svg"
 
 export function analyzeCase(

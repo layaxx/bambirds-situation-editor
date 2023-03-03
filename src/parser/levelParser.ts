@@ -1,5 +1,5 @@
-import { ABObject } from "../objects/angryBirdsObject"
-import { Point, Scene } from "../types"
+import { ABObject } from "objects/angryBirdsObject"
+import { Point, Scene } from "types"
 
 type LevelObject = {
   angle: number

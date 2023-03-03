@@ -1,4 +1,4 @@
-import { ABObject } from "./objects/angryBirdsObject"
+import { ABObject } from "objects/angryBirdsObject"
 
 export type Point = {
   x: number

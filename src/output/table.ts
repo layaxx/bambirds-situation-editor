@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/prefer-add-event-listener */
-import { ABObject } from "../objects/angryBirdsObject"
-import { tableStore } from "../stores/table"
+import { ABObject } from "objects/angryBirdsObject"
+import { tableStore } from "stores/table"
 import { redrawObjects, updateCenter } from "."
 
 /**

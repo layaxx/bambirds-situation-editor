@@ -1,4 +1,4 @@
-import { Scene } from "../types"
+import { Scene } from "types"
 import { Store } from "./store"
 
 export const sceneStore: Store<Scene | undefined> = new Store<

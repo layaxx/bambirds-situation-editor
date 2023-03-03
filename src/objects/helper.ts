@@ -1,5 +1,5 @@
-import { Point } from "../types"
-import { ABObject } from "./angryBirdsObject"
+import type { Point } from "types"
+import type { ABObject } from "./angryBirdsObject"
 
 /**
  * Returns an array of objects from given objects whose center is between the rectangle

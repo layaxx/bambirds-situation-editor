@@ -1,11 +1,11 @@
-import { drawCircle, drawPoly } from "../output/svg"
-import { parseType } from "../parser/levelParser"
+import { drawCircle, drawPoly } from "output/svg"
+import { parseType } from "parser/levelParser"
 import {
   getFormFor,
   getMaterialFor,
   parseShapePredicate,
-} from "../parser/situationFileParser"
-import { IFormPredicate, IMaterialPredicate, Point } from "../types"
+} from "parser/situationFileParser"
+import type { IFormPredicate, IMaterialPredicate, Point } from "types"
 import {
   FALLBACK_COLOR,
   getColorFromMaterial,

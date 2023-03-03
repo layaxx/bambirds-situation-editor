@@ -1,5 +1,5 @@
-import { ABObject } from "../objects/angryBirdsObject"
-import { Case } from "../types"
+import { ABObject } from "objects/angryBirdsObject"
+import { Case } from "types"
 import { getGenericValues } from "./prologHelper"
 
 /**

@@ -1,5 +1,5 @@
-import { ABObject } from "../objects/angryBirdsObject"
-import { generatorStore } from "../stores/generatorStore"
+import type { ABObject } from "objects/angryBirdsObject"
+import { generatorStore } from "stores/generatorStore"
 
 export function getRelationsBetweenTwoObjects(
   object1: ABObject,

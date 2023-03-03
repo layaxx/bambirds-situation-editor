@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/filename-case */
-import { ABObject } from "../objects/angryBirdsObject"
+import type { ABObject } from "objects/angryBirdsObject"
 import { IRelationGenerator, RelationGenerator } from "./relationGenerator"
 
 export const directions = [

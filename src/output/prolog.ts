@@ -1,6 +1,6 @@
-import { FALLBACK_COLOR } from "../objects/colors"
-import { objectStore } from "../stores/objects"
-import { sceneStore } from "../stores/scene"
+import { FALLBACK_COLOR } from "objects/colors"
+import { objectStore } from "stores/objects"
+import { sceneStore } from "stores/scene"
 
 /**
  * Constructs a new prolog file from the scene and current objects.

@@ -46,8 +46,13 @@
       "@typescript-eslint/consistent-type-assertions": "off",
       "eslint-comments/no-unused-disable": "off",
       "import/extensions": "off",
-      "import/no-cycle": "off",
-      "import/no-mutable-exports": "off",
+      "import/no-cycle": "error",
+      "import/no-mutable-exports": "error",
+      "import/no-unassigned-import": "error",
+      "import/no-relative-parent-imports": "warn",
+      "import/no-useless-path-segments": "error",
+      "import/first": "error",
+      "import/no-duplicates": "error",
       "unicorn/filename-case": [
         "error",
         {
