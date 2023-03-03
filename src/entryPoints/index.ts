@@ -1,38 +1,38 @@
-import { defaultSituation } from "../data/situation"
-import { Case } from "./types"
-import { redrawAll, redrawObjects, updateCenter } from "./output"
-import { exportFile } from "./output/prolog"
-import { setUpGroups } from "./output/svg"
-import parse from "./parser/situationFileParser"
-import { updateTable } from "./output/table"
-import { setUpEventHandlers } from "./canvasEventHandler"
-import parseDatabase from "./parser/databaseParser"
+import { defaultSituation } from "../../data/situation"
+import { Case } from "../types"
+import { redrawAll, redrawObjects, updateCenter } from "../output"
+import { exportFile } from "../output/prolog"
+import { setUpGroups } from "../output/svg"
+import parse from "../parser/situationFileParser"
+import { updateTable } from "../output/table"
+import { setUpEventHandlers } from "../canvasEventHandler"
+import parseDatabase from "../parser/databaseParser"
 import {
   analyzeCase,
   hideAllCaseOverlays,
   showAllCaseOverlays,
-} from "./output/caseBasedReasoning"
-import { ABObject } from "./objects/angryBirdsObject"
-import levels from "./levels/index"
-import parseLevel from "./parser/levelParser"
+} from "../output/caseBasedReasoning"
+import { ABObject } from "../objects/angryBirdsObject"
+import parseLevel from "../parser/levelParser"
 import {
   makeBackup,
   objectStore,
   previousSelectedObjectStore,
   selectedObjectStore,
-} from "./stores/objects"
-import { selectionMetaStore } from "./stores/selection"
-import { sceneStore } from "./stores/scene"
-import { svgStore } from "./stores/svgElements"
-import { tableStore } from "./stores/table"
-import header from "./output/createElements/header"
-import { editor, table, controls } from "./output/createElements/editor"
-import { footer } from "./output/createElements/footer"
-import { main } from "./output/createElements/main"
-import { indexImports } from "./output/createElements/index/imports"
-import { cbrDB } from "./output/createElements/index/cbrDB"
-import { cbrAnalysis } from "./output/createElements/index/cbrAnalysis"
-import { grid } from "./output/createElements/grid"
+} from "../stores/objects"
+import { selectionMetaStore } from "../stores/selection"
+import { sceneStore } from "../stores/scene"
+import { svgStore } from "../stores/svgElements"
+import { tableStore } from "../stores/table"
+import header from "../output/createElements/header"
+import { editor, table, controls } from "../output/createElements/editor"
+import { footer } from "../output/createElements/footer"
+import { main } from "../output/createElements/main"
+import { indexImports } from "../output/createElements/index/imports"
+import { cbrDB } from "../output/createElements/index/cbrDB"
+import { cbrAnalysis } from "../output/createElements/index/cbrAnalysis"
+import { grid } from "../output/createElements/grid"
+import levels from "../../data/levels"
 
 console.log("Loaded app.ts")
 

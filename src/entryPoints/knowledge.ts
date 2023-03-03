@@ -1,33 +1,33 @@
-import { defaultSituation } from "../data/situation"
-import { redrawAll, redrawObjects, updateCenter } from "./output"
-import { setUpGroups } from "./output/svg"
-import parse from "./parser/situationFileParser"
-import { updateTable } from "./output/table"
-import { setUpEventHandlers } from "./canvasEventHandler"
-import { ABObject } from "./objects/angryBirdsObject"
-import levels from "./levels/index"
-import parseLevel from "./parser/levelParser"
+import { defaultSituation } from "../../data/situation"
+import { redrawAll, redrawObjects, updateCenter } from "../output"
+import { setUpGroups } from "../output/svg"
+import parse from "../parser/situationFileParser"
+import { updateTable } from "../output/table"
+import { setUpEventHandlers } from "../canvasEventHandler"
+import { ABObject } from "../objects/angryBirdsObject"
+import levels from "../../data/levels/index"
+import parseLevel from "../parser/levelParser"
 import {
   makeBackup,
   objectStore,
   previousSelectedObjectStore,
   selectedObjectStore,
-} from "./stores/objects"
-import { selectionMetaStore } from "./stores/selection"
-import { sceneStore } from "./stores/scene"
-import { svgStore } from "./stores/svgElements"
-import { tableStore } from "./stores/table"
-import { generatorStore, relationGenerators } from "./stores/generatorStore"
+} from "../stores/objects"
+import { selectionMetaStore } from "../stores/selection"
+import { sceneStore } from "../stores/scene"
+import { svgStore } from "../stores/svgElements"
+import { tableStore } from "../stores/table"
+import { generatorStore, relationGenerators } from "../stores/generatorStore"
 import {
   clearEOPRA,
   drawEOPRA,
   getRelationsBetweenTwoObjects,
-} from "./knowledge"
-import header from "./output/createElements/header"
-import { footer } from "./output/createElements/footer"
-import { main } from "./output/createElements/main"
-import { knowledgeImports } from "./output/createElements/knowledge"
-import { controls, editor, table } from "./output/createElements/editor"
+} from "../knowledge"
+import header from "../output/createElements/header"
+import { footer } from "../output/createElements/footer"
+import { main } from "../output/createElements/main"
+import { knowledgeImports } from "../output/createElements/knowledge"
+import { controls, editor, table } from "../output/createElements/editor"
 
 console.log("Loaded knowledgeEntry.ts")
 

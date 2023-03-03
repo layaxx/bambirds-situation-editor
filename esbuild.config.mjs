@@ -1,13 +1,9 @@
 import * as esbuild from "esbuild"
+import { globSync } from "glob"
 
 const ctx = await esbuild.context({
   logLevel: "info",
-  entryPoints: [
-    "src/app.ts",
-    "src/levels.ts",
-    "src/knowledgeEntry.ts",
-    "src/entryPoints/analysis.ts",
-  ],
+  entryPoints: globSync("src/entryPoints/**/*.{ts,tsx,js,jsx}"),
   bundle: true,
   outdir: "build",
   sourcemap: true,
