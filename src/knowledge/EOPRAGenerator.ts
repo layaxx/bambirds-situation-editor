@@ -33,7 +33,12 @@ export class EOPRAGenerator
 {
   name = "EOPRA"
 
-  getRelationString(sx: number, ex: number, sy: number, ey: number): undefined {
+  getRelationString(
+    _sx: number,
+    _ex: number,
+    _sy: number,
+    _ey: number
+  ): undefined {
     return undefined
   }
 

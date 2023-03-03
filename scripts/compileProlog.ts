@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 
 import fs from "node:fs"
 import path from "node:path"
 import SWIPL from "swipl-wasm/dist/swipl/swipl-bundle"
 
-const entryPoint = path.join("prolog", "main.pl")
-const srcDir = "prolog"
+const entryPoint = path.join("data", "prolog", "main.pl")
+const srcDir = path.join("data", "prolog")
 const outFile = path.join("src", "prolog", "index.ts")
 
 async function buildProlog(): Promise<string> {

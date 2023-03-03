@@ -1,3 +1,4 @@
+import { defaultSituation } from "../data/situation"
 import { redrawAll, redrawObjects, updateCenter } from "./output"
 import { setUpGroups } from "./output/svg"
 import parse from "./parser/situationFileParser"
@@ -16,7 +17,6 @@ import { selectionMetaStore } from "./stores/selection"
 import { sceneStore } from "./stores/scene"
 import { svgStore } from "./stores/svgElements"
 import { tableStore } from "./stores/table"
-import { defaultSituation } from "./data/situation"
 import { generatorStore, relationGenerators } from "./stores/generatorStore"
 import {
   clearEOPRA,

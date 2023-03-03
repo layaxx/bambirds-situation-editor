@@ -1,4 +1,3 @@
-import { getRelationsBetweenTwoObjects } from "../knowledge"
 import { getObjectsWithinBoundary } from "../objects/helper"
 import { redrawObjects, updateCenter } from "../output"
 import {

@@ -1,5 +1,4 @@
-import { navigation } from "./src/output/createElements/navigation"
-
+/* eslint-disable unused-imports/no-unused-vars */
 namespace JSX {
   interface IntrinsicElements {
     navigation: any
