@@ -1,29 +1,16 @@
-import { setUpEventHandlers } from "canvasEventHandler"
 import { controls, editor, table } from "components/editor"
 import { footer } from "components/footer"
 import header from "components/header"
 import { knowledgeImports } from "components/knowledge"
 import { main } from "components/main"
-import levels from "data/levels"
 import { defaultSituation } from "data/situation"
 import { clearEOPRA, getRelationsBetweenTwoObjects, drawEOPRA } from "knowledge"
-import { ABObject } from "objects/angryBirdsObject"
-import { redrawAll, redrawObjects, updateCenter } from "output"
-import { setUpGroups } from "output/svg"
-import { updateTable } from "output/table"
-import parseLevel from "parser/levelParser"
-import parse from "parser/situationFileParser"
+import setupEditor from "output/shared/editor/setup"
+import { setupLevelSelection } from "output/shared/levelSelect"
+import { loadSituationFile } from "output/shared/situationFile/load"
 import { generatorStore, relationGenerators } from "stores/generatorStore"
-import {
-  selectedObjectStore,
-  objectStore,
-  makeBackup,
-  previousSelectedObjectStore,
-} from "stores/objects"
-import { sceneStore } from "stores/scene"
-import { selectionMetaStore } from "stores/selection"
+import { selectedObjectStore } from "stores/objects"
 import { svgStore } from "stores/svgElements"
-import { tableStore } from "stores/table"
 
 console.log("Loaded knowledgeEntry.ts")
 
@@ -48,61 +35,13 @@ function init() {
   $levelSelect = document.querySelector("#loadFromLevel")!
   $generatorSelect = document.querySelector("#generator-select")!
   const $container = document.querySelector<HTMLElement>("#container")!
-  if (
-    $input === null ||
-    $container === null ||
-    $levelSelect === null ||
-    $generatorSelect === null
-  ) {
-    console.error(
-      "Failed to get required HTML Elements, missing at least one of $situationfile, $container, $levelSelect, $generatorSelect"
-    )
-    return
-  }
 
   $input.value = defaultSituation
 
-  tableStore.set({
-    id: document.querySelector("#selected-object-id")!,
-    x: document.querySelector("#selected-object-x")!,
-    y: document.querySelector("#selected-object-y")!,
-    s: document.querySelector("#selected-object-s")!,
-    a: document.querySelector("#selected-object-a")!,
+  $input.addEventListener("blur", () => {
+    loadSituationFile($input.value)
   })
-  const $tableElements = tableStore.get()
-  if (
-    $tableElements!.id === null ||
-    $tableElements!.x === null ||
-    $tableElements!.y === null ||
-    $tableElements!.s === null ||
-    $tableElements!.a === null
-  ) {
-    console.error(
-      "Failed to get output HTML Elements, missing at least one from selected Object Inputs"
-    )
-  }
-
-  svgStore.set(setUpGroups($container))
-
-  // Setup SVG Scaling
-  const slider = document.querySelector("#zoomRange")
-  const zoomValue = document.querySelector("#zoomValue")
-  if (slider === null) {
-    console.error("Failed to setup SVG Scaling")
-  } else {
-    slider.addEventListener("input", function (event) {
-      const value = Number.parseFloat(
-        (event.target as HTMLInputElement | undefined)?.value ?? "100"
-      )
-      if (zoomValue !== null) {
-        zoomValue.textContent = `${value}%`
-      }
-
-      $container.style.transform = `scale(${value / 100})`
-    })
-  }
-
-  setUpEventHandlers($container)
+  loadSituationFile($input.value)
 
   document.querySelector("#clear-overlay")?.addEventListener("click", () => {
     ;[...(svgStore.get()?.$groupOverlay.children ?? [])].forEach((element) => {
@@ -126,74 +65,15 @@ function init() {
       })
     })
 
-  $input.addEventListener("blur", () => {
-    loadSituationFile()
-  })
-  loadSituationFile()
-
   // Load from Level
-  setupLevelSelection()
+  setupLevelSelection($levelSelect, () => {
+    loadSituationFile($input.value)
+  })
 
   // Generator Selection
   setupGeneratorSelection()
 
-  objectStore.subscribe((objects: ABObject[]) => {
-    redrawAll(objects)
-  })
-  selectedObjectStore.subscribe((objects: ABObject[]) => {
-    if (objects.length > 0) makeBackup()
-    redrawObjects(selectedObjectStore.get(), previousSelectedObjectStore.get())
-    updateCenter(selectedObjectStore.get())
-    updateTable(...selectedObjectStore.get())
-
-    selectionMetaStore.set({
-      scale:
-        objects.length === 0
-          ? 1
-          : objects.reduce(
-              (accumulator, current) => accumulator + current.scale,
-              0
-            ) / objects.length,
-    })
-
-    previousSelectedObjectStore.set(objects)
-  })
-}
-
-// Load Situation File
-function loadSituationFile() {
-  const loadResult = parse($input.value)
-  objectStore.set(loadResult.objects)
-  sceneStore.set(loadResult.scene)
-}
-
-function setupLevelSelection() {
-  const option = document.createElement("option")
-  option.text = `Load from Level`
-  option.value = "-1"
-  $levelSelect.append(option)
-
-  for (let index = 1; index <= levels.length; index++) {
-    const option = document.createElement("option")
-    option.text = `Level1-${index}`
-    option.value = String(index - 1)
-
-    $levelSelect.append(option)
-  }
-
-  $levelSelect.addEventListener("change", (event) => {
-    if (event?.target) {
-      const value = Number((event.target as HTMLSelectElement).value)
-
-      if (value > -1 && levels.at(value)) {
-        const result = parseLevel(levels.at(value)!)
-        objectStore.set(result.objects)
-        sceneStore.set(result.scene)
-      }
-
-      if (value === -1) loadSituationFile()
-    }
-  })
+  setupEditor($container)
 }
 
 function setupGeneratorSelection() {

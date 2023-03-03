@@ -1,4 +1,3 @@
-import { setUpEventHandlers } from "canvasEventHandler"
 import { editor, controls, table } from "components/editor"
 import { footer } from "components/footer"
 import { grid } from "components/grid"
@@ -7,31 +6,19 @@ import { cbrAnalysis } from "components/index/cbrAnalysis"
 import { cbrDB } from "components/index/cbrDB"
 import { indexImports } from "components/index/imports"
 import { main } from "components/main"
-import levels from "data/levels"
 import { defaultSituation } from "data/situation"
-import { ABObject } from "objects/angryBirdsObject"
-import { redrawAll, redrawObjects, updateCenter } from "output"
 import {
   analyzeCase,
   showAllCaseOverlays,
   hideAllCaseOverlays,
 } from "output/caseBasedReasoning"
 import { exportFile } from "output/prolog"
-import { setUpGroups } from "output/svg"
-import { updateTable } from "output/table"
+import setupEditor from "output/shared/editor/setup"
+import { setupLevelSelection } from "output/shared/levelSelect"
+import { loadSituationFile } from "output/shared/situationFile/load"
 import parseDatabase from "parser/databaseParser"
-import parseLevel from "parser/levelParser"
-import parse from "parser/situationFileParser"
-import {
-  objectStore,
-  selectedObjectStore,
-  makeBackup,
-  previousSelectedObjectStore,
-} from "stores/objects"
-import { sceneStore } from "stores/scene"
-import { selectionMetaStore } from "stores/selection"
+import { objectStore } from "stores/objects"
 import { svgStore } from "stores/svgElements"
-import { tableStore } from "stores/table"
 import { Case } from "types"
 
 console.log("Loaded app.ts")
@@ -79,89 +66,27 @@ function init() {
     exportFile($output, $keepPredicates.checked)
   })
 
-  tableStore.set({
-    id: document.querySelector("#selected-object-id")!,
-    x: document.querySelector("#selected-object-x")!,
-    y: document.querySelector("#selected-object-y")!,
-    s: document.querySelector("#selected-object-s")!,
-    a: document.querySelector("#selected-object-a")!,
-  })
-  const $tableElements = tableStore.get()
-  if (
-    $tableElements!.id === null ||
-    $tableElements!.x === null ||
-    $tableElements!.y === null ||
-    $tableElements!.s === null ||
-    $tableElements!.a === null
-  ) {
-    console.error(
-      "Failed to get output HTML Elements, missing at least one from selected Object Inputs"
-    )
-  }
-
-  svgStore.set(setUpGroups($container))
-
-  // Setup SVG Scaling
-  const slider = document.querySelector("#zoomRange")
-  const zoomValue = document.querySelector("#zoomValue")
-  if (slider === null) {
-    console.error("Failed to setup SVG Scaling")
-  } else {
-    slider.addEventListener("input", function (event) {
-      const value = Number.parseFloat(
-        (event.target as HTMLInputElement | undefined)?.value ?? "100"
-      )
-      if (zoomValue !== null) {
-        zoomValue.textContent = `${value}%`
-      }
-
-      $container.style.transform = `scale(${value / 100})`
-    })
-  }
-
-  setUpEventHandlers($container)
-
   // Load Situation File
-  const loadSituationFile = () => {
-    const loadResult = parse($input.value)
-    objectStore.set(loadResult.objects)
-    sceneStore.set(loadResult.scene)
-  }
-
   $input.addEventListener("blur", () => {
-    loadSituationFile()
+    loadSituationFile($input.value)
   })
-  loadSituationFile()
+  loadSituationFile($input.value)
 
   // Load from Level
-  const option = document.createElement("option")
-  option.text = `Load from Level`
-  option.value = "-1"
-  $levelSelect.append(option)
-
-  for (let index = 1; index <= levels.length; index++) {
-    const option = document.createElement("option")
-    option.text = `Level1-${index}`
-    option.value = String(index - 1)
-
-    $levelSelect.append(option)
-  }
-
-  $levelSelect.addEventListener("click", (event) => {
-    if (event?.target) {
-      const value = Number((event.target as HTMLSelectElement).value)
-
-      if (value > -1 && levels.at(value)) {
-        const result = parseLevel(levels.at(value)!)
-        objectStore.set(result.objects)
-        sceneStore.set(result.scene)
-      }
-
-      if (value === -1) loadSituationFile()
-    }
+  setupLevelSelection($levelSelect, () => {
+    loadSituationFile($input.value)
   })
 
   // Load Database
+  setupCBR()
+
+  // Setup Editor
+  setupEditor($container)
+}
+
+init()
+
+function setupCBR() {
   $databaseInput = document.querySelector("#database")!
   $CBRResults = document.querySelector("#analysis-results")!
   if ($databaseInput === null) {
@@ -210,28 +135,4 @@ function init() {
     loadDatabase()
   })
   loadDatabase()
-
-  objectStore.subscribe((objects: ABObject[]) => {
-    redrawAll(objects)
-  })
-  selectedObjectStore.subscribe((objects: ABObject[]) => {
-    if (objects.length > 0) makeBackup()
-    redrawObjects(selectedObjectStore.get(), previousSelectedObjectStore.get())
-    updateCenter(selectedObjectStore.get())
-    updateTable(...selectedObjectStore.get())
-
-    selectionMetaStore.set({
-      scale:
-        objects.length === 0
-          ? 1
-          : objects.reduce(
-              (accumulator, current) => accumulator + current.scale,
-              0
-            ) / objects.length,
-    })
-
-    previousSelectedObjectStore.set(objects)
-  })
 }
-
-init()
