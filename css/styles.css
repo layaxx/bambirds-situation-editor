@@ -46,3 +46,23 @@ main > div {
 #database {
   white-space: nowrap;
 }
+
+.green {
+  color: green;
+}
+
+.red {
+  color: red;
+}
+
+.greyed-out {
+  pointer-events: none;
+  opacity: 0.6;
+  filter: grayscale(100%);
+  background-color: lightgray;
+}
+
+.timeline details {
+  padding-top: var(--spacing);
+  margin: 0;
+}

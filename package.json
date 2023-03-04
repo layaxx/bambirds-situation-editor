@@ -11,10 +11,12 @@
     "start": "node esbuild.config.mjs -w",
     "dev": "yarn start",
     "lint": "xo",
-    "compile-prolog": "ts-node scripts/compileProlog.ts"
+    "compile-prolog": "ts-node scripts/compileProlog.ts",
+    "compile-logs": "ts-node scripts/writeLogIndex.ts"
   },
   "dependencies": {
     "@picocss/pico": "^1.5.3",
+    "dayjs": "^1.11.7",
     "glob": "^9.2.1",
     "patch-package": "^6.5.1",
     "swipl-wasm": "^3.1.0",
@@ -40,7 +42,8 @@
       "esbuild.config.mjs",
       "src/prolog/loadImage.ts",
       "src/prolog/strToBuffer.ts",
-      "src/prolog/index.ts"
+      "src/prolog/index.ts",
+      "data/logs/**/*"
     ],
     "rules": {
       "@typescript-eslint/consistent-type-assertions": "off",

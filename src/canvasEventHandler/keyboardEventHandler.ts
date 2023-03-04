@@ -29,7 +29,10 @@ export function setUpKeyboardEventHandlers(): void {
   // eslint-disable-next-line complexity
   function handleKeyPress(event: KeyboardEvent): void {
     if (
-      new Set(["TEXTAREA", "INPUT"]).has((event.target as HTMLElement)?.tagName)
+      new Set(["TEXTAREA", "INPUT"]).has(
+        (event.target as HTMLElement)?.tagName
+      ) ||
+      /F\d+/.test(event.key)
     ) {
       return
     }
@@ -85,7 +88,6 @@ export function setUpKeyboardEventHandlers(): void {
           }
         }
 
-        console.log("style")
         svg?.setAttribute(
           "style",
           (style ?? "") +
