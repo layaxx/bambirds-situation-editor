@@ -54,7 +54,10 @@ function init() {
       footer()
     )
 
-  logStore.subscribe(({ content, id }) => {
+  logStore.subscribe(async ({ content, id }) => {
+    content = await fetch("build/" + content).then(async (response) =>
+      response.text()
+    )
     $outputElement.textContent = content
 
     const state = new LevelState()
@@ -100,45 +103,23 @@ function init() {
             generic(
               "div",
               generic("h3", "for all runs"),
-              button("Maximum Score", () => {
-                console.log(
-                  "Maximum Score",
-                  logs.flatMap(({ content, id }) => {
-                    const state = new LevelState()
-                    state.addMultipleLines(String(content).split("\n"))
-                    return getScoreData(state, id)
-                  })
-                )
+              button("Maximum Score", async () => {
+                console.log("Maximum Score", await applyToAll(getScoreData))
               }),
-              button("CBR first shot", () => {
+              button("CBR first shot", async () => {
                 console.log(
                   "CBR on first shot",
-                  logs.flatMap(({ content, id }) => {
-                    const state = new LevelState()
-                    state.addMultipleLines(String(content).split("\n"))
-                    return getCBRShotsOnFirstShotPerLevelData(state, id)
-                  })
+                  await applyToAll(getCBRShotsOnFirstShotPerLevelData)
                 )
               }),
-              button("CBR Success rate", () => {
+              button("CBR Success rate", async () => {
                 console.log(
                   "Success rate",
-                  logs.flatMap(({ content, id }) => {
-                    const state = new LevelState()
-                    state.addMultipleLines(String(content).split("\n"))
-                    return getCBRSuccessRateData(state, id)
-                  })
+                  await applyToAll(getCBRSuccessRateData)
                 )
               }),
-              button("Strategies", () => {
-                console.log(
-                  "Strategies",
-                  logs.flatMap(({ content, id }) => {
-                    const state = new LevelState()
-                    state.addMultipleLines(String(content).split("\n"))
-                    return getStrategyData(state, id)
-                  })
-                )
+              button("Strategies", async () => {
+                console.log("Strategies", await applyToAll(getStrategyData))
               })
             )
           ),
@@ -205,4 +186,21 @@ function getStrategyData(state: LevelState, id: string) {
   }
 
   return strategies
+}
+
+async function applyToAll<T>(
+  func: (state: LevelState, id: string) => T[]
+): Promise<T[]> {
+  const arrays = await Promise.all(
+    logs.map(async ({ content, id }) => {
+      content = await fetch("build/" + String(content)).then(async (response) =>
+        response.text()
+      )
+      const state = new LevelState()
+      state.addMultipleLines(String(content).split("\n"))
+      return func(state, id)
+    })
+  )
+
+  return arrays.flat()
 }

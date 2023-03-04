@@ -8,6 +8,7 @@
   "scripts": {
     "postinstall": "patch-package",
     "type-check": "tsc --noEmit",
+    "prestart": "yarn compile-logs",
     "start": "node esbuild.config.mjs -w",
     "dev": "yarn start",
     "lint": "xo",
