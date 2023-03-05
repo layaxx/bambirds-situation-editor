@@ -9,6 +9,7 @@ import {
 } from "objects/colors"
 import { ABObject } from "objects/angryBirdsObject"
 import { svgStore } from "stores/svgElements"
+import jsx from "texsaur"
 
 /** Amount of pixels between each line in the background grid */
 const gridSize = 10
@@ -60,13 +61,13 @@ export function setUpGroups($svg: HTMLElement): SVGElements {
 }
 
 /**
- * Function that draws a grid to the "group-background" group of the main svg canvas.
+ * Function that draws a grid to $target if given, or the "group-background" group of the main svg canvas otherwise.
  * The Grid consists of horizontal and vertical lines, such that the entire canvas is covered
  * and all lines are of {@link gridSize} pixels apart
  */
 export function drawGrid(
   $target?: SVGElement,
-  options?: { width?: number; height?: number }
+  options?: { width?: number; height?: number; skip?: number }
 ): void {
   const $svgElements = svgStore.get()
   if (!$target && !$svgElements) throw new Error("SVG Elements not setup yet")
@@ -80,7 +81,7 @@ export function drawGrid(
   const svgHeight = options?.height ?? height()
 
   for (
-    let offset = gridSize;
+    let offset = gridSize + (options?.skip ?? 0);
     offset < Math.max(svgWidth, svgHeight);
     offset += gridSize
   ) {
@@ -407,6 +408,46 @@ export function drawCrossAt({ x, y }: Point, $target: SVGElement): void {
   const $group = document.createElementNS("http://www.w3.org/2000/svg", "g")
   $group.setAttribute("id", "svg-center")
   $group.append($horizontalLine, $verticalLine)
+
+  $target.append($group)
+}
+
+/**
+ * Draws a more visible target crosshair at the given position
+ *
+ * @param center - center of the crosshair
+ * @param $target - SVG element to which the cross is appended
+ */
+export function drawTargetCrossAt({ x, y }: Point, $target: SVGElement): void {
+  const crossSize = 20
+  const style = "stroke:" + CENTER_CROSS_COLOR + ";stroke-width:2;"
+
+  const $horizontalLine = getGenericLine(
+    { x: x - crossSize, y },
+    { x: x + crossSize, y },
+    style
+  )
+
+  const $verticalLine = getGenericLine(
+    { x, y: y + crossSize },
+    { x, y: y - crossSize },
+    style
+  )
+
+  const circles = Array.from({ length: 1 }).map((_, index) =>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    jsx("circle", {
+      cx: x,
+      cy: y,
+      r: (crossSize / 2) * (index + 1),
+      style: "fill:none;stroke:" + CENTER_CROSS_COLOR + ";stroke-width:1;",
+    })
+  )
+
+  const $group = document.createElementNS("http://www.w3.org/2000/svg", "g")
+  $group.setAttribute("id", "svg-center")
+  $group.append($horizontalLine, $verticalLine, ...circles)
 
   $target.append($group)
 }

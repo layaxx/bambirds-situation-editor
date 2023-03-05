@@ -223,7 +223,7 @@ export function getFormFor(
  */
 function getScene(predicatesByType: Record<string, string[]>): Scene {
   const groundY = getGenericValues(
-    predicatesByType.ground_plane[0]
+    predicatesByType.ground_plane?.at(0)
   )[1] as number
 
   const derivedPredicateKeys = [

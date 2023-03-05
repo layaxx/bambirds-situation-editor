@@ -2,13 +2,13 @@ import dayjs from "dayjs"
 import minMax from "dayjs/plugin/minMax"
 import { parsePlan, Plan } from "./plans"
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 dayjs.extend(minMax)
 
 export type Shot = {
   candidates: Plan[]
   executed?: Plan
   result?: { killed: number; score: number }
+  cbrEffects?: Effects
 }
 
 type Level = {
@@ -33,13 +33,17 @@ export type LevelTry = {
   chronology: ChronologyEntry[]
 }
 
+export type Effects = {
+  expected: Effect
+  actual: Effect
+}
+
+export type Effect = { moved: string; destroyed: string }
+
 export type Use = {
   level: string
   shotNumber: number
-  effect?: {
-    expected: { moved: string; destroyed: string }
-    actual: { moved: string; destroyed: string }
-  }
+  effect?: Effects
   killed: number
 }
 
@@ -169,6 +173,7 @@ export default class LevelState {
           if (this.newCBRCases.get(this.lastCaseID ?? "-1")?.uses.at(-1))
             this.newCBRCases.get(this.lastCaseID ?? "-1")!.uses.at(-1)!.effect =
               effect
+          if (this.getCurrentShot()) this.getCurrentShot()!.cbrEffects = effect
         } else if (msg.includes("loaded case")) {
           const caseResult =
             /Meta - CBR_DEBUG loaded case: CBR-Case: (?<id>\d+), .*/.exec(msg)

@@ -6,7 +6,7 @@ import { cbrAnalysis } from "components/index/cbrAnalysis"
 import { cbrDB } from "components/index/cbrDB"
 import { indexImports } from "components/index/imports"
 import { main } from "components/main"
-import { defaultSituation } from "data/situation"
+import { defaultSituation } from "data/situations"
 import {
   analyzeCase,
   showAllCaseOverlays,

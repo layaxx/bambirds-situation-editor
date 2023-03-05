@@ -474,6 +474,15 @@ export class ABObject {
         console.log("Not sure how to draw", this)
     }
 
+    /* DEBUG: used to display IDs next to objects 
+    $target.append(
+      jsx(
+        "text",
+        { x: this.x - 5, y: this.y, "font-size": 15, "font-weight": "bold" },
+        this.id.replace(/[^\d+]/g, "")
+      )
+    ) */
+
     if (newElement && clickEventListener) {
       newElement.addEventListener("click", clickEventListener)
     }

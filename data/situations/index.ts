@@ -1,3 +1,51 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-expect-error
+import situation1 from "./situation1-1.pl" // @ts-expect-error
+import situation2 from "./situation2-1.pl" // @ts-expect-error
+import situation3 from "./situation3-1.pl" // @ts-expect-error
+import situation4 from "./situation4-1.pl" // @ts-expect-error
+import situation5 from "./situation5-1.pl" // @ts-expect-error
+import situation6 from "./situation6-1.pl" // @ts-expect-error
+import situation7 from "./situation7-1.pl" // @ts-expect-error
+import situation8 from "./situation8-1.pl" // @ts-expect-error
+import situation9 from "./situation9-1.pl" // @ts-expect-error
+import situation10 from "./situation10-1.pl" // @ts-expect-error
+import situation11 from "./situation11-1.pl" // @ts-expect-error
+import situation12 from "./situation12-1.pl" // @ts-expect-error
+import situation13 from "./situation13-1.pl" // @ts-expect-error
+import situation14 from "./situation14-1.pl" // @ts-expect-error
+import situation15 from "./situation15-1.pl" // @ts-expect-error
+import situation16 from "./situation16-1.pl" // @ts-expect-error
+import situation17 from "./situation17-1.pl" // @ts-expect-error
+import situation18 from "./situation18-1.pl" // @ts-expect-error
+import situation19 from "./situation19-1.pl" // @ts-expect-error
+import situation20 from "./situation20-1.pl" // @ts-expect-error
+import situation21 from "./situation21-1.pl"
+
+export const situationFiles = [
+  situation1,
+  situation2,
+  situation3,
+  situation4,
+  situation5,
+  situation6,
+  situation7,
+  situation8,
+  situation9,
+  situation10,
+  situation11,
+  situation12,
+  situation13,
+  situation14,
+  situation15,
+  situation16,
+  situation17,
+  situation18,
+  situation19,
+  situation20,
+  situation21,
+]
+
 export const defaultSituation = `before(pig0,pig1,xAxis).
 before(pig0,pig1,yAxis).
 before(pig0,pig2,xAxis).

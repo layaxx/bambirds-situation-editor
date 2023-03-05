@@ -1,11 +1,11 @@
+import { levelMap } from "components/levels/map"
 import levels from "data/levels/index"
 import type { ABObject } from "objects/angryBirdsObject"
 import { footer } from "output/createElements/footer"
 import header from "output/createElements/header"
-import { container } from "output/createElements/levels/container"
 import { main } from "output/createElements/main"
-import { drawGrid } from "output/svg"
-import parseLevel, { levelDimensions } from "parser/levelParser"
+import parseLevel from "parser/levelParser"
+import jsx from "texsaur"
 
 console.log("Loaded levels.ts")
 
@@ -21,7 +21,11 @@ function init() {
     location.reload()
   })
 
-  const $container = container()
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const $container = jsx("div", {
+    style: "display:grid; grid-template-columns: auto auto auto;",
+  })
 
   document
     .querySelector("body")
@@ -40,45 +44,12 @@ function init() {
 
   levels.forEach((level, index) => {
     const { objects } = parseLevel(level)
-    const { minX, maxX, minY, maxY } = levelDimensions(objects)
-
-    const height = 500
-    const width = 1000
-    const buffer = 10
-    const newSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-    newSVG.setAttribute("height", "8rem")
-    newSVG.setAttribute("width", "100%")
-    newSVG.setAttribute("preserveAspectRatio", "xMidYMax")
-    const xHeight = maxY - minY
-    newSVG.setAttribute(
-      "viewBox",
-      `${minX - buffer} ${400 - xHeight} ${maxX - minX + 2 * buffer} ${xHeight}`
-    )
-
-    newSVG.setAttribute("transform", `translate(0 ${0})`)
-    const newSVGWrapper = document.createElement("div")
-    newSVGWrapper.setAttribute(
-      "style",
-      "overflow: hidden; padding: 0; width: 33.3%; height: auto; border: 2px solid black;"
-    )
-
-    drawGrid(newSVG, { height, width })
-    objects.forEach((object) => {
-      object.render(newSVG)
-    })
-
-    /* Text:     const text = document.createElementNS("http://www.w3.org/2000/svg", "text")
-    text.textContent = String(minY)
-    text.setAttribute("x", "150")
-    text.setAttribute("y", "300")
-    text.setAttribute("style", "font: bold 40px sans-serif;")
-    newSVG.append(text) */
-
-    newSVGWrapper.append(newSVG)
 
     analysis.push(analyzeLevel(objects, 1 + index))
 
-    $container.append(newSVGWrapper)
+    const map = levelMap({ objects })
+
+    $container.append(map)
   })
 }
 

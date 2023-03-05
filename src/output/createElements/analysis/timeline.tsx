@@ -3,10 +3,21 @@ import jsx from "texsaur"
 import { levelTry as levelTryComponent } from "./levelTry"
 
 export const timeline: JSX.Component<{ state: LevelState }> = ({ state }) => {
-  return (
+  const $container = (
     <div class="timeline">
       <h2>Chronology:</h2>
-      {state.levelTries.map((levelTry) => levelTryComponent({ levelTry }))}
     </div>
   )
+  Promise.all(
+    state.levelTries.map(async (levelTry) => levelTryComponent({ levelTry }))
+  ).then(
+    (elements) => {
+      $container.append(...elements)
+    },
+    () => {
+      console.error("Failed to generate Timeline")
+    }
+  )
+
+  return $container
 }

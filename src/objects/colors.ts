@@ -53,6 +53,10 @@ export function getColorFromMaterial(
       return TNT_COLOR
     case "cbr":
       return CBR_COLOR
+    case "cbr_destroyed":
+      return "red"
+    case "cbr_moved":
+      return "yellow"
     case undefined:
       return undefined
     default:

@@ -8,7 +8,7 @@ const ctx = await esbuild.context({
   outdir: "build",
   sourcemap: true,
   external: ["fs", "path"],
-  loader: { ".log": "file" },
+  loader: { ".log": "file", ".pl": "file" },
 })
 
 await ctx.watch()
